@@ -1,0 +1,22 @@
+{
+  "name": "libredeuda",
+  "version": "1.0.0",
+  "description": "Front-End sistema de libre deudas AGP",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/reyesdiego/LibreDeuda.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/reyesdiego/LibreDeuda/issues"
+  },
+  "homepage": "https://github.com/reyesdiego/LibreDeuda#readme",
+  "dependencies": {
+    "bower": "^1.7.9"
+  }
+}
