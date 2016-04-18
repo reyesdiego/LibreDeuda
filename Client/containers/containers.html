@@ -1,0 +1,34 @@
+<div class="container-fluid">
+
+    <div class="row page-header col-lg-12">
+        <h1>Listado de contenedores</h1>
+    </div>
+
+    <table class="table table-striped table-hover ">
+        <thead>
+        <tr>
+            <th>Buque</th>
+            <th>Viaje</th>
+            <th>Contenedor</th>
+            <th>Fecha</th>
+            <th>CUIT</th>
+            <th>Razón social</th>
+            <th>Devolución</th>
+            <th>Estado</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="data in dataContainers">
+            <td>{{ data.SHIP }}</td>
+            <td>{{ data.TRIP }}</td>
+            <td>{{ data.CONTAINER }}</td>
+            <td>{{ data.DATE }}</td>
+            <td>{{ data.CUIT }}</td>
+            <td>{{ data.COMPANY }}</td>
+            <td>{{ data.RETURN_PLACE }}</td>
+            <td>{{ data.STATUS }}</td>
+        </tr>
+        </tbody>
+    </table>
+
+</div>
