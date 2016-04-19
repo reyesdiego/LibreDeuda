@@ -1,0 +1,54 @@
+<div class="container-fluid">
+    <div class="row col-lg-6 well top-gap">
+        <form class="form-horizontal" ng-submit="saveContainer()">
+            <fieldset>
+                <legend>Nuevo registro</legend>
+                <div class="form-group">
+                    <label for="ship" class="col-lg-2 control-label"><span class="glyphicon"></span> Buque</label>
+                    <div class="col-lg-9">
+                        <input type="text" class="form-control" ng-model="newContainer.SHIP" id="ship" placeholder="" ng-required="true">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="trip" class="col-lg-2 control-label"><span class="glyphicon"></span> Viaje</label>
+                    <div class="col-lg-9">
+                        <input type="text" class="form-control" ng-model="newContainer.TRIP" id="trip" placeholder="" ng-required="true">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="container" class="col-lg-2 control-label"><span class="glyphicon"></span> Contenedor</label>
+                    <div class="col-lg-9">
+                        <input type="text" class="form-control" ng-model="newContainer.CONTAINER" id="container" placeholder="" ng-required="true">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="date" class="col-lg-2 control-label"><span class="glyphicon"></span> Fecha</label>
+                    <div class="col-lg-9">
+                        <input type="text" class="form-control" ng-model="newContainer.DATE" id="date" placeholder="" ng-required="true">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="cuit" class="col-lg-2 control-label"><span class="glyphicon"></span> CUIT</label>
+                    <div class="col-lg-9">
+                        <input type="text" class="form-control" ng-model="newContainer.CUIT" id="cuit" placeholder="" ng-required="true">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="return" class="col-lg-2 control-label"><span class="glyphicon"></span> Devolución</label>
+                    <div class="col-lg-9">
+                        <input type="text" class="form-control" ng-model="newContainer.RETURN_PLACE" id="return" placeholder="" ng-required="true">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="status" class="col-lg-2 control-label"><span class="glyphicon"></span> Estado</label>
+                    <div class="col-lg-9">
+                        <input type="text" class="form-control" ng-model="newContainer.STATUS" id="status" placeholder="" ng-required="true">
+                    </div>
+                </div>
+                <div class="form-group col-lg-11">
+                    <button type="submit" class="btn btn-primary pull-right"><span class="glyphicon glyphicon-save"></span> Guardar</button>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+</div>

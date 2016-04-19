@@ -8,10 +8,11 @@ myApp.factory('containersFactory', ['$http', 'configService', function($http, co
 
         getContainers: function(callback){
             var insertUrl = configService.serverUrl + '/libre';
-            $http.get(insertUrl).then(function(data){
-                callback(data);
-            }, function(error){
-                callback(error);
+            $http.get(insertUrl).then(function(response){
+                callback(response);
+            }, function(response){
+                console.log(response);
+                callback(response);
             })
         }
 

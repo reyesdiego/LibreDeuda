@@ -19,7 +19,57 @@ myApp.config(['$urlRouterProvider', '$stateProvider', function($urlRouterProvide
         url: '/containers',
         templateUrl: 'containers/containers.html',
         controller: 'containersCtrl'
+    }).state('containers.new', {
+        url: '/containers/new',
+        templateUrl: 'containers/containers.new.html'
     })
+
+}]);
+
+//Configuración para interceptar respuestas http y tratar errores
+myApp.config(['$provide', '$httpProvider', function($provide, $httpProvider){
+
+    // register the interceptor as a service
+    $provide.factory('myHttpInterceptor', function($q) {
+        return {
+            // optional method
+            'request': function(config) {
+                // do something on success
+                return config;
+            },
+
+            // optional method
+            'requestError': function(rejection) {
+                // do something on error
+
+                /*if (canRecover(rejection)) {
+                    return responseOrNewPromise
+                }*/
+                return $q.reject(rejection);
+            },
+
+
+
+            // optional method
+            'response': function(response) {
+                // do something on success
+                return response;
+            },
+
+            // optional method
+            'responseError': function(rejection) {
+                //TODO config custom messages for http Error status
+                if (rejection.status == -1) rejection.statusText = 'No se ha podido establecer comunicación con el servidor.';
+                // do something on error
+                /*if (canRecover(rejection)) {
+                    return responseOrNewPromise
+                }*/
+                return $q.reject(rejection);
+            }
+        };
+    });
+
+    $httpProvider.interceptors.push('myHttpInterceptor');
 
 }]);
 

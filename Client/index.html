@@ -24,9 +24,9 @@
     <!-- MOCKS -->
     <script src="mocks/dummyLogin.js"></script>
 </head>
-<body class="container-fluid wrapper" ng-class="loginScreen ? 'image-background' : ''">
+<body class="container-fluid" ng-class="loginScreen ? 'image-background' : ''">
 
-<nav class="navbar navbar-default navbar-fixed-top">
+<nav class="navbar navbar-default navbar-fixed-top" ng-hide="loginScreen">
     <div class="container-fluid">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
@@ -35,7 +35,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href>LibreDeuda</a>
+            <a href class="navbar-brand"><img src="images/logo-libredeuda-chico.png" height="30"></a>
         </div>
 
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -47,14 +47,14 @@
 </nav>
 
 
-<div class="row content">
+<div class="row wrapper">
     <div ui-view></div>
 </div>
 
 <footer class="container-fluid footer" ng-hide="loginScreen">
     <hr>
-    <span class="hidden-xs">Administración General de Puertos S.E. - Departamento de desarrollo <img src="images/LogoPUERTO_30x30.png" width="30" height="30"></span>
-    <span class="visible-xs">AGP S.E. - Depto. de desarrollo <img src="images/LogoPUERTO_30x30.png" width="30" height="30"></span>
+    <span class="hidden-xs">Administración General de Puertos S.E. - Departamento de desarrollo <img src="images/logo-puerto-chico.PNG" height="45"></span>
+    <span class="visible-xs">AGP S.E. - Depto. de desarrollo <img src="images/logo-puerto-chico.PNG"></span>
 </footer>
 
 </body>
