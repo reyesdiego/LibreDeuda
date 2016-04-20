@@ -14,6 +14,14 @@ myApp.factory('containersFactory', ['$http', 'configService', function($http, co
                 console.log(response);
                 callback(response);
             })
+        },
+        saveContainer: function(dataContainer, callback){
+            var insertUrl = configService.serverUrl + '/libre';
+            $http.post(insertUrl, dataContainer).then(function(response){
+                callback(response);
+            }, function(response){
+                callback(response);
+            })
         }
 
     };

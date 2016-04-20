@@ -5,7 +5,9 @@
 var myApp = angular.module('libreDeuda', [
    'ui.router',
     'ui.bootstrap',
-    'ngSanitize'
+    'ngSanitize',
+    'btford.socket-io',
+    'ngAnimate'
 ]);
 
 myApp.config(['$urlRouterProvider', '$stateProvider', function($urlRouterProvider, $stateProvider){
@@ -73,7 +75,9 @@ myApp.config(['$provide', '$httpProvider', function($provide, $httpProvider){
 
 }]);
 
-myApp.run(['$rootScope', function($rootScope){
+myApp.run(['$rootScope', 'appSocket', function($rootScope, appSocket){
+    $rootScope.socket = appSocket;
+    $rootScope.socket.connect();
 
     $rootScope.loginScreen = true;
 

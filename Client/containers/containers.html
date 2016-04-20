@@ -4,6 +4,10 @@
         <h1>Listado de contenedores</h1>
     </div>
 
+    <div class="col-lg-12">
+        <button class="btn btn-default pull-right" ui-sref="containers.new">Informar contenedor</button>
+    </div>
+
     <div class="row col-lg-12">
         <div ng-show="errorResponse.show" class="panel panel-danger">
             <div class="panel-heading">
@@ -15,37 +19,46 @@
         </div>
     </div>
 
-
-    <table ng-hide="errorResponse.show" class="table table-striped table-hover ">
+    <table ng-hide="errorResponse.show" class="table">
         <thead>
         <tr>
             <th>Buque</th>
             <th>Viaje</th>
             <th>Contenedor</th>
-            <th>Fecha</th>
-            <th>CUIT</th>
+            <th>Conocimiento</th>
+            <th>Fecha devolución</th>
+            <th>Lugar devolución</th>
             <th>Razón social</th>
-            <th>Devolución</th>
+            <th>CUIT</th>
             <th>Estado</th>
+            <th>Fecha alta</th>
+            <th>Usuario</th>
         </tr>
         </thead>
-        <tbody>
-        <tr ng-repeat="data in dataContainers">
+        <tbody ng-repeat="data in dataContainers track by $index">
+        <tr ng-click="showDetail($index)" class="parent-row">
             <td>{{ data.SHIP }}</td>
             <td>{{ data.TRIP }}</td>
             <td>{{ data.CONTAINER }}</td>
-            <td>{{ data.DATE }}</td>
-            <td>{{ data.CUIT }}</td>
-            <td>{{ data.COMPANY }}</td>
+            <td>{{ data.BL }}</td>
+            <td>{{ data.DATE | date: 'dd/MM/yyyy' }}</td>
             <td>{{ data.RETURN_PLACE }}</td>
-            <td>{{ data.STATUS }}</td>
+            <td>{{ data.DETAIL[0].COMPANY }}</td>
+            <td>{{ data.DETAIL[0].CUIT }}</td>
+            <td>{{ data.DETAIL[0].STATUS | containerStatus }}</td>
+            <td>{{ data.DETAIL[0].TIMESTAMP | date: 'dd/MM/yyyy HH:mm' }}</td>
+            <td>{{ data.DETAIL[0].USER }}</td>
+        </tr>
+        <tr ng-repeat="detail in data.DETAIL" ng-init="data.SHOW = false" ng-show="data.SHOW">
+            <td colspan="6"><span class="glyphicon glyphicon-arrow-right pull-right"></span> </td>
+            <td>{{ detail.COMPANY }}</td>
+            <td>{{ detail.CUIT }}</td>
+            <td>{{ detail.STATUS | containerStatus }}</td>
+            <td>{{ detail.TIMESTAMP | date: 'dd/MM/yyyy HH:mm' }}</td>
+            <td>{{ detail.USER }}</td>
         </tr>
         </tbody>
     </table>
-
-    <div class="col-lg-12">
-        <button class="btn btn-default" ui-sref="containers.new">Informar contenedor</button>
-    </div>
 
     <div ui-view></div>
 

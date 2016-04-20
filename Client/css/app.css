@@ -2,6 +2,20 @@ html, body {
     height: 100%;
 }
 
+.parent-row {
+    background-color: #f9f9f9;
+    cursor: hand;
+    cursor: pointer;
+}
+
+.parent-row:hover{
+    background-color: #dddddd;
+}
+
+.nested-row {
+
+}
+
 .logo-image {
     width:540px; /* you can use % */
     height: auto;
