@@ -6,7 +6,17 @@ myApp.service('configService', [function(){
 
     return {
         serverUrl: 'http://10.10.0.223:8086',
-        statusContainers: {'0': 'Liberado', '5': 'Retirado', '9': 'Cancelado'}
+        statusContainers: {'0': 'Liberado', '5': 'Retirado', '9': 'Cancelado'},
+        statusContainersAsArray: function(){
+            var result = [];
+            var status = this.statusContainers;
+            for (var key in status) {
+                if (status.hasOwnProperty(key)) {
+                    result.push(status[key]);
+                }
+            }
+            return result;
+        }
     }
 
 }]);

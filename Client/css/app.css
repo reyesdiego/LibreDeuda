@@ -2,9 +2,24 @@ html, body {
     height: 100%;
 }
 
+.animated-row.ng-enter {
+    -webkit-animation: tada 1s;
+    animation: tada 1s
+}
+
+.animated-row.ng-enter-stagger {
+    /* 200ms will be applied between each sucessive enter operation */
+    -webkit-animation-delay:0.1s;
+    animation-delay:0.1s;
+
+    /* this is here to avoid accidental CSS inheritance */
+    -webkit-animation-duration:0;
+    animation-duration:0;
+}
+
 .parent-row {
     background-color: #f9f9f9;
-    cursor: hand;
+    /*cursor: hand;*/
     cursor: pointer;
 }
 
