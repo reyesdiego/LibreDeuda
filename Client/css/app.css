@@ -100,7 +100,7 @@ html, body {
 
     /* In legacy web browsers such as Firefox 9
        we need to specify the width of the flex container */
-    width: 100%;
+    /*width: 100%;*/
 
     /* Also 'margin: 0 auto' doesn't have any effect on flex items in such web browsers
        hence the bootstrap's container won't be aligned to the center anymore.

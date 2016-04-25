@@ -59,8 +59,11 @@
                 </div>
                 <div class="form-group">
                     <label for="status" class="col-lg-2 control-label"><span class="glyphicon"></span> Estado</label>
-                    <div class="col-lg-9">
+                    <div class="input-group col-lg-9">
                         <input type="text" class="form-control" ng-model="newContainer.STATUS" id="status" placeholder="" ng-required="true" uib-typeahead="state for state in statesContainers | filter:$viewValue | limitTo:8">
+                        <span class="input-group-btn">
+                            <button type="button" class="btn btn-default" ng-click="eraseField('STATUS')"><i class="glyphicon glyphicon-remove"></i></button>
+                        </span>
                     </div>
                 </div>
                 <div class="form-group col-lg-11">
