@@ -6,7 +6,7 @@
                 <div class="form-group">
                     <label for="ship" class="col-lg-2 control-label"><span class="glyphicon"></span> Buque</label>
                     <div class="input-group col-lg-9">
-                        <input type="text" class="form-control" ng-model="newContainer.SHIP" id="ship" placeholder="" ng-required="true">
+                        <input type="text" class="form-control" ng-model="newContainer.SHIP" id="ship" placeholder="" ng-required="true" toupper>
                         <span class="input-group-btn">
                             <button type="button" class="btn btn-default" ng-click="eraseField('SHIP')"><i class="glyphicon glyphicon-remove"></i></button>
                         </span>
@@ -15,7 +15,7 @@
                 <div class="form-group">
                     <label for="trip" class="col-lg-2 control-label"><span class="glyphicon"></span> Viaje</label>
                     <div class="input-group col-lg-9">
-                        <input type="text" class="form-control" ng-model="newContainer.TRIP" id="trip" placeholder="" ng-required="true">
+                        <input type="text" class="form-control" ng-model="newContainer.TRIP" id="trip" placeholder="" ng-required="true" toupper>
                         <span class="input-group-btn">
                             <button type="button" class="btn btn-default" ng-click="eraseField('TRIP')"><i class="glyphicon glyphicon-remove"></i></button>
                         </span>
@@ -24,43 +24,52 @@
                 <div class="form-group">
                     <label for="container" class="col-lg-2 control-label"><span class="glyphicon"></span> Contenedor</label>
                     <div class="input-group col-lg-9">
-                        <input type="text" class="form-control" ng-model="newContainer.CONTAINER" id="container" placeholder="" ng-required="true">
+                        <input type="text" class="form-control" ng-model="newContainer.CONTAINER" id="container" placeholder="" ng-required="true" toupper>
                         <span class="input-group-btn">
                             <button type="button" class="btn btn-default" ng-click="eraseField('CONTAINER')"><i class="glyphicon glyphicon-remove"></i></button>
                         </span>
                     </div>
                 </div>
                 <div class="form-group">
+                    <label for="bl" class="col-lg-2 control-label"><span class="glyphicon"></span> Conocimiento</label>
+                    <div class="input-group col-lg-9">
+                        <input type="text" class="form-control" ng-model="newContainer.BL" id="bl" placeholder="" ng-required="true" toupper>
+                        <span class="input-group-btn">
+                            <button type="button" class="btn btn-default" ng-click="eraseField('BL')"><i class="glyphicon glyphicon-remove"></i></button>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
                     <label for="date" class="col-lg-2 control-label"><span class="glyphicon"></span> Fecha</label>
                     <div class="input-group col-lg-9">
-                        <input type="text" class="form-control" ng-model="newContainer.DATE" id="date" placeholder="" ng-required="true" uib-datepicker-popup="{{datePopUp.format}}" is-open="datePopUp.opened" datepicker-options="datePopUp.options" close-text="Cerrar" >
+                        <input type="text" class="form-control" ng-model="newContainer.DATE" id="date" placeholder="" ng-required="true" uib-datepicker-popup="{{datePopUp.format}}" is-open="datePopUp.opened" datepicker-options="datePopUp.options" close-text="Cerrar" current-text="Hoy" clear-text="Borrar">
                         <span class="input-group-btn">
                             <button type="button" class="btn btn-default" ng-click="openDate()"><i class="glyphicon glyphicon-calendar"></i></button>
                         </span>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="cuit" class="col-lg-2 control-label"><span class="glyphicon"></span> CUIT</label>
+                    <label for="return" class="col-lg-2 control-label"><span class="glyphicon"></span> Lugar devolución</label>
                     <div class="input-group col-lg-9">
-                        <input type="text" class="form-control" ng-model="newContainer.CUIT" id="cuit" placeholder="" ng-required="true">
-                        <span class="input-group-btn">
-                            <button type="button" class="btn btn-default" ng-click="eraseField('CUIT')"><i class="glyphicon glyphicon-remove"></i></button>
-                        </span>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="return" class="col-lg-2 control-label"><span class="glyphicon"></span> Devolución</label>
-                    <div class="input-group col-lg-9">
-                        <input type="text" class="form-control" ng-model="newContainer.RETURN_PLACE" id="return" placeholder="" ng-required="true">
+                        <input type="text" class="form-control" ng-model="newContainer.RETURN_PLACE" id="return" placeholder="" ng-required="true" toupper>
                         <span class="input-group-btn">
                             <button type="button" class="btn btn-default" ng-click="eraseField('RETURN_PLACE')"><i class="glyphicon glyphicon-remove"></i></button>
                         </span>
                     </div>
                 </div>
                 <div class="form-group">
+                    <label for="cuit" class="col-lg-2 control-label"><span class="glyphicon"></span> CUIT</label>
+                    <div class="input-group col-lg-9">
+                        <input type="text" class="form-control" ng-model="containerDetail.CUIT" id="cuit" placeholder="" ng-required="true" toupper>
+                        <span class="input-group-btn">
+                            <button type="button" class="btn btn-default" ng-click="eraseField('CUIT')"><i class="glyphicon glyphicon-remove"></i></button>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
                     <label for="status" class="col-lg-2 control-label"><span class="glyphicon"></span> Estado</label>
                     <div class="input-group col-lg-9">
-                        <input type="text" class="form-control" ng-model="newContainer.STATUS" id="status" placeholder="" ng-required="true" uib-typeahead="state for state in statesContainers | filter:$viewValue | limitTo:8">
+                        <input type="text" class="form-control" ng-model="containerDetail.STATUS" id="status" placeholder="" ng-required="true" uib-typeahead="state.id as state.formatted for state in statesContainers | filter:$viewValue | limitTo:8" typeahead-editable="false" typeahead-input-formatter="formatStatus($model)">
                         <span class="input-group-btn">
                             <button type="button" class="btn btn-default" ng-click="eraseField('STATUS')"><i class="glyphicon glyphicon-remove"></i></button>
                         </span>

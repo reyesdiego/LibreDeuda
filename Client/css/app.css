@@ -68,7 +68,6 @@ html, body {
 .image-background {
     background: url('../images/puerto_blur.jpg') no-repeat fixed center;
     background-size: cover;
-    overflow: hidden;
 }
 
 .vertical-center {

@@ -12,7 +12,11 @@ myApp.service('configService', [function(){
             var status = this.statusContainers;
             for (var key in status) {
                 if (status.hasOwnProperty(key)) {
-                    result.push(status[key]);
+                    var newValue = {
+                        id: parseInt(key),
+                        formatted: key + ' - ' + status[key]
+                    };
+                    result.push(newValue);
                 }
             }
             return result;

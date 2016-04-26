@@ -2,7 +2,7 @@
  * Created by kolesnikov-a on 18/04/2016.
  */
 
-myApp.factory('containersFactory', ['$http', 'configService', function($http, configService){
+myApp.factory('containersFactory', ['$http', 'configService', 'storageService', function($http, configService, storageService){
 
     var factory = {
 
@@ -16,6 +16,9 @@ myApp.factory('containersFactory', ['$http', 'configService', function($http, co
             })
         },
         saveContainer: function(dataContainer, callback){
+            dataContainer.DETAIL[0].TIMESTAMP = new Date();
+            dataContainer.DETAIL[0].USER = storageService.getObject('user').name;
+            console.log(dataContainer);
             var insertUrl = configService.serverUrl + '/libre';
             $http.post(insertUrl, dataContainer).then(function(response){
                 callback(response);

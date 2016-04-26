@@ -2,7 +2,7 @@
  * Created by kolesnikov-a on 15/04/2016.
  */
 
-myApp.controller('loginCtrl', ['$scope', '$state', 'loginMock', function($scope, $state, loginMock){
+myApp.controller('loginCtrl', ['$scope', '$state', 'loginFactory', 'storageService', function($scope, $state, loginFactory, storageService){
 
     $scope.user = {
         name: '',
@@ -13,8 +13,10 @@ myApp.controller('loginCtrl', ['$scope', '$state', 'loginMock', function($scope,
     $scope.login = function(){
         console.log($scope.user);
 
-        loginMock.login($scope.user, function(result){
-            if (result.status == 'OK'){
+        loginFactory.login($scope.user, function(result){
+            if (result.statusText == 'OK'){
+                storageService.setObject('user', $scope.user);
+                storageService.setKey('token', result.data.token);
                 $state.transitionTo('containers');
             }
         })

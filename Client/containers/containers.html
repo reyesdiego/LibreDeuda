@@ -59,7 +59,7 @@
             <td>{{ data.DETAIL[0].USER }}</td>
         </tr>
         <tr ng-repeat="detail in data.DETAIL" ng-init="data.SHOW = false" ng-show="data.SHOW">
-            <td colspan="6"><span class="glyphicon glyphicon-arrow-right pull-right"></span> </td>
+            <td colspan="6"><span class="glyphicon glyphicon-edit pull-right"></span> </td>
             <td>{{ detail.COMPANY }}</td>
             <td>{{ detail.CUIT }}</td>
             <td>{{ detail.STATUS | containerStatus }}</td>
