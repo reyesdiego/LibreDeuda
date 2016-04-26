@@ -44,7 +44,7 @@
             <th>Usuario</th>
         </tr>
         </thead>
-        <tbody ng-repeat="data in filteredData = (dataContainers | filter:search) | startFrom:(pagination.currentPage-1)*pagination.itemsPerPage | limitTo:pagination.itemsPerPage track by $index" ng-class="data.CLASS" ng-if="data.ANIMATE">
+        <tbody ng-repeat="data in filteredData = (dataContainers | filter:search) | startFrom:(pagination.currentPage-1)*pagination.itemsPerPage | limitTo:pagination.itemsPerPage track by $index" ng-class="data.ANIMATE ? 'animated animated-row' : ''">
         <tr ng-click="showDetail($index)" class="parent-row">
             <td>{{ data.SHIP }}</td>
             <td>{{ data.TRIP }}</td>

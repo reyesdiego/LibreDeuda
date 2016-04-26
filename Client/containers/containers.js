@@ -27,16 +27,13 @@ myApp.controller('containersCtrl', ['$scope', 'containersFactory', '$timeout', '
         };
         $scope.pagination = {
             currentPage: 1,
-            itemsPerPage: 15
+            itemsPerPage: 10
         };
         $scope.statesContainers = configService.statusContainersAsArray();
 
         $scope.$on('socket:container', function(ev, data){
-            console.log(data);
-            data.CLASS = 'animated-row';
-            data.ANIMATE = false;
+            data.ANIMATE = true;
             $scope.dataContainers.unshift(data);
-            $scope.filteredData.unshift(data);
             $scope.reAnimate($scope.dataContainers[0]);
         });
 
@@ -52,12 +49,8 @@ myApp.controller('containersCtrl', ['$scope', 'containersFactory', '$timeout', '
 
         $scope.getContainersData = function (){
             containersFactory.getContainers(function(result){
-                console.log(result);
                 if (result.statusText == 'OK'){
                     $scope.dataContainers = result.data.data;
-                    $scope.dataContainers.forEach(function(data){
-                        data.ANIMATE = true
-                    })
                 } else {
                     $scope.errorResponse.show = true;
                     $scope.errorResponse.message = result.statusText;
@@ -72,8 +65,8 @@ myApp.controller('containersCtrl', ['$scope', 'containersFactory', '$timeout', '
 
         $scope.reAnimate = function(data){
             $timeout(function(){
-                data.ANIMATE = true
-            }, 5)
+                delete data['ANIMATE']
+            }, 10000)
         };
 
         $scope.showDetail = function(index){
@@ -82,7 +75,6 @@ myApp.controller('containersCtrl', ['$scope', 'containersFactory', '$timeout', '
         };
 
         $scope.saveContainer = function(){
-            console.log($scope.newContainer);
             $scope.newContainer.DETAIL.push($scope.containerDetail);
             containersFactory.saveContainer($scope.newContainer, function(response){
                 if (response.statusText == 'OK'){
