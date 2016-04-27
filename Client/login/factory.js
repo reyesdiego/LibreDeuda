@@ -1,19 +1,16 @@
 /**
  * Created by kolesnikov-a on 26/04/2016.
  */
-myApp.factory('loginFactory', ['$http', function($http){
+myApp.factory('loginFactory', ['$http', 'configService', function($http, configService){
 
     return {
         login: function(user, callback){
-            //TODO reemplazar esto por el verdadero login
-            var response = {
-                status: 200,
-                statusText: 'OK',
-                data: {
-                    token: 'jasvkdajsvhdkajsvhdklsadbfñasiojbdñcvpasjidfnvqeoinrvljhbatgsdicviduycvewr'
-                }
-            };
-            callback(response);
+            var inserturl = configService.serverUrl + '/login';
+            $http.post(inserturl, user).then(function(response){
+                callback(response)
+            }, function(response){
+                callback(response);
+            })
         }
     }
 

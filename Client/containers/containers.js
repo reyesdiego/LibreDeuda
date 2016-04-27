@@ -32,6 +32,7 @@ myApp.controller('containersCtrl', ['$scope', 'containersFactory', '$timeout', '
         $scope.statesContainers = configService.statusContainersAsArray();
 
         $scope.$on('socket:container', function(ev, data){
+            console.log('hola');
             data.ANIMATE = true;
             $scope.dataContainers.unshift(data);
             $scope.reAnimate($scope.dataContainers[0]);

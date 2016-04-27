@@ -32,11 +32,12 @@ myApp.config(['$urlRouterProvider', '$stateProvider', function($urlRouterProvide
 myApp.config(['$provide', '$httpProvider', function($provide, $httpProvider){
 
     // register the interceptor as a service
-    $provide.factory('myHttpInterceptor', function($q) {
+    $provide.factory('myHttpInterceptor', ['$rootScope', '$q', 'storageService', function($rootScope, $q, storageService) {
         return {
             // optional method
             'request': function(config) {
                 // do something on success
+                config.headers['Token'] = storageService.getKey('token');
                 return config;
             },
 
@@ -61,6 +62,17 @@ myApp.config(['$provide', '$httpProvider', function($provide, $httpProvider){
             // optional method
             'responseError': function(rejection) {
                 //TODO config custom messages for http Error status
+                if (rejection.status == 401){
+                    var deferred = $q.defer();
+                    var req = {
+                        config: rejection.config,
+                        deferred: deferred
+                    };
+                    $rootScope.requests401.push(req);
+                    $rootScope.$broadcast('loginRequired');
+                    return deferred.promise;
+
+                }
                 if (rejection.status == -1) rejection.statusText = 'No se ha podido establecer comunicación con el servidor.';
                 // do something on error
                 /*if (canRecover(rejection)) {
@@ -69,13 +81,40 @@ myApp.config(['$provide', '$httpProvider', function($provide, $httpProvider){
                 return $q.reject(rejection);
             }
         };
-    });
+    }]);
 
     $httpProvider.interceptors.push('myHttpInterceptor');
 
 }]);
 
-myApp.run(['$rootScope', 'appSocket', function($rootScope, appSocket){
+myApp.run(['$rootScope', 'appSocket', 'loginFactory', 'storageService', '$state', '$http', function($rootScope, appSocket, loginFactory, storageService, $state, $http){
+    $rootScope.requests401 = [];
+
+    $rootScope.$on('loginRequired', function(){
+        loginFactory.login(storageService.getObject('user'), function(result){
+            if (result.statusText == 'OK'){
+                storageService.setKey('token', result.data);
+                $rootScope.$broadcast('loginConfirmed');
+            } else {
+                $state.transitionTo('login');
+            }
+        })
+    });
+
+    $rootScope.$on('loginConfirmed', function() {
+        var i, requests = $rootScope.requests401;
+        for (i = 0; i < requests.length; i++) {
+            retry(requests[i]);
+        }
+        $rootScope.requests401 = [];
+
+        function retry(req) {
+            $http(req.config).then(function(response) {
+                req.deferred.resolve(response);
+            });
+        }
+    });
+
     $rootScope.socket = appSocket;
     $rootScope.socket.connect();
 

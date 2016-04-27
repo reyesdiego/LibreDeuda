@@ -9,8 +9,12 @@ myApp.service('dialogsService', ['$uibModal', function($uibModal){
                 controller: 'dialogsCtrl',
                 templateUrl: './services/dialogs/error.html',
                 resolve: {
-                    title: title,
-                    message: message
+                    title: function(){
+                        return title;
+                    },
+                    message: function(){
+                        return message;
+                    }
                 }
             })
         },
