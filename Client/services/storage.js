@@ -15,6 +15,9 @@ myApp.service('storageService', [function(){
         },
         getObject: function(key){
             return JSON.parse(localStorage.getItem(key))
+        },
+        deleteKey: function(key){
+            localStorage.removeItem(key);
         }
     }
 

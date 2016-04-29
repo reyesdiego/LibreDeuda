@@ -89,16 +89,30 @@ myApp.config(['$provide', '$httpProvider', function($provide, $httpProvider){
 }]);
 
 myApp.config(['IdleProvider', 'KeepaliveProvider', function(IdleProvider, KeepaliveProvider) {
-    IdleProvider.idle(10); // 15 min
-    IdleProvider.timeout(10);
+    IdleProvider.idle(900); // 15 min
+    IdleProvider.timeout(60);
     KeepaliveProvider.interval(600); // heartbeat every 10 min
-    KeepaliveProvider.http('/api/heartbeat'); // URL that makes sure session is alive
+    //KeepaliveProvider.http('/api/heartbeat'); // URL that makes sure session is alive
 }]);
 
-myApp.run(['$rootScope', 'appSocket', 'loginFactory', 'storageService', '$state', '$http', 'Idle', function($rootScope, appSocket, loginFactory, storageService, $state, $http, Idle){
-    Idle.watch();
-    $rootScope.$on('IdleStart', function() { console.log('usuario inactivo') /* Display modal warning or sth */ });
-    $rootScope.$on('IdleTimeout', function() { console.log('logout usuario') /* Logout user */ });
+myApp.run(['$rootScope', 'appSocket', 'loginFactory', 'storageService', '$state', '$http', 'dialogsService', function($rootScope, appSocket, loginFactory, storageService, $state, $http, dialogsService){
+
+    $rootScope.loggedUser = ''
+
+    $rootScope.$on('IdleStart', function() {
+        console.log('usuario inactivo'); /* Display modal warning or sth */
+        dialogsService.notify('Usuario inactivo', 'Se ha detectado que se encuentra inactivo, se procederá a cerrar su sesión en 60 segundos.');
+    });
+
+    $rootScope.logOut = function(){
+        loginFactory.logout();
+        $state.transitionTo('login');
+    };
+
+    $rootScope.$on('IdleTimeout', function() {
+        console.log('logout usuario');/* Logout user */
+        $rootScope.logOut();
+    });
 
     $rootScope.requests401 = [];
 

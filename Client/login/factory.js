@@ -1,7 +1,7 @@
 /**
  * Created by kolesnikov-a on 26/04/2016.
  */
-myApp.factory('loginFactory', ['$http', 'configService', function($http, configService){
+myApp.factory('loginFactory', ['$http', 'configService', 'storageService', function($http, configService, storageService){
 
     return {
         login: function(user, callback){
@@ -11,6 +11,10 @@ myApp.factory('loginFactory', ['$http', 'configService', function($http, configS
             }, function(response){
                 callback(response);
             })
+        },
+        logout: function(){
+            storageService.deleteKey('user');
+            storageService.deleteKey('token');
         }
     }
 
