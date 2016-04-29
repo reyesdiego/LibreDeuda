@@ -1,8 +1,8 @@
 /**
  * Created by kolesnikov-a on 18/04/2016.
  */
-myApp.controller('containersCtrl', ['$scope', 'containersFactory', '$timeout', 'configService', 'dialogsService',
-    function($scope, containersFactory, $timeout, configService, dialogsService){
+myApp.controller('containersCtrl', ['$scope', 'containersFactory', '$timeout', 'configService', 'dialogsService', '$q',
+    function($scope, containersFactory, $timeout, configService, dialogsService, $q){
 
         $scope.search = '';
         $scope.dataContainers = [];
@@ -12,9 +12,12 @@ myApp.controller('containersCtrl', ['$scope', 'containersFactory', '$timeout', '
             message: '',
             title: 'Error'
         };
-        $scope.newContainer = {
+        $scope.shipTrip = {
             SHIP: '',
             TRIP: '',
+            CONTAINERS: []
+        };
+        $scope.newContainer = {
             CONTAINER: '',
             BL: '',
             DATE: new Date(),
@@ -52,6 +55,7 @@ myApp.controller('containersCtrl', ['$scope', 'containersFactory', '$timeout', '
             containersFactory.getContainers(function(result){
                 if (result.statusText == 'OK'){
                     $scope.dataContainers = result.data.data;
+                    console.log(($scope.dataContainers[0].RETURN_TO.concat($scope.dataContainers[0].CLIENT)).concat($scope.dataContainers[0].STATUS))
                 } else {
                     $scope.errorResponse.show = true;
                     $scope.errorResponse.message = result.statusText;
@@ -75,9 +79,48 @@ myApp.controller('containersCtrl', ['$scope', 'containersFactory', '$timeout', '
             $scope.filteredData[realIndex].SHOW = !$scope.filteredData[realIndex].SHOW;
         };
 
-        $scope.saveContainer = function(){
+        $scope.setContainer = function(){
             $scope.newContainer.DETAIL.push($scope.containerDetail);
-            containersFactory.saveContainer($scope.newContainer, function(response){
+            $scope.shipTrip.CONTAINERS.push($scope.newContainer);
+            $scope.newContainer = {
+                CONTAINER: '',
+                BL: '',
+                DATE: new Date(),
+                DETAIL: []
+            };
+            $scope.containerDetail = {
+                CUIT: '',
+                COMPANY: 'RAZONSOCIALPRUEBA',
+                STATUS: 0
+            };
+        };
+
+        function saveContainer (container){
+            var deferred = $q.defer();
+            containersFactory.saveContainer(container, function(response){
+                if (response.statusText == 'OK'){
+                    deferred.resolve();
+                } else {
+                    deferred.reject()
+                }
+            });
+            return deferred.promise;
+        }
+
+        $scope.saveContainers = function(){
+            var asyncCalls = [];
+            $scope.shipTrip.CONTAINERS.forEach(function(container){
+                container.SHIP = $scope.shipTrip.SHIP;
+                container.TRIP = $scope.shipTrip.TRIP;
+                asyncCalls.push(saveContainer(container));
+                //TODO proceso de guardado batch de contenedores sincronizado para asegurar que todos se hayan guardado correctamente
+            });
+            $q.all(asyncCalls).then(function(result){
+
+            }, function(){
+
+            });
+            /*containersFactory.saveContainer($scope.newContainer, function(response){
                 if (response.statusText == 'OK'){
                     dialogsService.notify('Nuevo contenedor', 'Los datos se han guardado correctamente.');
                     $scope.newContainer = {
@@ -96,7 +139,7 @@ myApp.controller('containersCtrl', ['$scope', 'containersFactory', '$timeout', '
                 } else {
                     console.log(response);
                 }
-            })
+            })*/
 
         };
 

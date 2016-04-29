@@ -7,7 +7,8 @@ var myApp = angular.module('libreDeuda', [
     'ui.bootstrap',
     'ngSanitize',
     'btford.socket-io',
-    'ngAnimate'
+    'ngAnimate',
+    'ngIdle'
 ]);
 
 myApp.config(['$urlRouterProvider', '$stateProvider', function($urlRouterProvider, $stateProvider){
@@ -87,7 +88,18 @@ myApp.config(['$provide', '$httpProvider', function($provide, $httpProvider){
 
 }]);
 
-myApp.run(['$rootScope', 'appSocket', 'loginFactory', 'storageService', '$state', '$http', function($rootScope, appSocket, loginFactory, storageService, $state, $http){
+myApp.config(['IdleProvider', 'KeepaliveProvider', function(IdleProvider, KeepaliveProvider) {
+    IdleProvider.idle(10); // 15 min
+    IdleProvider.timeout(10);
+    KeepaliveProvider.interval(600); // heartbeat every 10 min
+    KeepaliveProvider.http('/api/heartbeat'); // URL that makes sure session is alive
+}]);
+
+myApp.run(['$rootScope', 'appSocket', 'loginFactory', 'storageService', '$state', '$http', 'Idle', function($rootScope, appSocket, loginFactory, storageService, $state, $http, Idle){
+    Idle.watch();
+    $rootScope.$on('IdleStart', function() { console.log('usuario inactivo') /* Display modal warning or sth */ });
+    $rootScope.$on('IdleTimeout', function() { console.log('logout usuario') /* Logout user */ });
+
     $rootScope.requests401 = [];
 
     $rootScope.$on('loginRequired', function(){

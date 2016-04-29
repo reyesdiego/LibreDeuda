@@ -27,10 +27,6 @@ html, body {
     background-color: #dddddd;
 }
 
-.nested-row {
-
-}
-
 .logo-image {
     width:540px; /* you can use % */
     height: auto;
@@ -44,6 +40,10 @@ html, body {
 .text-white {
     color: white;
     font-size: 20px;
+}
+
+.text-bold {
+    font-weight: bold;
 }
 
 .fill {

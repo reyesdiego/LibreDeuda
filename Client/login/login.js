@@ -6,8 +6,8 @@ myApp.controller('loginCtrl', ['$scope', '$state', 'loginFactory', 'storageServi
     function($scope, $state, loginFactory, storageService, dialogsService){
 
         $scope.user = {
-            name: '',
-            pass: '',
+            user: '',
+            password: '',
             session: false
         };
 
@@ -19,7 +19,8 @@ myApp.controller('loginCtrl', ['$scope', '$state', 'loginFactory', 'storageServi
                     storageService.setKey('token', result.data);
                     $state.transitionTo('containers');
                 } else {
-                    dialogsService.error('Error', 'Usuario o contraseña incorrectos.');
+                    console.log('hola');
+                    dialogsService.error('Error', result.statusText);
                 }
             })
         }

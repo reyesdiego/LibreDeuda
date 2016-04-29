@@ -7,7 +7,7 @@ myApp.factory('containersFactory', ['$http', 'configService', 'storageService', 
     var factory = {
 
         getContainers: function(callback){
-            var insertUrl = configService.serverUrl + '/libre';
+            var insertUrl = configService.serverUrl + '/lde';
             $http.get(insertUrl).then(function(response){
                 callback(response);
             }, function(response){
@@ -19,7 +19,7 @@ myApp.factory('containersFactory', ['$http', 'configService', 'storageService', 
             dataContainer.DETAIL[0].TIMESTAMP = new Date();
             dataContainer.DETAIL[0].USER = storageService.getObject('user').name;
             console.log(dataContainer);
-            var insertUrl = configService.serverUrl + '/libre';
+            var insertUrl = configService.serverUrl + '/lde';
             $http.post(insertUrl, dataContainer).then(function(response){
                 callback(response);
             }, function(response){
