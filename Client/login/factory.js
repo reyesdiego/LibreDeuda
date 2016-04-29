@@ -7,6 +7,7 @@ myApp.factory('loginFactory', ['$http', 'configService', 'storageService', funct
         login: function(user, callback){
             var inserturl = configService.serverUrl + '/login';
             $http.post(inserturl, user).then(function(response){
+                storageService.setKey('token', response.data);
                 callback(response)
             }, function(response){
                 callback(response);

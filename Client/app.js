@@ -92,26 +92,29 @@ myApp.config(['IdleProvider', 'KeepaliveProvider', function(IdleProvider, Keepal
     IdleProvider.idle(900); // 15 min
     IdleProvider.timeout(60);
     KeepaliveProvider.interval(600); // heartbeat every 10 min
-    //KeepaliveProvider.http('/api/heartbeat'); // URL that makes sure session is alive
 }]);
 
-myApp.run(['$rootScope', 'appSocket', 'loginFactory', 'storageService', '$state', '$http', 'dialogsService', function($rootScope, appSocket, loginFactory, storageService, $state, $http, dialogsService){
+myApp.run(['$rootScope', 'appSocket', 'loginFactory', 'storageService', '$state', '$http', 'dialogsService', 'Idle', function($rootScope, appSocket, loginFactory, storageService, $state, $http, dialogsService, Idle){
 
-    $rootScope.loggedUser = ''
+    $rootScope.loggedUser = '';
 
     $rootScope.$on('IdleStart', function() {
-        console.log('usuario inactivo'); /* Display modal warning or sth */
+        console.log('usuario inactivo');
         dialogsService.notify('Usuario inactivo', 'Se ha detectado que se encuentra inactivo, se procederá a cerrar su sesión en 60 segundos.');
     });
 
     $rootScope.logOut = function(){
         loginFactory.logout();
+        Idle.unwatch();
         $state.transitionTo('login');
     };
 
     $rootScope.$on('IdleTimeout', function() {
-        console.log('logout usuario');/* Logout user */
         $rootScope.logOut();
+    });
+
+    $rootScope.$on('KeepAlive', function(){
+        //TODO llamada para renovar el token por ahora se podría volver a llamar al login
     });
 
     $rootScope.requests401 = [];
@@ -119,7 +122,6 @@ myApp.run(['$rootScope', 'appSocket', 'loginFactory', 'storageService', '$state'
     $rootScope.$on('loginRequired', function(){
         loginFactory.login(storageService.getObject('user'), function(result){
             if (result.statusText == 'OK'){
-                storageService.setKey('token', result.data);
                 $rootScope.$broadcast('loginConfirmed');
             } else {
                 $state.transitionTo('login');

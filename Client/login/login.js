@@ -13,15 +13,12 @@ myApp.controller('loginCtrl', ['$rootScope', '$scope', '$state', 'loginFactory',
 
         $scope.login = function(){
             loginFactory.login($scope.user, function(result){
-                console.log(result);
                 if (result.statusText == 'OK'){
                     Idle.watch();
                     $rootScope.loggedUser = $scope.user.user;
                     storageService.setObject('user', $scope.user);
-                    storageService.setKey('token', result.data);
                     $state.transitionTo('containers');
                 } else {
-                    console.log('hola');
                     dialogsService.error('Error', result.statusText);
                 }
             })
