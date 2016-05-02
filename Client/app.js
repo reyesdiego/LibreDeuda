@@ -3,7 +3,7 @@
  */
 
 var myApp = angular.module('libreDeuda', [
-   'ui.router',
+    'ui.router',
     'ui.bootstrap',
     'ngSanitize',
     'btford.socket-io',
@@ -41,44 +41,40 @@ myApp.config(['$provide', '$httpProvider', function($provide, $httpProvider){
                 config.headers['Token'] = storageService.getKey('token');
                 return config;
             },
-
             // optional method
             'requestError': function(rejection) {
                 // do something on error
 
                 /*if (canRecover(rejection)) {
-                    return responseOrNewPromise
-                }*/
+                 return responseOrNewPromise
+                 }*/
                 return $q.reject(rejection);
             },
-
-
-
             // optional method
             'response': function(response) {
                 // do something on success
                 return response;
             },
-
             // optional method
             'responseError': function(rejection) {
                 //TODO config custom messages for http Error status
-                if (rejection.status == 401){
-                    var deferred = $q.defer();
+                if (rejection.status == 401) $rootScope.$broadcast('loginRequired');
+                    /*var deferred = $q.defer();
                     var req = {
                         config: rejection.config,
                         deferred: deferred
                     };
-                    $rootScope.requests401.push(req);
-                    $rootScope.$broadcast('loginRequired');
-                    return deferred.promise;
+                    $rootScope.requests401.push(req);*/
 
-                }
+                    //return deferred.promise;
+                    //$state.transitionTo('login');
+
+
                 if (rejection.status == -1) rejection.statusText = 'No se ha podido establecer comunicación con el servidor.';
                 // do something on error
                 /*if (canRecover(rejection)) {
-                    return responseOrNewPromise
-                }*/
+                 return responseOrNewPromise
+                 }*/
                 return $q.reject(rejection);
             }
         };
@@ -94,62 +90,63 @@ myApp.config(['IdleProvider', 'KeepaliveProvider', function(IdleProvider, Keepal
     KeepaliveProvider.interval(600); // heartbeat every 10 min
 }]);
 
-myApp.run(['$rootScope', 'appSocket', 'loginFactory', 'storageService', '$state', '$http', 'dialogsService', 'Idle', function($rootScope, appSocket, loginFactory, storageService, $state, $http, dialogsService, Idle){
+myApp.run(['$rootScope', 'appSocket', 'loginFactory', 'storageService', '$state', '$http', 'dialogsService', 'Idle',
+    function($rootScope, appSocket, loginFactory, storageService, $state, $http, dialogsService, Idle){
 
-    $rootScope.loggedUser = '';
+        $rootScope.loggedUser = '';
 
-    $rootScope.$on('IdleStart', function() {
-        console.log('usuario inactivo');
-        dialogsService.notify('Usuario inactivo', 'Se ha detectado que se encuentra inactivo, se procederá a cerrar su sesión en 60 segundos.');
-    });
+        $rootScope.$on('IdleStart', function() {
+            dialogsService.notify('Usuario inactivo', 'Se ha detectado que se encuentra inactivo, se procederá a cerrar su sesión en 60 segundos.');
+        });
 
-    $rootScope.logOut = function(){
-        loginFactory.logout();
-        Idle.unwatch();
-        $state.transitionTo('login');
-    };
+        $rootScope.logOut = function(){
+            loginFactory.logout();
+            Idle.unwatch();
+            $state.transitionTo('login');
+        };
 
-    $rootScope.$on('IdleTimeout', function() {
-        $rootScope.logOut();
-    });
+        $rootScope.$on('IdleTimeout', function() {
+            $rootScope.logOut();
+        });
 
-    $rootScope.$on('KeepAlive', function(){
-        //TODO llamada para renovar el token por ahora se podría volver a llamar al login
-    });
+        $rootScope.$on('KeepAlive', function(){
+            //TODO llamada para renovar el token por ahora se podría volver a llamar al login
+        });
 
-    $rootScope.requests401 = [];
-
-    $rootScope.$on('loginRequired', function(){
-        loginFactory.login(storageService.getObject('user'), function(result){
-            if (result.statusText == 'OK'){
-                $rootScope.$broadcast('loginConfirmed');
-            } else {
-                $state.transitionTo('login');
-            }
-        })
-    });
-
-    $rootScope.$on('loginConfirmed', function() {
-        var i, requests = $rootScope.requests401;
-        for (i = 0; i < requests.length; i++) {
-            retry(requests[i]);
-        }
         $rootScope.requests401 = [];
 
-        function retry(req) {
-            $http(req.config).then(function(response) {
-                req.deferred.resolve(response);
-            });
-        }
-    });
+        $rootScope.$on('loginRequired', function(){
+            $state.transitionTo('login');
+            /*loginFactory.login(storageService.getObject('user'), function(result){
+                if (result.statusText == 'OK'){
+                    $rootScope.$broadcast('loginConfirmed');
+                } else {
+                    $state.transitionTo('login');
+                }
+            })*/
+        });
 
-    $rootScope.socket = appSocket;
-    $rootScope.socket.connect();
+        /*$rootScope.$on('loginConfirmed', function() {
+            var i, requests = $rootScope.requests401;
+            for (i = 0; i < requests.length; i++) {
+                retry(requests[i]);
+            }
+            $rootScope.requests401 = [];
 
-    $rootScope.loginScreen = true;
+            function retry(req) {
+                $http(req.config).then(function(response) {
+                    req.deferred.resolve(response);
+                });
+            }
+        });*/
 
-    $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){
-        $rootScope.loginScreen = (toState.name == 'login');
-    })
+        $rootScope.socket = appSocket;
+        $rootScope.socket.connect();
 
-}]);
+        $rootScope.loginScreen = true;
+
+        $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){
+            $rootScope.loginScreen = (toState.name == 'login');
+        })
+
+    }]);

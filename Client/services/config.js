@@ -20,7 +20,8 @@ myApp.service('configService', [function(){
                 }
             }
             return result;
-        }
+        },
+        terminalsArray: ['TRP', 'BACTSSA', 'TERMINAL4']
     }
 
 }]);

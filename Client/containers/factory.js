@@ -16,9 +16,13 @@ myApp.factory('containersFactory', ['$http', 'configService', 'storageService', 
             })
         },
         saveContainer: function(dataContainer, callback){
-            dataContainer.DETAIL[0].TIMESTAMP = new Date();
-            dataContainer.DETAIL[0].USER = storageService.getObject('user').name;
-            console.log(dataContainer);
+            /*dataContainer.CLIENT[0].AUD_TIME = new Date();
+            dataContainer.CLIENT[0].AUD_USER = storageService.getObject('user').name;
+            dataContainer.RETURN_TO[0].AUD_TIME = new Date();
+            dataContainer.RETURN_TO[0].AUD_USER = storageService.getObject('user').name;
+            dataContainer.STATUS[0].AUD_TIME = new Date();
+            dataContainer.STATUS[0].AUD_USER = storageService.getObject('user').name;
+            console.log(dataContainer);*/
             var insertUrl = configService.serverUrl + '/lde';
             $http.post(insertUrl, dataContainer).then(function(response){
                 callback(response);

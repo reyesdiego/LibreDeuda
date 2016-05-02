@@ -12,30 +12,32 @@ myApp.controller('containersCtrl', ['$scope', 'containersFactory', '$timeout', '
             message: '',
             title: 'Error'
         };
-        $scope.shipTrip = {
+        $scope.newContainer = {
+            TERMINAL: '',
             SHIP: '',
             TRIP: '',
-            CONTAINERS: []
-        };
-        $scope.newContainer = {
             CONTAINER: '',
             BL: '',
-            DATE: new Date(),
-            DETAIL: []
-        };
-        $scope.containerDetail = {
-            CUIT: '',
-            COMPANY: 'RAZONSOCIALPRUEBA',
-            STATUS: 0
+            CLIENT: [{
+                COMPANY: 'RAZONSOCIALPRUEBA',
+                CUIT: ''
+            }],
+            RETURN_TO: [{
+                DATE_TO: new Date(),
+                RETURN_PLACE: ''
+            }],
+            STATUS: [{
+                STATUS_ID: 0
+            }]
         };
         $scope.pagination = {
             currentPage: 1,
             itemsPerPage: 10
         };
         $scope.statesContainers = configService.statusContainersAsArray();
+        $scope.terminals = configService.terminalsArray;
 
         $scope.$on('socket:container', function(ev, data){
-            console.log('hola');
             data.ANIMATE = true;
             $scope.dataContainers.unshift(data);
             $scope.reAnimate($scope.dataContainers[0]);
@@ -79,67 +81,32 @@ myApp.controller('containersCtrl', ['$scope', 'containersFactory', '$timeout', '
             $scope.filteredData[realIndex].SHOW = !$scope.filteredData[realIndex].SHOW;
         };
 
-        $scope.setContainer = function(){
-            $scope.newContainer.DETAIL.push($scope.containerDetail);
-            $scope.shipTrip.CONTAINERS.push($scope.newContainer);
-            $scope.newContainer = {
-                CONTAINER: '',
-                BL: '',
-                DATE: new Date(),
-                DETAIL: []
-            };
-            $scope.containerDetail = {
-                CUIT: '',
-                COMPANY: 'RAZONSOCIALPRUEBA',
-                STATUS: 0
-            };
-        };
-
-        function saveContainer (container){
-            var deferred = $q.defer();
-            containersFactory.saveContainer(container, function(response){
-                if (response.statusText == 'OK'){
-                    deferred.resolve();
-                } else {
-                    deferred.reject()
-                }
-            });
-            return deferred.promise;
-        }
-
-        $scope.saveContainers = function(){
-            var asyncCalls = [];
-            $scope.shipTrip.CONTAINERS.forEach(function(container){
-                container.SHIP = $scope.shipTrip.SHIP;
-                container.TRIP = $scope.shipTrip.TRIP;
-                asyncCalls.push(saveContainer(container));
-                //TODO proceso de guardado batch de contenedores sincronizado para asegurar que todos se hayan guardado correctamente
-            });
-            $q.all(asyncCalls).then(function(result){
-
-            }, function(){
-
-            });
-            /*containersFactory.saveContainer($scope.newContainer, function(response){
+        $scope.saveContainer = function(){
+            containersFactory.saveContainer($scope.newContainer, function(response){
                 if (response.statusText == 'OK'){
                     dialogsService.notify('Nuevo contenedor', 'Los datos se han guardado correctamente.');
                     $scope.newContainer = {
+                        TERMINAL: '',
                         SHIP: '',
                         TRIP: '',
                         CONTAINER: '',
                         BL: '',
-                        DATE: new Date(),
-                        DETAIL: []
-                    };
-                    $scope.containerDetail = {
-                        CUIT: '',
-                        COMPANY: 'RAZONSOCIALPRUEBA',
-                        STATUS: 0
+                        CLIENT: [{
+                            COMPANY: 'RAZONSOCIALPRUEBA',
+                            CUIT: ''
+                        }],
+                        RETURN_TO: [{
+                            DATE_TO: new Date(),
+                            RETURN_PLACE: ''
+                        }],
+                        STATUS: [{
+                            STATUS_ID: 0
+                        }]
                     };
                 } else {
                     console.log(response);
                 }
-            })*/
+            })
 
         };
 
@@ -158,13 +125,13 @@ myApp.controller('containersCtrl', ['$scope', 'containersFactory', '$timeout', '
             $scope.datePopUp.opened = true;
         };
 
-        $scope.eraseField = function(field){
-            if (field == 'CUIT' || field == 'STATUS'){
-                $scope.containerDetail[field] = '';
-            } else {
+        $scope.eraseField = function(field, detail){
+            console.log(detail);
+            if (!detail){
                 $scope.newContainer[field] = '';
+            } else {
+                $scope.newContainer[detail][0][field] = '';
             }
-
         };
 
         $scope.formatStatus = function(model){
