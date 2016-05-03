@@ -147,6 +147,24 @@ myApp.controller('containersCtrl', ['$scope', 'containersFactory', '$timeout', '
 myApp.filter('containerStatus', ['configService', function(configService){
 
     return function(status){
-        return configService.statusContainers[status];
+        if (angular.isDefined(status)){
+            return configService.statusContainers[status].name;
+        } else {
+            return 'Sin definir';
+        }
+
     }
+}]);
+
+myApp.filter('containerClass', ['configService', function(configService){
+
+    return function (status){
+        if (angular.isDefined(status)){
+            return configService.statusContainers[status].className;
+        } else {
+            return 'status-canceled'
+        }
+
+    }
+
 }]);

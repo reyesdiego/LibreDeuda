@@ -56,11 +56,11 @@
             <td>{{ data.RETURN_TO[0].RETURN_PLACE }}</td>
             <td>{{ data.CLIENT[0].COMPANY }}</td>
             <td>{{ data.CLIENT[0].CUIT }}</td>
-            <td>{{ data.STATUS[0].STATUS_ID | containerStatus }}</td>
+            <td class="{{ data.STATUS[0].STATUS_ID | containerClass }}" >{{ data.STATUS[0].STATUS_ID | containerStatus }}</td>
             <td>{{ data.STATUS[0].AUD_TIME | date: 'dd/MM/yyyy HH:mm' }}</td>
             <td>{{ data.STATUS[0].AUD_USER }}</td>
         </tr>
-        <tr ng-repeat="detail in data.RETURN_TO" ng-init="data.SHOW = false" ng-show="data.SHOW">
+        <tr ng-repeat="detail in data.RETURN_TO" ng-init="data.SHOW = false" ng-show="data.SHOW" class="child-row">
             <td colspan="5" class="text-right text-bold"><span class="glyphicon glyphicon-edit"></span> Lugar y fecha de devolución</td>
             <td>{{ detail.DATE_TO | date: 'dd/MM/yyyy' }}</td>
             <td>{{ detail.RETURN_PLACE }}</td>
@@ -70,7 +70,7 @@
             <td>{{ detail.AUD_TIME | date: 'dd/MM/yyyy HH:mm' }}</td>
             <td>{{ detail.AUD_USER }}</td>
         </tr>
-        <tr ng-repeat="detail in data.CLIENT" ng-show="data.SHOW">
+        <tr ng-repeat="detail in data.CLIENT" ng-show="data.SHOW" class="child-row">
             <td colspan="7" class="text-right text-bold"><span class="glyphicon glyphicon-edit"></span> Cliente</td>
             <td>{{ detail.COMPANY }}</td>
             <td>{{ detail.CUIT }}</td>
@@ -78,9 +78,9 @@
             <td>{{ detail.AUD_TIME | date: 'dd/MM/yyyy HH:mm' }}</td>
             <td>{{ detail.AUD_USER }}</td>
         </tr>
-        <tr ng-repeat="detail in data.STATUS" ng-show="data.SHOW">
+        <tr ng-repeat="detail in data.STATUS" ng-show="data.SHOW" class="child-row">
             <td colspan="9" class="text-right text-bold"><span class="glyphicon glyphicon-edit"></span> Estado del contenedor</td>
-            <td>{{ detail.STATUS_ID | containerStatus }}</td>
+            <td class="{{ data.STATUS[0].STATUS_ID | containerClass }}">{{ detail.STATUS_ID | containerStatus }}</td>
             <td>{{ detail.AUD_TIME | date: 'dd/MM/yyyy HH:mm' }}</td>
             <td>{{ detail.AUD_USER }}</td>
         </tr>

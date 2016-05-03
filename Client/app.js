@@ -23,7 +23,7 @@ myApp.config(['$urlRouterProvider', '$stateProvider', function($urlRouterProvide
         templateUrl: 'containers/containers.html',
         controller: 'containersCtrl'
     }).state('containers.new', {
-        url: '/containers/new',
+        url: '/new',
         templateUrl: 'containers/containers.new.html'
     })
 

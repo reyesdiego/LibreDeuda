@@ -2,6 +2,18 @@ html, body {
     height: 100%;
 }
 
+.status-free {
+    color: green;
+}
+
+.status-retired {
+    color: blue;
+}
+
+.status-canceled {
+    color: red;
+}
+
 .animated-row {
     -webkit-animation: tada 1s;
     animation: tada 1s
@@ -24,6 +36,11 @@ html, body {
 }
 
 .parent-row:hover{
+    background-color: #000000;
+    color: white;
+}
+
+.child-row:hover {
     background-color: #dddddd;
 }
 
