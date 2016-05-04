@@ -11,7 +11,21 @@ var myApp = angular.module('libreDeuda', [
     'ngIdle'
 ]);
 
-myApp.config(['$urlRouterProvider', '$stateProvider', function($urlRouterProvider, $stateProvider){
+myApp.constant('USER_ROLES', {
+    all: '*',
+    admin: 'admin',
+    terminal: 'terminal',
+    agent: 'agent',
+    builder: 'builder'
+});
+
+myApp.constant('AUTH_EVENTS', {
+    notAuthenticated: 'loginRequired',
+    notAuthorized: 'notAuthorized',
+    loginSucces: 'loginConfirmed'
+});
+
+myApp.config(['$urlRouterProvider', '$stateProvider', 'USER_ROLES', function($urlRouterProvider, $stateProvider, USER_ROLES){
     $urlRouterProvider.otherwise('/login');
 
     $stateProvider.state('login', {
@@ -21,10 +35,16 @@ myApp.config(['$urlRouterProvider', '$stateProvider', function($urlRouterProvide
     }).state('containers', {
         url: '/containers',
         templateUrl: 'containers/containers.html',
-        controller: 'containersCtrl'
+        controller: 'containersCtrl',
+        data: {
+            authorizedRoles: [USER_ROLES.all]
+        }
     }).state('containers.new', {
         url: '/new',
-        templateUrl: 'containers/containers.new.html'
+        templateUrl: 'containers/containers.new.html',
+        data: {
+            authorizedRoles: [USER_ROLES.all]
+        }
     })
 
 }]);
@@ -33,52 +53,57 @@ myApp.config(['$urlRouterProvider', '$stateProvider', function($urlRouterProvide
 myApp.config(['$provide', '$httpProvider', function($provide, $httpProvider){
 
     // register the interceptor as a service
-    $provide.factory('myHttpInterceptor', ['$rootScope', '$q', 'storageService', function($rootScope, $q, storageService) {
-        return {
-            // optional method
-            'request': function(config) {
-                // do something on success
-                config.headers['Token'] = storageService.getKey('token');
-                return config;
-            },
-            // optional method
-            'requestError': function(rejection) {
-                // do something on error
+    $provide.factory('myHttpInterceptor', ['$rootScope', '$q', 'storageService', 'configService', 'AUTH_EVENTS',
+        function($rootScope, $q, storageService, configService, AUTH_EVENTS) {
+            return {
+                // optional method
+                'request': function(config) {
+                    // do something on success
+                    config.headers['Token'] = storageService.getKey('token');
+                    return config;
+                },
+                // optional method
+                'requestError': function(rejection) {
+                    // do something on error
 
-                /*if (canRecover(rejection)) {
-                 return responseOrNewPromise
-                 }*/
-                return $q.reject(rejection);
-            },
-            // optional method
-            'response': function(response) {
-                // do something on success
-                return response;
-            },
-            // optional method
-            'responseError': function(rejection) {
-                //TODO config custom messages for http Error status
-                if (rejection.status == 401) $rootScope.$broadcast('loginRequired');
-                    /*var deferred = $q.defer();
-                    var req = {
-                        config: rejection.config,
-                        deferred: deferred
-                    };
-                    $rootScope.requests401.push(req);*/
+                    /*if (canRecover(rejection)) {
+                     return responseOrNewPromise
+                     }*/
+                    return $q.reject(rejection);
+                },
+                // optional method
+                'response': function(response) {
+                    // do something on success
+                    return response;
+                },
+                // optional method
+                'responseError': function(rejection) {
+                    //TODO config custom messages for http Error status
+                    console.log(rejection);
+                    if (rejection.status == 401){
+                        if (rejection.config.url != configService.serverUrl + '/login'){
+                            $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
+                            var deferred = $q.defer();
+                            var req = {
+                                config: rejection.config,
+                                deferred: deferred
+                            };
+                            $rootScope.requests401.push(req);
 
-                    //return deferred.promise;
-                    //$state.transitionTo('login');
+                            return deferred.promise;
+                            //$state.transitionTo('login');
+                        }
+                    }
 
-
-                if (rejection.status == -1) rejection.statusText = 'No se ha podido establecer comunicación con el servidor.';
-                // do something on error
-                /*if (canRecover(rejection)) {
-                 return responseOrNewPromise
-                 }*/
-                return $q.reject(rejection);
-            }
-        };
-    }]);
+                    if (rejection.status == -1) rejection.statusText = 'No se ha podido establecer comunicación con el servidor.';
+                    // do something on error
+                    /*if (canRecover(rejection)) {
+                     return responseOrNewPromise
+                     }*/
+                    return $q.reject(rejection);
+                }
+            };
+        }]);
 
     $httpProvider.interceptors.push('myHttpInterceptor');
 
@@ -90,9 +115,14 @@ myApp.config(['IdleProvider', 'KeepaliveProvider', function(IdleProvider, Keepal
     KeepaliveProvider.interval(600); // heartbeat every 10 min
 }]);
 
-myApp.run(['$rootScope', 'appSocket', 'loginFactory', 'storageService', '$state', '$http', 'dialogsService', 'Idle',
-    function($rootScope, appSocket, loginFactory, storageService, $state, $http, dialogsService, Idle){
+myApp.run(['$rootScope', 'appSocket', 'loginFactory', 'storageService', '$state', '$http', 'dialogsService', 'Idle', 'AUTH_EVENTS',
+    function($rootScope, appSocket, loginFactory, storageService, $state, $http, dialogsService, Idle, AUTH_EVENTS){
 
+        $rootScope.requests401 = [];
+        $rootScope.routeChange = {
+            to: '',
+            from: ''
+        };
         $rootScope.loggedUser = '';
 
         $rootScope.$on('IdleStart', function() {
@@ -100,6 +130,7 @@ myApp.run(['$rootScope', 'appSocket', 'loginFactory', 'storageService', '$state'
         });
 
         $rootScope.logOut = function(){
+            //$rootScope.$broadcast('loginRequired');
             loginFactory.logout();
             Idle.unwatch();
             $state.transitionTo('login');
@@ -113,40 +144,73 @@ myApp.run(['$rootScope', 'appSocket', 'loginFactory', 'storageService', '$state'
             //TODO llamada para renovar el token por ahora se podría volver a llamar al login
         });
 
-        $rootScope.requests401 = [];
-
-        $rootScope.$on('loginRequired', function(){
-            $state.transitionTo('login');
-            /*loginFactory.login(storageService.getObject('user'), function(result){
-                if (result.statusText == 'OK'){
-                    $rootScope.$broadcast('loginConfirmed');
-                } else {
+        $rootScope.$on(AUTH_EVENTS.notAuthenticated, function(){
+            if ($rootScope.routeChange.from != 'login'){
+                var loginDialog = dialogsService.login();
+                loginDialog.result.then(function(user){
+                    $rootScope.loggedUser = user.user;
+                    storageService.setObject('user', user);
+                    $rootScope.$broadcast(AUTH_EVENTS.loginSucces);
+                }, function(){
                     $state.transitionTo('login');
-                }
-            })*/
+                });
+            } else {
+                dialogsService.notify('No autorizado', 'Se requiere un inicio de sesión antes de poder continuar.')
+            }
         });
 
-        /*$rootScope.$on('loginConfirmed', function() {
-            var i, requests = $rootScope.requests401;
-            for (i = 0; i < requests.length; i++) {
-                retry(requests[i]);
+        $rootScope.$on(AUTH_EVENTS.loginSucces, function() {
+            if ($rootScope.requests401.length > 0){
+                var i, requests = $rootScope.requests401;
+                for (i = 0; i < requests.length; i++) {
+                    retry(requests[i]);
+                }
+                $rootScope.requests401 = [];
+            } else if ($rootScope.routeChange.to != '' ){
+                var next = $rootScope.routeChange.to;
+                $rootScope.routeChange = {
+                    to: '',
+                    from: ''
+                };
+                $state.transitionTo(next);
             }
-            $rootScope.requests401 = [];
+
 
             function retry(req) {
                 $http(req.config).then(function(response) {
                     req.deferred.resolve(response);
                 });
             }
-        });*/
+        });
 
         $rootScope.socket = appSocket;
         $rootScope.socket.connect();
 
         $rootScope.loginScreen = true;
 
-        $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){
+        $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromParams) {
             $rootScope.loginScreen = (toState.name == 'login');
+        });
+
+        $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){
+            if (angular.isDefined(toState.data)){ //state requires logged user
+                var authorizedRoles = toState.data.authorizedRoles;
+                if (!loginFactory.isAuthorized(authorizedRoles)){
+                    event.preventDefault();
+                    if (loginFactory.isAuthenticated()) {
+                        // user is not allowed
+                        $rootScope.$broadcast(AUTH_EVENTS.notAuthorized);
+                    } else {
+                        // user is not logged in
+                        $rootScope.routeChange ={
+                            to: toState.name,
+                            from: fromState.name
+                        };
+                        $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
+                    }
+                }
+            }
+
         })
 
     }]);

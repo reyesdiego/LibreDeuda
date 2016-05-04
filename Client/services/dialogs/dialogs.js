@@ -5,7 +5,7 @@ myApp.service('dialogsService', ['$uibModal', function($uibModal){
 
     return {
         error: function(title, message){
-            $uibModal.open({
+            return $uibModal.open({
                 controller: 'dialogsCtrl',
                 templateUrl: './services/dialogs/error.html',
                 resolve: {
@@ -19,7 +19,7 @@ myApp.service('dialogsService', ['$uibModal', function($uibModal){
             })
         },
         notify: function(title, message){
-            $uibModal.open({
+            return $uibModal.open({
                 controller: 'dialogsCtrl',
                 templateUrl: './services/dialogs/notify.html',
                 resolve: {
@@ -30,6 +30,13 @@ myApp.service('dialogsService', ['$uibModal', function($uibModal){
                         return message
                     }
                 }
+            })
+        },
+        login: function(){
+            return $uibModal.open({
+                controller: 'loginDialogCtrl',
+                templateUrl: './services/dialogs/login.html',
+                backdrop: 'static'
             })
         }
     }
@@ -52,5 +59,31 @@ myApp.controller('dialogsCtrl', ['$scope', '$uibModalInstance', 'title', 'messag
     $scope.cancel = function () {
         $uibModalInstance.dismiss('cancel');
     };
+
+}]);
+
+myApp.controller('loginDialogCtrl', ['$scope', '$uibModalInstance', 'loginFactory',  function($scope, $uibModalInstance, loginFactory){
+
+    $scope.user = {
+        name: '',
+        password: '',
+        session: false,
+        role: 'admin'
+    };
+
+    $scope.login = function(){
+        loginFactory.login($scope.user, function(result){
+            if (result.statusText == 'OK'){
+                $uibModalInstance.close($scope.user);
+            } else {
+                dialogsService.error('Error', result.statusText);
+            }
+        })
+    };
+
+    $scope.cancel = function(){
+        $uibModalInstance.dismiss('cancel');
+    }
+
 
 }]);

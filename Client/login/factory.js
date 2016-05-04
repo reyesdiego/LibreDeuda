@@ -16,6 +16,13 @@ myApp.factory('loginFactory', ['$http', 'configService', 'storageService', funct
         logout: function(){
             storageService.deleteKey('user');
             storageService.deleteKey('token');
+        },
+        isAuthenticated: function(){
+            return (storageService.getKey('token') != null);
+        },
+        isAuthorized: function(authorizedRoles){
+            return (this.isAuthenticated() &&
+            (authorizedRoles.indexOf(storageService.getObject('user').role) !== -1 || authorizedRoles.indexOf('*') !== -1));
         }
     }
 

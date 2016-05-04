@@ -8,7 +8,8 @@ myApp.controller('loginCtrl', ['$rootScope', '$scope', '$state', 'loginFactory',
         $scope.user = {
             user: '',
             password: '',
-            session: false
+            session: false,
+            role: 'admin'
         };
 
         $scope.login = function(){
