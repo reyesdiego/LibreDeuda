@@ -30,6 +30,7 @@
     <script src="services/socket.js"></script>
     <script src="services/dialogs/dialogs.js"></script>
     <script src="services/storage.js"></script>
+    <script src="services/session.js"></script>
     <!-- FILTERS -->
     <script src="filters/generalFilters.js"></script>
     <!-- OTHER LIBRARIES -->
@@ -51,7 +52,7 @@
 
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav navbar-right">
-                <li><a href ng-click="logOut()"><span class="glyphicon glyphicon-user"></span> {{ loggedUser }}</a></li>
+                <li><a href ng-click="logOut()"><span class="glyphicon glyphicon-user"></span> {{ session.getName() }}</a></li>
             </ul>
         </div>
     </div>

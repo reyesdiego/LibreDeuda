@@ -43,7 +43,7 @@ myApp.config(['$urlRouterProvider', '$stateProvider', 'USER_ROLES', function($ur
         url: '/new',
         templateUrl: 'containers/containers.new.html',
         data: {
-            authorizedRoles: [USER_ROLES.all]
+            authorizedRoles: [USER_ROLES.builder]
         }
     })
 
@@ -53,13 +53,14 @@ myApp.config(['$urlRouterProvider', '$stateProvider', 'USER_ROLES', function($ur
 myApp.config(['$provide', '$httpProvider', function($provide, $httpProvider){
 
     // register the interceptor as a service
-    $provide.factory('myHttpInterceptor', ['$rootScope', '$q', 'storageService', 'configService', 'AUTH_EVENTS',
-        function($rootScope, $q, storageService, configService, AUTH_EVENTS) {
+    $provide.factory('myHttpInterceptor', ['$rootScope', '$q', 'configService', 'AUTH_EVENTS',
+        function($rootScope, $q, configService, AUTH_EVENTS) {
             return {
                 // optional method
                 'request': function(config) {
                     // do something on success
-                    config.headers['Token'] = storageService.getKey('token');
+                    config.headers['Token'] = $rootScope.session.getToken();
+
                     return config;
                 },
                 // optional method
@@ -115,8 +116,10 @@ myApp.config(['IdleProvider', 'KeepaliveProvider', function(IdleProvider, Keepal
     KeepaliveProvider.interval(600); // heartbeat every 10 min
 }]);
 
-myApp.run(['$rootScope', 'appSocket', 'loginFactory', 'storageService', '$state', '$http', 'dialogsService', 'Idle', 'AUTH_EVENTS',
-    function($rootScope, appSocket, loginFactory, storageService, $state, $http, dialogsService, Idle, AUTH_EVENTS){
+myApp.run(['$rootScope', 'appSocket', 'loginFactory', 'storageService', '$state', '$http', 'dialogsService', 'Idle', 'AUTH_EVENTS', 'Session',
+    function($rootScope, appSocket, loginFactory, storageService, $state, $http, dialogsService, Idle, AUTH_EVENTS, Session){
+
+        $rootScope.session = new Session();
 
         $rootScope.requests401 = [];
         $rootScope.routeChange = {
@@ -130,8 +133,7 @@ myApp.run(['$rootScope', 'appSocket', 'loginFactory', 'storageService', '$state'
         });
 
         $rootScope.logOut = function(){
-            //$rootScope.$broadcast('loginRequired');
-            loginFactory.logout();
+            $rootScope.session.logOut();
             Idle.unwatch();
             $state.transitionTo('login');
         };
@@ -144,13 +146,15 @@ myApp.run(['$rootScope', 'appSocket', 'loginFactory', 'storageService', '$state'
             //TODO llamada para renovar el token por ahora se podría volver a llamar al login
         });
 
+        $rootScope.$on(AUTH_EVENTS.notAuthorized, function(){
+            dialogsService.notify('Error de acceso', 'Su usario no se encuentra autorizado para realizar esa operación.')
+        });
+
         $rootScope.$on(AUTH_EVENTS.notAuthenticated, function(){
             if ($rootScope.routeChange.from != 'login'){
                 var loginDialog = dialogsService.login();
                 loginDialog.result.then(function(user){
                     $rootScope.loggedUser = user.user;
-                    storageService.setObject('user', user);
-                    $rootScope.$broadcast(AUTH_EVENTS.loginSucces);
                 }, function(){
                     $state.transitionTo('login');
                 });
@@ -159,7 +163,12 @@ myApp.run(['$rootScope', 'appSocket', 'loginFactory', 'storageService', '$state'
             }
         });
 
-        $rootScope.$on(AUTH_EVENTS.loginSucces, function() {
+        $rootScope.$on(AUTH_EVENTS.loginSucces, function(ev, token, user) {
+            Idle.watch();
+
+            $rootScope.session.setData(user);
+            $rootScope.session.setToken(token);
+
             if ($rootScope.requests401.length > 0){
                 var i, requests = $rootScope.requests401;
                 for (i = 0; i < requests.length; i++) {
@@ -193,22 +202,24 @@ myApp.run(['$rootScope', 'appSocket', 'loginFactory', 'storageService', '$state'
         });
 
         $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){
+
             if (angular.isDefined(toState.data)){ //state requires logged user
                 var authorizedRoles = toState.data.authorizedRoles;
-                if (!loginFactory.isAuthorized(authorizedRoles)){
-                    event.preventDefault();
-                    if (loginFactory.isAuthenticated()) {
-                        // user is not allowed
+                if ($rootScope.session.isAuthenticated()){
+                    if (!$rootScope.session.isAuthorized(authorizedRoles)){
+                        event.preventDefault();
                         $rootScope.$broadcast(AUTH_EVENTS.notAuthorized);
-                    } else {
-                        // user is not logged in
-                        $rootScope.routeChange ={
-                            to: toState.name,
-                            from: fromState.name
-                        };
-                        $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
                     }
+                } else {
+                    event.preventDefault();
+                    // user is not logged in
+                    $rootScope.routeChange ={
+                        to: toState.name,
+                        from: fromState.name
+                    };
+                    $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
                 }
+
             }
 
         })
