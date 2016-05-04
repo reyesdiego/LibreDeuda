@@ -43,7 +43,7 @@ myApp.config(['$urlRouterProvider', '$stateProvider', 'USER_ROLES', function($ur
         url: '/new',
         templateUrl: 'containers/containers.new.html',
         data: {
-            authorizedRoles: [USER_ROLES.builder]
+            authorizedRoles: [USER_ROLES.all]
         }
     })
 
