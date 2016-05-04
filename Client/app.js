@@ -153,8 +153,11 @@ myApp.run(['$rootScope', 'appSocket', 'loginFactory', 'storageService', '$state'
         $rootScope.$on(AUTH_EVENTS.notAuthenticated, function(){
             if ($rootScope.routeChange.from != 'login'){
                 var loginDialog = dialogsService.login();
-                loginDialog.result.then(function(user){
-                    $rootScope.loggedUser = user.user;
+                loginDialog.result.then(function(result){
+                    if (result.statusText != 'OK'){
+                        dialogsService.error('Error', result.data);
+                        $state.transitionTo('login');
+                    }
                 }, function(){
                     $state.transitionTo('login');
                 });

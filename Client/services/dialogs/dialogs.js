@@ -73,11 +73,7 @@ myApp.controller('loginDialogCtrl', ['$scope', '$uibModalInstance', 'loginFactor
 
     $scope.login = function(){
         loginFactory.login($scope.user, function(result){
-            if (result.statusText == 'OK'){
-                $uibModalInstance.close($scope.user);
-            } else {
-                dialogsService.error('Error', result.statusText);
-            }
+            $uibModalInstance.close(result);
         })
     };
 
