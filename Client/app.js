@@ -116,10 +116,14 @@ myApp.config(['IdleProvider', 'KeepaliveProvider', function(IdleProvider, Keepal
     KeepaliveProvider.interval(600); // heartbeat every 10 min
 }]);
 
-myApp.run(['$rootScope', 'appSocket', 'loginFactory', 'storageService', '$state', '$http', 'dialogsService', 'Idle', 'AUTH_EVENTS', 'Session',
-    function($rootScope, appSocket, loginFactory, storageService, $state, $http, dialogsService, Idle, AUTH_EVENTS, Session){
+myApp.run(['$rootScope', 'appSocket', 'loginFactory', 'storageService', '$state', '$http', 'dialogsService', 'Idle', 'AUTH_EVENTS', 'Session', '$timeout',
+    function($rootScope, appSocket, loginFactory, storageService, $state, $http, dialogsService, Idle, AUTH_EVENTS, Session, $timeout){
 
         $rootScope.session = new Session();
+
+        if ($rootScope.session.isAuthenticated()){
+            Idle.watch();
+        }
 
         $rootScope.requests401 = [];
         $rootScope.routeChange = {
@@ -127,9 +131,10 @@ myApp.run(['$rootScope', 'appSocket', 'loginFactory', 'storageService', '$state'
             from: ''
         };
         $rootScope.loggedUser = '';
+        $rootScope.dialogIdle = null;
 
         $rootScope.$on('IdleStart', function() {
-            dialogsService.notify('Usuario inactivo', 'Se ha detectado que se encuentra inactivo, se procederá a cerrar su sesión en 60 segundos.');
+            $rootScope.dialogIdle = dialogsService.notify('Usuario inactivo', 'Se ha detectado que se encuentra inactivo, se procederá a cerrar su sesión en 60 segundos.');
         });
 
         $rootScope.logOut = function(){
@@ -139,7 +144,13 @@ myApp.run(['$rootScope', 'appSocket', 'loginFactory', 'storageService', '$state'
         };
 
         $rootScope.$on('IdleTimeout', function() {
+            $rootScope.dialogIdle.dismiss();
+            dialogsService.notify('Usuario inactivo', 'Se ha cerrado su sesión debido a que ha sobrepasado el período de inactividad permitido.');
             $rootScope.logOut();
+        });
+
+        $rootScope.$on('IdleEnd', function() {
+            $rootScope.dialogIdle.dismiss();
         });
 
         $rootScope.$on('KeepAlive', function(){

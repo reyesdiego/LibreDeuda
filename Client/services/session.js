@@ -35,7 +35,6 @@ myApp.service('Session', ['storageService', function(storageService){
             if (this.keep){
                 return storageService.getKey('token');
             } else {
-                console.log('aca ta el token');
                 return storageService.getSessionKey('token');
             }
         },

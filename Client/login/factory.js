@@ -7,8 +7,7 @@ myApp.factory('loginFactory', ['$http', 'configService', '$rootScope', 'AUTH_EVE
         login: function(user, callback){
             var inserturl = configService.serverUrl + '/login';
             $http.post(inserturl, user).then(function(response){
-                $rootScope.$broadcast(AUTH_EVENTS.loginSucces, response.data, user);
-                //storageService.setKey('token', response.data);
+                $rootScope.$broadcast(AUTH_EVENTS.loginSucces, response.data.data, user);
                 callback(response)
             }, function(response){
                 callback(response);
