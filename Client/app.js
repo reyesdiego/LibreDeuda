@@ -116,8 +116,11 @@ myApp.config(['IdleProvider', 'KeepaliveProvider', function(IdleProvider, Keepal
     KeepaliveProvider.interval(600); // heartbeat every 10 min
 }]);
 
-myApp.run(['$rootScope', 'appSocket', 'loginFactory', 'storageService', '$state', '$http', 'dialogsService', 'Idle', 'AUTH_EVENTS', 'Session', '$timeout',
-    function($rootScope, appSocket, loginFactory, storageService, $state, $http, dialogsService, Idle, AUTH_EVENTS, Session, $timeout){
+myApp.run(['$rootScope', 'appSocket', 'loginFactory', 'storageService', '$state', '$http', 'dialogsService', 'Idle', 'AUTH_EVENTS', 'Session', '$timeout', 'Title',
+    function($rootScope, appSocket, loginFactory, storageService, $state, $http, dialogsService, Idle, AUTH_EVENTS, Session, $timeout, Title){
+
+        Title.timedOutMessage('Su sesión ha expirado.');
+        Title.idleMessage('Tiene {{ seconds }} hasta que su sesión expire.');
 
         $rootScope.session = new Session();
 
@@ -151,6 +154,7 @@ myApp.run(['$rootScope', 'appSocket', 'loginFactory', 'storageService', '$state'
 
         $rootScope.$on('IdleEnd', function() {
             $rootScope.dialogIdle.dismiss();
+            Title.restore();
         });
 
         $rootScope.$on('KeepAlive', function(){
@@ -178,6 +182,7 @@ myApp.run(['$rootScope', 'appSocket', 'loginFactory', 'storageService', '$state'
         });
 
         $rootScope.$on(AUTH_EVENTS.loginSucces, function(ev, token, user) {
+            Title.restore();
             Idle.watch();
 
             $rootScope.session.setData(user);
