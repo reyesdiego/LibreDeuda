@@ -15,7 +15,8 @@
         </div>
     </div>
 
-    <div class="col-lg-12">
+
+    <div class="row col-lg-12">
         <button class="btn btn-default pull-right" ui-sref="containers.new">Informar contenedor</button>
     </div>
 
@@ -28,64 +29,67 @@
         </div>
     </div>
 
-    <table ng-hide="errorResponse.show" class="table col-lg-12 top-gap">
-        <thead>
-        <tr>
-            <th>Terminal</th>
-            <th>Buque</th>
-            <th>Viaje</th>
-            <th>Contenedor</th>
-            <th>Conocimiento</th>
-            <th>Fecha devolución</th>
-            <th>Lugar devolución</th>
-            <th>Razón social</th>
-            <th>CUIT</th>
-            <th>Estado</th>
-            <th>Fecha alta</th>
-            <th>Usuario</th>
-        </tr>
-        </thead>
-        <tbody ng-repeat="data in filteredData = (dataContainers | filter:search) | startFrom:(pagination.currentPage-1)*pagination.itemsPerPage | limitTo:pagination.itemsPerPage track by $index" ng-class="data.ANIMATE ? 'animated animated-row' : ''">
-        <tr ng-click="showDetail($index)" class="parent-row">
-            <td>{{ data.TERMINAL }}</td>
-            <td>{{ data.SHIP }}</td>
-            <td>{{ data.TRIP }}</td>
-            <td>{{ data.CONTAINER }}</td>
-            <td>{{ data.BL }}</td>
-            <td>{{ data.RETURN_TO[0].DATE_TO | date: 'dd/MM/yyyy' }}</td>
-            <td>{{ data.RETURN_TO[0].RETURN_PLACE }}</td>
-            <td>{{ data.CLIENT[0].COMPANY }}</td>
-            <td>{{ data.CLIENT[0].CUIT }}</td>
-            <td class="{{ data.STATUS[0].STATUS | containerClass }}" >{{ data.STATUS[0].STATUS | containerStatus }}</td>
-            <td>{{ data.STATUS[0].AUD_TIME | date: 'dd/MM/yyyy HH:mm' }}</td>
-            <td>{{ data.STATUS[0].AUD_USER }}</td>
-        </tr>
-        <tr ng-repeat="detail in data.RETURN_TO" ng-init="data.SHOW = false" ng-show="data.SHOW" class="child-row">
-            <td colspan="5" class="text-right text-bold"><span class="glyphicon glyphicon-edit"></span> Lugar y fecha de devolución</td>
-            <td>{{ detail.DATE_TO | date: 'dd/MM/yyyy' }}</td>
-            <td>{{ detail.RETURN_PLACE }}</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>{{ detail.AUD_TIME | date: 'dd/MM/yyyy HH:mm' }}</td>
-            <td>{{ detail.AUD_USER }}</td>
-        </tr>
-        <tr ng-repeat="detail in data.CLIENT" ng-show="data.SHOW" class="child-row">
-            <td colspan="7" class="text-right text-bold"><span class="glyphicon glyphicon-edit"></span> Cliente</td>
-            <td>{{ detail.COMPANY }}</td>
-            <td>{{ detail.CUIT }}</td>
-            <td></td>
-            <td>{{ detail.AUD_TIME | date: 'dd/MM/yyyy HH:mm' }}</td>
-            <td>{{ detail.AUD_USER }}</td>
-        </tr>
-        <tr ng-repeat="detail in data.STATUS track by $index" ng-show="data.SHOW" class="child-row">
-            <td colspan="9" class="text-right text-bold"><span class="glyphicon glyphicon-edit"></span> Estado del contenedor</td>
-            <td class="{{ data.STATUS[$index].STATUS | containerClass }}">{{ detail.STATUS | containerStatus }}</td>
-            <td>{{ detail.AUD_TIME | date: 'dd/MM/yyyy HH:mm' }}</td>
-            <td>{{ detail.AUD_USER }}</td>
-        </tr>
-        </tbody>
-    </table>
+
+    <div class="table-responsive">
+        <table ng-hide="errorResponse.show" class="table col-lg-12 top-gap">
+            <thead>
+            <tr>
+                <th>Terminal</th>
+                <th>Buque</th>
+                <th>Viaje</th>
+                <th>Contenedor</th>
+                <th>Conocimiento</th>
+                <th>Fecha devolución</th>
+                <th>Lugar devolución</th>
+                <th>Razón social</th>
+                <th>CUIT</th>
+                <th>Estado</th>
+                <th>Fecha alta</th>
+                <th>Usuario</th>
+            </tr>
+            </thead>
+            <tbody ng-repeat="data in filteredData = (dataContainers | filter:search) | startFrom:(pagination.currentPage-1)*pagination.itemsPerPage | limitTo:pagination.itemsPerPage track by $index" ng-class="data.ANIMATE ? 'animated animated-row' : ''">
+            <tr ng-click="showDetail($index)" class="parent-row">
+                <td>{{ data.TERMINAL }}</td>
+                <td>{{ data.SHIP }}</td>
+                <td>{{ data.TRIP }}</td>
+                <td>{{ data.CONTAINER }}</td>
+                <td>{{ data.BL }}</td>
+                <td>{{ data.RETURN_TO[0].DATE_TO | date: 'dd/MM/yyyy' }}</td>
+                <td>{{ data.RETURN_TO[0].PLACE }}</td>
+                <td>{{ data.CLIENT[0].COMPANY }}</td>
+                <td>{{ data.CLIENT[0].CUIT }}</td>
+                <td class="{{ data.STATUS[0].STATUS | containerClass }}" >{{ data.STATUS[0].STATUS | containerStatus }}</td>
+                <td>{{ data.STATUS[0].AUD_TIME | date: 'dd/MM/yyyy HH:mm' }}</td>
+                <td>{{ data.STATUS[0].AUD_USER }}</td>
+            </tr>
+            <tr ng-repeat="detail in data.RETURN_TO" ng-init="data.SHOW = false" ng-show="data.SHOW" class="child-row">
+                <td colspan="5" class="text-right text-bold"><span class="glyphicon glyphicon-edit"></span> Lugar y fecha de devolución</td>
+                <td>{{ detail.DATE_TO | date: 'dd/MM/yyyy' }}</td>
+                <td>{{ detail.PLACE }}</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>{{ detail.AUD_TIME | date: 'dd/MM/yyyy HH:mm' }}</td>
+                <td>{{ detail.AUD_USER }}</td>
+            </tr>
+            <tr ng-repeat="detail in data.CLIENT" ng-show="data.SHOW" class="child-row">
+                <td colspan="7" class="text-right text-bold"><span class="glyphicon glyphicon-edit"></span> Cliente</td>
+                <td>{{ detail.COMPANY }}</td>
+                <td>{{ detail.CUIT }}</td>
+                <td></td>
+                <td>{{ detail.AUD_TIME | date: 'dd/MM/yyyy HH:mm' }}</td>
+                <td>{{ detail.AUD_USER }}</td>
+            </tr>
+            <tr ng-repeat="detail in data.STATUS track by $index" ng-show="data.SHOW" class="child-row">
+                <td colspan="9" class="text-right text-bold"><span class="glyphicon glyphicon-edit"></span> Estado del contenedor</td>
+                <td class="{{ data.STATUS[$index].STATUS | containerClass }}">{{ detail.STATUS | containerStatus }}</td>
+                <td>{{ detail.AUD_TIME | date: 'dd/MM/yyyy HH:mm' }}</td>
+                <td>{{ detail.AUD_USER }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 
     <div class="col-lg-12 hidden-print hidden-xs" ng-show="filteredData.length > pagination.itemsPerPage">
         <div class="text-center"><uib-pagination class="pagination" boundary-link-numbers="true" rotate="false" total-items="filteredData.length" items-per-page="pagination.itemsPerPage" ng-model="pagination.currentPage" previous-text="<" next-text=">" first-text="<<" last-text=">>" max-size="20"></uib-pagination></div>

@@ -9,6 +9,9 @@ myApp.service('configService', [function(){
         statusContainers: {'0': {
             name: 'Liberado',
             className: 'status-free'
+        }, '3': {
+            name: 'Retirado?',
+            className: 'status-retired'
         }, '5': {
             name:'Retirado',
             className: 'status-retired'
