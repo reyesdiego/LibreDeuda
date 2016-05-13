@@ -56,7 +56,7 @@
             <td>{{ data.RETURN_TO[0].RETURN_PLACE }}</td>
             <td>{{ data.CLIENT[0].COMPANY }}</td>
             <td>{{ data.CLIENT[0].CUIT }}</td>
-            <td class="{{ data.STATUS[0].STATUS_ID | containerClass }}" >{{ data.STATUS[0].STATUS_ID | containerStatus }}</td>
+            <td class="{{ data.STATUS[0].STATUS | containerClass }}" >{{ data.STATUS[0].STATUS | containerStatus }}</td>
             <td>{{ data.STATUS[0].AUD_TIME | date: 'dd/MM/yyyy HH:mm' }}</td>
             <td>{{ data.STATUS[0].AUD_USER }}</td>
         </tr>
@@ -78,9 +78,9 @@
             <td>{{ detail.AUD_TIME | date: 'dd/MM/yyyy HH:mm' }}</td>
             <td>{{ detail.AUD_USER }}</td>
         </tr>
-        <tr ng-repeat="detail in data.STATUS" ng-show="data.SHOW" class="child-row">
+        <tr ng-repeat="detail in data.STATUS track by $index" ng-show="data.SHOW" class="child-row">
             <td colspan="9" class="text-right text-bold"><span class="glyphicon glyphicon-edit"></span> Estado del contenedor</td>
-            <td class="{{ data.STATUS[0].STATUS_ID | containerClass }}">{{ detail.STATUS_ID | containerStatus }}</td>
+            <td class="{{ data.STATUS[$index].STATUS | containerClass }}">{{ detail.STATUS | containerStatus }}</td>
             <td>{{ detail.AUD_TIME | date: 'dd/MM/yyyy HH:mm' }}</td>
             <td>{{ detail.AUD_USER }}</td>
         </tr>

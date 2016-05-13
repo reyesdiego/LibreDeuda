@@ -96,7 +96,7 @@ myApp.config(['$provide', '$httpProvider', function($provide, $httpProvider){
                         }
                     }
 
-                    if (rejection.status == -1) rejection.statusText = 'No se ha podido establecer comunicación con el servidor.';
+                    if (rejection.status == -1) rejection.data = { message: 'No se ha podido establecer comunicación con el servidor.', status: 'ERROR' };
                     // do something on error
                     /*if (canRecover(rejection)) {
                      return responseOrNewPromise

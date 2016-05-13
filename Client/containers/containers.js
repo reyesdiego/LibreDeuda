@@ -57,10 +57,9 @@ myApp.controller('containersCtrl', ['$scope', 'containersFactory', '$timeout', '
             containersFactory.getContainers(function(result){
                 if (result.statusText == 'OK'){
                     $scope.dataContainers = result.data.data;
-                    console.log(($scope.dataContainers[0].RETURN_TO.concat($scope.dataContainers[0].CLIENT)).concat($scope.dataContainers[0].STATUS))
                 } else {
                     $scope.errorResponse.show = true;
-                    $scope.errorResponse.message = result.statusText;
+                    $scope.errorResponse.message = result.data.message;
                 }
             })
         };
@@ -105,6 +104,7 @@ myApp.controller('containersCtrl', ['$scope', 'containersFactory', '$timeout', '
                     };
                 } else {
                     console.log(response);
+                    dialogsService.error('Contenedor', response.data.message);
                 }
             })
 
@@ -126,7 +126,6 @@ myApp.controller('containersCtrl', ['$scope', 'containersFactory', '$timeout', '
         };
 
         $scope.eraseField = function(field, detail){
-            console.log(detail);
             if (!detail){
                 $scope.newContainer[field] = '';
             } else {

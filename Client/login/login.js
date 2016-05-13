@@ -19,7 +19,7 @@ myApp.controller('loginCtrl', ['$rootScope', '$scope', '$state', 'loginFactory',
                     //storageService.setObject('user', $scope.user);
                     $state.transitionTo('containers');
                 } else {
-                    dialogsService.error('Error', result.statusText);
+                    dialogsService.error('Error', result.data.message);
                 }
             })
         }
