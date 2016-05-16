@@ -24,17 +24,20 @@ myApp.controller('containersCtrl', ['$scope', 'containersFactory', '$timeout', '
             }],
             RETURN_TO: [{
                 DATE_TO: new Date(),
-                RETURN_PLACE: ''
+                RETURN_PLACE: 0
             }],
             STATUS: [{
-                STATUS_ID: 0
+                STATUS: 0
             }]
         };
         $scope.pagination = {
             currentPage: 1,
             itemsPerPage: 10
         };
+
         $scope.statesContainers = configService.statusContainersAsArray();
+        $scope.returnPlaces = containersFactory.getReturnPlaces();
+
         $scope.terminals = configService.terminalsArray;
 
         $scope.$on('socket:container', function(ev, data){
@@ -97,10 +100,10 @@ myApp.controller('containersCtrl', ['$scope', 'containersFactory', '$timeout', '
                         }],
                         RETURN_TO: [{
                             DATE_TO: new Date(),
-                            RETURN_PLACE: ''
+                            RETURN_PLACE: 0
                         }],
                         STATUS: [{
-                            STATUS_ID: 0
+                            STATUS: 0
                         }]
                     };
                 } else {
@@ -138,6 +141,14 @@ myApp.controller('containersCtrl', ['$scope', 'containersFactory', '$timeout', '
             for (var i=0; i< $scope.statesContainers.length; i++) {
                 if (model === $scope.statesContainers[i].id) {
                     return $scope.statesContainers[i].formatted;
+                }
+            }
+        };
+
+        $scope.formatPlace = function(model){
+            for (var i=0; i< $scope.returnPlaces.length; i++) {
+                if (model === $scope.returnPlaces[i].id) {
+                    return $scope.returnPlaces[i].name;
                 }
             }
         };

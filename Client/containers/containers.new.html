@@ -7,7 +7,7 @@
                     <div class="form-group">
                         <label for="terminal" class="col-lg-2 control-label"><span class="glyphicon"></span> Terminal</label>
                         <div class="input-group col-lg-9">
-                            <input type="text" class="form-control" ng-model="newContainer.TERMINAL" id="terminal" placeholder="" ng-required="true" uib-typeahead="terminal for terminal in terminals | filter:$viewValue | limitTo:8" typeahead-editable="false">
+                            <input type="text" class="form-control" ng-model="newContainer.TERMINAL" id="terminal" placeholder="" ng-required="true" uib-typeahead="terminal for terminal in terminals | filter:$viewValue | limitTo:8" typeahead-editable="false" autocomplete="off">
                         <span class="input-group-btn">
                             <button type="button" class="btn btn-default" ng-click="eraseField('TERMINAL')"><i class="glyphicon glyphicon-remove"></i></button>
                         </span>
@@ -61,7 +61,7 @@
                     <div class="form-group">
                         <label for="return" class="col-lg-2 control-label"><span class="glyphicon"></span> Lugar devolución</label>
                         <div class="input-group col-lg-9">
-                            <input type="text" class="form-control" ng-model="newContainer.RETURN_TO[0].RETURN_PLACE" id="return" placeholder="" ng-required="true" toupper>
+                            <input type="text" class="form-control" ng-model="newContainer.RETURN_TO[0].RETURN_PLACE" id="return" placeholder="" ng-required="true" uib-typeahead="place.id as place.name for place in returnPlaces | filter:$viewValue | limitTo:8" typeahead-editable="false" typeahead-input-formatter="formatPlace($model)">
                         <span class="input-group-btn">
                             <button type="button" class="btn btn-default" ng-click="eraseField('RETURN_PLACE', 'RETURN_TO')"><i class="glyphicon glyphicon-remove"></i></button>
                         </span>
@@ -79,9 +79,9 @@
                     <div class="form-group">
                         <label for="status" class="col-lg-2 control-label"><span class="glyphicon"></span> Estado</label>
                         <div class="input-group col-lg-9">
-                            <input type="text" class="form-control" ng-model="newContainer.STATUS[0].STATUS_ID" id="status" placeholder="" ng-required="true" uib-typeahead="state.id as state.formatted for state in statesContainers | filter:$viewValue | limitTo:8" typeahead-editable="false" typeahead-input-formatter="formatStatus($model)">
+                            <input type="text" class="form-control {{ newContainer.STATUS[0].STATUS | containerClass}}" ng-model="newContainer.STATUS[0].STATUS" id="status" placeholder="" ng-required="true" uib-typeahead="state.id as state.formatted for state in statesContainers | filter:$viewValue | limitTo:8" typeahead-editable="false" typeahead-input-formatter="formatStatus($model)">
                         <span class="input-group-btn">
-                            <button type="button" class="btn btn-default" ng-click="eraseField('STATUS_ID', 'STATUS')"><i class="glyphicon glyphicon-remove"></i></button>
+                            <button type="button" class="btn btn-default" ng-click="eraseField('STATUS', 'STATUS')"><i class="glyphicon glyphicon-remove"></i></button>
                         </span>
                         </div>
                     </div>

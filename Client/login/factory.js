@@ -12,6 +12,14 @@ myApp.factory('loginFactory', ['$http', 'configService', '$rootScope', 'AUTH_EVE
             }, function(response){
                 callback(response);
             })
+        },
+        keepAlive: function(callback){
+            var inserturl = configService.serverUrl + '/keepAlive';
+            $http.get(inserturl).then(function(response){
+                callback(response)
+            }, function(response){
+                callback(response);
+            })
         }
     }
 

@@ -4,6 +4,13 @@
 
 myApp.factory('containersFactory', ['$http', 'configService', 'storageService', function($http, configService, storageService){
 
+    var places = [
+        {id: 0, name: 'Depósito 1'},
+        {id: 1, name: 'Depósito 489'},
+        {id: 2, name: 'Hangar 18'},
+        {id: 3, name: 'Tu casa'}
+    ]
+
     var factory = {
 
         getContainers: function(callback){
@@ -29,8 +36,12 @@ myApp.factory('containersFactory', ['$http', 'configService', 'storageService', 
             }, function(response){
                 callback(response);
             })
+        },
+        getReturnPlaces: function(query, callback){
+            var insertUrl = configService.serverUrl + '/????';
+            //TODO llamada http para traer los lugares de devolución
+            return places;
         }
-
     };
 
     return factory;

@@ -157,8 +157,12 @@ myApp.run(['$rootScope', 'appSocket', 'loginFactory', 'storageService', '$state'
             Title.restore();
         });
 
-        $rootScope.$on('KeepAlive', function(){
-            //TODO llamada para renovar el token por ahora se podría volver a llamar al login
+        $rootScope.$on('Keepalive', function(){
+            /*loginFactory.keepAlive(function(response){
+                if (response.statusText == 'OK'){
+                    $rootScope.session.setToken(response.data);
+                }
+            });*/
         });
 
         $rootScope.$on(AUTH_EVENTS.notAuthorized, function(){
