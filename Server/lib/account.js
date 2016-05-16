@@ -14,7 +14,7 @@ class Account {
         var account = Account.findOne({email: user});
         account.exec(function (err, dataAccount) {
             if (err) {
-                res.status(401).send({status: "ERROR",
+                callback({status: "ERROR",
                     message: err.message,
                     data: err});
             } else {

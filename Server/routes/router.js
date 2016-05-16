@@ -19,10 +19,13 @@ module.exports = function (app, socket) {
         });
     }
 
-    var account = require("./account.js")(app);
+    var account = require("./account.js")();
     app.use(account);
 
     var lde = require("./lde.js")(socket);
     app.use('/lde', verifyToken, lde);
 
+    app.get('/', function (req, res) {
+        res.status(200).send("Libre Deuda 1.0");
+    });
 }

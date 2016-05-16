@@ -7,7 +7,9 @@ var config = require("./config/config.js");
 var log4n = require('./include/log4node.js'),
     log = new log4n.log(config.log);
 
-var http = require("http");
+var http = require("https");
+var fs = require("fs");
+var path = require("path");
 var express = require("express");
 var compress = require('compression');
 var methodOverride = require('method-override'),
@@ -42,7 +44,11 @@ app.all('/*', function (req, res, next) {
     }
 });
 
-server = http.createServer(app);
+var options = {
+    key: fs.readFileSync(path.join(__dirname, '', "/key.pem")),
+    cert: fs.readFileSync(path.join(__dirname, '', "/cert.pem"))
+};
+server = http.createServer(options, app);
 
 socket = socket(server, {
     transports: [
@@ -53,13 +59,13 @@ socket = socket(server, {
 });
 
 server.listen(port, function () {
-    console.info("#%s Nodejs %s Running on %s://localhost:%s", process.pid, process.version, 'http', port);
+    log.logger.info("#%s Nodejs %s Running on %s://localhost:%s", process.pid, process.version, 'http', port);
     /** Conecta a la base de datos MongoDb */
-    require('./include/mongoose.js')(config.mongo.url, undefined, log);
+    require('./include/mongoose.js')(config.mongo.url, config.mongo.options, log);
 });
 server.on('error', function (err) {
     if (err.code === 'EADDRINUSE') {
-        console.error('El puerto %s está siendo utilizado por otro proceso. El proceso que intenta iniciar se abortará', port);
+        log.logger.error('El puerto %s está siendo utilizado por otro proceso. El proceso que intenta iniciar se abortará', port);
         process.exit();
     }
 });
