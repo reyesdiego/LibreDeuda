@@ -44,39 +44,95 @@ module.exports = function (socket) {
                     data: err};
                 res.status(500).send(result);
             } else {
-                var statuses = Enumerable.from(data[0].STATUS)
-                    .orderByDescending('$.AUD_TIME')
-                    .select('value, idx => {STATUS: value.STATUS}')
-                    .toArray();
-                if (statuses[0].STATUS !== 'undefined' && statuses[0].STATUS === 9) {
+                if (data.length === 0) {
                     result = {
                         status: "ERROR",
-                        message: "Libre Deuda Anulado",
-                        data: data};
+                        message: "No existe Libre Deuda para este Contenedor."};
                     res.status(403).send(result);
                 } else {
-                    result = {
-                        status: "OK",
-                        data: data};
-                    res.status(200).send(result);
+                    var statuses = Enumerable.from(data[0].STATUS)
+                        .orderByDescending('$.AUD_TIME')
+                        .select('value, idx => {STATUS: value.STATUS}')
+                        .toArray();
+                    if (statuses[0].STATUS !== 'undefined' && statuses[0].STATUS === 9) {
+                        result = {
+                            status: "ERROR",
+                            message: "El Libre Deuda ha sido Anulado",
+                            data: data.STATUS};
+                        res.status(403).send(result);
+                    } else {
+                        result = {
+                            status: "OK",
+                            data: data};
+                        res.status(200).send(result);
+                    }
                 }
             }
         });
     }
 
     function putFreeDebt (req, res) {
+        const DISABLED = 9;
+        const ENABLED = 0;
+        const INVOICED = 3;
         var contenedor = req.params.contenedor;
         var user = req.user;
+        var status = -1;
+        var description = '';
+        var newStatus = {
+            AUD_USER: user.user,
+            AUD_TIME: Date.now()
+        };
 
         var freeDebt = FreeDebt.findOne({CONTAINER: contenedor, AUD_USER: user.email});
         freeDebt.exec(function (err, data) {
             if (err) {
                 res.status(500).send({status: "ERROR", message: err.message, data: err});
             } else {
-                if (data.length < 1) {
+                if (data.length === 0) {
                     res.status(403).send({status: "ERROR", message: "No Existe el Libre Deuda para el Contenedor."});
                 } else {
-                    res.status(200).send({status: "OK", data: data});
+                    var lastStatus = data.STATUS[data.STATUS.length-1];
+
+                    if (req.route.path.indexOf('disable') > 0) {
+                        if (lastStatus.STATUS === DISABLED) {
+                            description = 'Deshabilitado';
+                        } else if (lastStatus.STATUS === INVOICED) {
+                            description = 'Facturado';
+                        } else {
+                            status = DISABLED;
+                        }
+                    } else if (req.route.path.indexOf('enable')  > 0) {
+                        if (lastStatus.STATUS === ENABLED) {
+                            description = 'Habilitado';
+                        } else if (lastStatus.STATUS === INVOICED) {
+                            description = 'Facturado';
+                        } else {
+                            status = ENABLED;
+                        }
+                    } else if (req.route.path.indexOf('invoice')  > 0) {
+                        if (lastStatus.STATUS === INVOICED) {
+                            description = 'Facturado';
+                        } else if (lastStatus.STATUS === DISABLED) {
+                                description = 'Deshabilitado';
+                        } else {
+                            status = INVOICED;
+                        }
+                    }
+
+                    if (description !== '') {
+                        res.status(403).send({
+                            status: "ERROR",
+                            message: `El Libre Deuda del Contenedor yá se encuentra ${description}.`
+                        });
+                    } else {
+                        newStatus.STATUS = status;
+                        data.STATUS.push(newStatus);
+                        data.save(function (err, rowAffected) {
+                            res.status(200).send({status: "OK", data: data});
+                        });
+                    }
+
                 }
             }
         });
@@ -113,6 +169,7 @@ module.exports = function (socket) {
     router.get("/:contenedor", getFreeDebt);
     router.put("/:contenedor/disable", putFreeDebt);
     router.put("/:contenedor/enable", putFreeDebt);
+    router.put("/:contenedor/invoice", putFreeDebt);
     router.post("/", addFreeDebt);
 
     return router;

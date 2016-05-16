@@ -11,13 +11,13 @@ var freeDebt = new mongoose.Schema({
     CONTAINER: {type: String},
     BL: {type: String},
     RETURN_TO: [{
-        RETURN_PLACE: {type: Number},
+        PLACE: {type: Number},
         DATE_TO: {type: Date},
         AUD_USER: {type: String, required: true},
         AUD_TIME: {type: Date, required: true}
     }],
     STATUS: [{
-        STATUS_ID: {type: Number},
+        STATUS: {type: Number},
         AUD_USER: {type: String, required: true},
         AUD_TIME: {type: Date, required: true}
     }],

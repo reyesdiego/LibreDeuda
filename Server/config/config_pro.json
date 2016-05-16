@@ -4,8 +4,8 @@
     "log": {
         "path": "log/",
         "filename": "nohup.out",
-        "toConsole": true,
-        "toFile": false
+        "toConsole": false,
+        "toFile": true
     },
     "mongo": {
         "url": "mongodb://10.1.0.60:27017/free",
