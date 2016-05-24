@@ -75,7 +75,7 @@ module.exports = function (socket) {
         const DISABLED = 9;
         const ENABLED = 0;
         const INVOICED = 3;
-        var contenedor = req.params.contenedor;
+        var contenedor = req.body.CONTENEDOR;
         var user = req.user;
         var status = -1;
         var description = '';
@@ -84,12 +84,12 @@ module.exports = function (socket) {
             AUD_TIME: Date.now()
         };
 
-        var freeDebt = FreeDebt.findOne({CONTAINER: contenedor, AUD_USER: user.email});
+        var freeDebt = FreeDebt.findOne({CONTAINER: contenedor, AUD_USER: user.USUARIO});
         freeDebt.exec(function (err, data) {
             if (err) {
                 res.status(500).send({status: "ERROR", message: err.message, data: err});
             } else {
-                if (data.length === 0) {
+                if (!data) {
                     res.status(403).send({status: "ERROR", message: "No Existe el Libre Deuda para el Contenedor."});
                 } else {
                     var lastStatus = data.STATUS[data.STATUS.length-1];
@@ -114,7 +114,7 @@ module.exports = function (socket) {
                         if (lastStatus.STATUS === INVOICED) {
                             description = 'Facturado';
                         } else if (lastStatus.STATUS === DISABLED) {
-                                description = 'Deshabilitado';
+                            description = 'Deshabilitado';
                         } else {
                             status = INVOICED;
                         }
@@ -139,37 +139,64 @@ module.exports = function (socket) {
     }
 
     function addFreeDebt (req, res) {
-        var contenedor = req.body;
-        var container = require("../lib/container.js");
+        // TODO controlar que el LDE no exista previamente
+        var lde = req.body;
+        var container = require("../include/container.js");
+        var cuit = require("../include/cuit.js");
         var timestamp = moment().toDate();
+        var lde2insert;
 
-        var check = container(contenedor.CONTAINER);
-        if (check) {
+        var check = container(lde.CONTAINER);
+        var checkCuit = cuit(lde.CUIT);
 
-            contenedor.RETURN_TO[0].AUD_USER = req.user.user;
-            contenedor.RETURN_TO[0].AUD_TIME = timestamp;
-            contenedor.STATUS[0].AUD_USER = req.user.user;
-            contenedor.STATUS[0].AUD_TIME = timestamp;
-            contenedor.CLIENT[0].AUD_USER = req.user.user;
-            contenedor.CLIENT[0].AUD_TIME = timestamp;
-            FreeDebt.create(contenedor, function (err, data) {
+        if (checkCuit === false) {
+            res.status(400).send({status: "ERROR", message: "El CUIT es inválido", data: {CUIT: lde.CUIT}});
+        } else {
+            lde2insert = {
+                TERMINAL: lde.TERMINAL,
+                SHIP: lde.BUQUE,
+                TRIP: lde.VIAJE,
+                CONTAINER: lde.CONTENEDOR,
+                BL: lde.BL,
+                RETURN_TO: [
+                    {PLACE: lde.LUGAR_DEV,
+                        DATE_TO: moment(lde.FECHA_DEV, "YYYY-MM-DD").format("YYYY-MM-DD"),
+                        AUD_USER: req.user.USUARIO,
+                        AUD_TIME: timestamp}
+                ],
+                STATUS: [
+                    {STATUS: 0,
+                        AUD_USER: req.user.USUARIO,
+                        AUD_TIME: timestamp}
+                ],
+                CLIENT: [
+                    {CUIT: lde.CUIT,
+                        EMAIL_CLIENT: lde.EMAIL_CLIENTE,
+                        AUD_USER: req.user.USUARIO,
+                        AUD_TIME: timestamp}
+                ]
+            };
+            FreeDebt.create(lde2insert, function (err, data) {
                 if (err) {
                     res.status(500).send({status: "ERROR", message: err.message, data: err});
                 } else {
-                    socket.emit('container', contenedor);
-                    res.status(200).send({status: "OK", data: data});
+                    socket.emit('container', lde2insert);
+                    res.status(200).send({
+                        status: "OK",
+                        data: {
+                            ID: data._id
+                        }});
                 }
             });
-        } else {
-            res.status(403).send({status: "ERROR", message: `El contenedor ${contenedor.CONTAINER} no es valido` });
         }
+
     }
 
 
     router.get("/:contenedor", getFreeDebt);
-    router.put("/:contenedor/disable", putFreeDebt);
-    router.put("/:contenedor/enable", putFreeDebt);
-    router.put("/:contenedor/invoice", putFreeDebt);
+    router.put("/disable", putFreeDebt);
+    router.put("/enable", putFreeDebt);
+    router.put("/invoice", putFreeDebt);
     router.post("/", addFreeDebt);
 
     return router;

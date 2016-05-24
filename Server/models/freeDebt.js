@@ -11,7 +11,7 @@ var freeDebt = new mongoose.Schema({
     CONTAINER: {type: String},
     BL: {type: String},
     RETURN_TO: [{
-        PLACE: {type: Number},
+        PLACE: {type: String},
         DATE_TO: {type: Date},
         AUD_USER: {type: String, required: true},
         AUD_TIME: {type: Date, required: true}
@@ -24,6 +24,7 @@ var freeDebt = new mongoose.Schema({
     CLIENT: [{
         CUIT: {type: String},
         COMPANY: {type: String},
+        EMAIL_CLIENT: {type: String},
         AUD_USER: {type: String, required: true},
         AUD_TIME: {type: Date, required: true}
     }]

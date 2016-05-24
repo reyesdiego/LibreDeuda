@@ -17,13 +17,13 @@ module.exports = function () {
         var payload = req.body;
         var response;
 
-        if (payload.user === undefined || payload.user === '') {
+        if (payload.USUARIO === undefined || payload.USUARIO === '') {
             res.status(401).send({
                 status: "ERROR",
                 message: "Debe proveer un usuario"
             });
         } else {
-            account = account.getAccount(payload.user, payload.password, function (err, data) {
+            account = account.getAccount(payload.USUARIO, payload.CLAVE, function (err, data) {
                 if (err) {
                     res.status(401).send(err);
                 } else {

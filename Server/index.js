@@ -70,6 +70,10 @@ server.on('error', function (err) {
     }
 });
 
+app.get('/killme', function (req, res) {
+    server.close();
+});
+
 require("./routes/router.js")(app, socket);
 
 process.on('exit', function () {

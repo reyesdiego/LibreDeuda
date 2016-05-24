@@ -19,7 +19,7 @@ class Account {
                     data: err});
             } else {
                 if (!dataAccount) {
-                    callback({status: "ERROR", message: "El Usuario es Inexistente."});
+                    callback({status: "ERROR", message: "El Usuario No Existe."});
                 } else {
                     if (dataAccount.password !== password) {
                         callback({status: "ERROR", message: "La Clave es Incorrecta."});
