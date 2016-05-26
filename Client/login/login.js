@@ -6,8 +6,8 @@ myApp.controller('loginCtrl', ['$rootScope', '$scope', '$state', 'loginFactory',
     function($rootScope, $scope, $state, loginFactory, storageService, dialogsService){
 
         $scope.user = {
-            user: '',
-            password: '',
+            USUARIO: '',
+            CLAVE: '',
             session: false,
             role: 'admin'
         };
