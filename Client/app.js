@@ -60,6 +60,8 @@ myApp.config(['$provide', '$httpProvider', function($provide, $httpProvider){
                 'request': function(config) {
                     // do something on success
                     config.headers['Token'] = $rootScope.session.getToken();
+                    //TODO verificar tiempos de respuestas para diferentes llamadas...
+                    config.timeout = 2000;
 
                     return config;
                 },
