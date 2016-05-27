@@ -2,9 +2,9 @@
  * Created by diego on 24/05/16.
  */
 
-function cuit (cuit) {
+let cuit = (cuit) => {
     var result = false;
-    var feed = "5432765432";
+    var feed = '5432765432';
     var sum  = 0;
     var digit = 0;
 

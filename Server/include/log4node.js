@@ -138,4 +138,4 @@ var log4njs = function (options) {
     };
 };
 
-exports.log = log4njs;
+module.exports.log = log4njs;

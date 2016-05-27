@@ -12,7 +12,7 @@ class Account {
         var Account = require("../models/account");
 
         var account = Account.findOne({email: user});
-        account.exec(function (err, dataAccount) {
+        account.exec((err, dataAccount) => {
             if (err) {
                 callback({status: "ERROR",
                     message: err.message,
