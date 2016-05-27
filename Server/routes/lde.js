@@ -2,7 +2,7 @@
  * Created by diego on 4/18/16.
  */
 
-module.exports = function (socket) {
+module.exports = (socket) => {
     "use strict";
     var express = require("express");
     var router = express.Router();
@@ -10,11 +10,11 @@ module.exports = function (socket) {
     var moment = require("moment");
     var Enumerable = require("linq");
 
-    router.get("/", function (req, res) {
+    router.get("/", (req, res) => {
         var result;
 
         var free = FreeDebt.find();
-        free.exec(function (err, data) {
+        free.exec((err, data) => {
             if (err) {
                 result = {
                     status: "ERROR",
@@ -30,13 +30,13 @@ module.exports = function (socket) {
         });
     });
 
-    function getFreeDebt (req, res) {
+    let getFreeDebt = (req, res) => {
         var result;
         var contenedor = req.params.contenedor;
 
         var free = FreeDebt.find({CONTAINER: contenedor});
         free.lean();
-        free.exec(function (err, data) {
+        free.exec((err, data) => {
             if (err) {
                 result = {
                     status: "ERROR",
@@ -71,7 +71,7 @@ module.exports = function (socket) {
         });
     }
 
-    function putFreeDebt (req, res) {
+    let putFreeDebt = (req, res) => {
         const DISABLED = 9;
         const ENABLED = 0;
         const INVOICED = 3;
@@ -85,7 +85,7 @@ module.exports = function (socket) {
         };
 
         var freeDebt = FreeDebt.findOne({CONTAINER: contenedor, AUD_USER: user.USUARIO});
-        freeDebt.exec(function (err, data) {
+        freeDebt.exec((err, data) => {
             if (err) {
                 res.status(500).send({status: "ERROR", message: err.message, data: err});
             } else {
@@ -128,7 +128,7 @@ module.exports = function (socket) {
                     } else {
                         newStatus.STATUS = status;
                         data.STATUS.push(newStatus);
-                        data.save(function (err, rowAffected) {
+                        data.save((err, rowAffected) => {
                             res.status(200).send({status: "OK", data: data});
                         });
                     }
@@ -138,7 +138,7 @@ module.exports = function (socket) {
         });
     }
 
-    function addFreeDebt (req, res) {
+    let addFreeDebt = (req, res) => {
         // TODO controlar que el LDE no exista previamente
         var lde = req.body;
         var container = require("../include/container.js");
@@ -191,7 +191,6 @@ module.exports = function (socket) {
         }
 
     }
-
 
     router.get("/:contenedor", getFreeDebt);
     router.put("/disable", putFreeDebt);

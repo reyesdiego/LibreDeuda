@@ -28,7 +28,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 //app.use(multer());
 app.use(methodOverride());
-app.all('/*', function (req, res, next) {
+app.all('/*', (req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", 'X-Requested-With, Content-Type, token');
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
@@ -58,28 +58,28 @@ socket = socket(server, {
     ]
 });
 
-server.listen(port, function () {
+server.listen(port, () => {
     log.logger.info("#%s Nodejs %s Running on %s://localhost:%s", process.pid, process.version, 'http', port);
     /** Conecta a la base de datos MongoDb */
     require('./include/mongoose.js')(config.mongo.url, config.mongo.options, log);
 });
-server.on('error', function (err) {
+server.on('error', (err) => {
     if (err.code === 'EADDRINUSE') {
         log.logger.error('El puerto %s está siendo utilizado por otro proceso. El proceso que intenta iniciar se abortará', port);
         process.exit();
     }
 });
 
-app.get('/killme', function (req, res) {
+app.get('/killme', (req, res) => {
     server.close();
 });
 
 require("./routes/router.js")(app, socket);
 
-process.on('exit', function () {
+process.on('exit', () => {
     log.logger.error('exiting');
 });
 
-process.on('uncaughtException', function (err) {
+process.on('uncaughtException', (err) => {
     log.logger.info("Caught exception: " + err);
 });

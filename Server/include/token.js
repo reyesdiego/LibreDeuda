@@ -3,14 +3,14 @@
  * @module Token
  */
 
-"use strict";
+'use strict';
 
 var jwt = require("jsonwebtoken");
 var secret = require("../config/secret.js");
 var config = require("../config/config.js");
 
-function createToken (payload, callback) {
-    jwt.sign(payload, secret, {expiresIn: config.token_timeout}, function (token) {
+let createToken = (payload, callback) => {
+    jwt.sign(payload, secret, {expiresIn: config.token_timeout}, (token) => {
         callback(token);
     });
 }
@@ -22,8 +22,8 @@ module.exports.createToken = createToken;
  * @param {string} token - Token.
  * @param {function} callback - return Function
  */
-function verifyToken (token, callback) {
-    jwt.verify(token, secret, function (err, decoded) {
+let verifyToken = (token, callback) => {
+    jwt.verify(token, secret, (err, decoded) => {
         if (err) {
             callback(err);
         } else {
