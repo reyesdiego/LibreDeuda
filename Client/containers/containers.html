@@ -46,6 +46,7 @@
                 <th>Estado</th>
                 <th>Fecha alta</th>
                 <th>Usuario</th>
+                <th></th>
             </tr>
             </thead>
             <tbody ng-repeat="data in filteredData = (dataContainers | filter:search) | startFrom:(pagination.currentPage-1)*pagination.itemsPerPage | limitTo:pagination.itemsPerPage track by $index" ng-class="data.ANIMATE ? 'animated animated-row' : ''">
@@ -62,6 +63,11 @@
                 <td class="{{ data.STATUS[0].STATUS | containerClass }}" >{{ data.STATUS[0].STATUS | containerStatus }}</td>
                 <td>{{ data.STATUS[0].AUD_TIME | date: 'dd/MM/yyyy HH:mm' }}</td>
                 <td>{{ data.STATUS[0].AUD_USER }}</td>
+                <td>
+                    <button type="button" class="btn btn-success btn-sm" ng-click="updateContainer($event, 'enable', data.CONTAINER)" uib-tooltip="Liberar"><span class="glyphicon glyphicon-ok"></span></button>
+                    <button type="button" class="btn btn-primary btn-sm" ng-click="updateContainer($event, 'invoice', data.CONTAINER)" uib-tooltip="Facturar"><span class="glyphicon glyphicon-edit"></span></button>
+                    <button type="button" class="btn btn-danger btn-sm" ng-click="updateContainer($event, 'disable', data.CONTAINER)" uib-tooltip="Cancelar"><span class="glyphicon glyphicon-remove"></span></button>
+                </td>
             </tr>
             <tr ng-repeat="detail in data.RETURN_TO" ng-init="data.SHOW = false" ng-show="data.SHOW" class="child-row">
                 <td colspan="5" class="text-right text-bold"><span class="glyphicon glyphicon-edit"></span> Lugar y fecha de devolución</td>

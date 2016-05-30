@@ -5,13 +5,13 @@
 myApp.service('configService', [function(){
 
     return {
-        //serverUrl: 'http://10.10.0.223:8086', //Servidor Diego
-        serverUrl: 'https://localhost:8086', //Local contra base en pc de diego
+        serverUrl: 'https://10.10.0.223:8086', //Servidor Diego
+        //serverUrl: 'https://localhost:8086', //Local contra base en pc de diego
         statusContainers: {'0': {
             name: 'Liberado',
             className: 'status-free'
         }, '3': {
-            name: 'Retirado?',
+            name: 'Facturado',
             className: 'status-retired'
         }, '5': {
             name:'Retirado',

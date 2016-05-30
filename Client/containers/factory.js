@@ -37,6 +37,14 @@ myApp.factory('containersFactory', ['$http', 'configService', 'storageService', 
                 callback(response);
             })
         },
+        updateContainer: function(container, operation, callback){
+            var insertUrl = configService.serverUrl + '/lde/' + operation;
+            $http.put(insertUrl, container).then(function(response){
+                callback(response);
+            }, function(response){
+                callback(response)
+            })
+        },
         getReturnPlaces: function(query, callback){
             var insertUrl = configService.serverUrl + '/????';
             //TODO llamada http para traer los lugares de devolución

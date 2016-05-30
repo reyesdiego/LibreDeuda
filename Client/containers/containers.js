@@ -137,6 +137,18 @@ myApp.controller('containersCtrl', ['$scope', 'containersFactory', '$timeout', '
             }
         };
 
+        $scope.updateContainer = function(event, operation, container){
+            event.stopPropagation();
+            var containerBody = {CONTENEDOR: container };
+            containersFactory.updateContainer(containerBody, operation, function(response){
+                if (response.statusText == 'OK'){
+                    console.log(response.data);
+                } else {
+                    console.log(response.data);
+                }
+            })
+        };
+
         $scope.formatStatus = function(model){
             for (var i=0; i< $scope.statesContainers.length; i++) {
                 if (model === $scope.statesContainers[i].id) {
