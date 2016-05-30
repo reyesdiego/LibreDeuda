@@ -17,7 +17,7 @@
 
 
     <div class="row col-lg-12">
-        <button class="btn btn-default pull-right" ui-sref="containers.new">Informar contenedor</button>
+        <button class="btn btn-default pull-right" ng-click="openForm()">Informar contenedor</button>
     </div>
 
     <div class="row hidden-print" ng-hide="errorResponse.show">
@@ -104,6 +104,6 @@
         <pager total-items="totalItems" ng-model="currentPage" previous-text="<< Anterior" next-text="Siguiente >>"></pager>
     </div>
 
-    <div ui-view></div>
+    <div id="newContainer" ui-view></div>
 
 </div>

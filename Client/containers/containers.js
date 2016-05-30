@@ -1,8 +1,8 @@
 /**
  * Created by kolesnikov-a on 18/04/2016.
  */
-myApp.controller('containersCtrl', ['$scope', 'containersFactory', '$timeout', 'configService', 'dialogsService', '$q',
-    function($scope, containersFactory, $timeout, configService, dialogsService, $q){
+myApp.controller('containersCtrl', ['$scope', 'containersFactory', '$timeout', 'configService', 'dialogsService', '$q', '$location', '$state',
+    function($scope, containersFactory, $timeout, configService, dialogsService, $q, $location, $state){
 
         $scope.search = '';
         $scope.dataContainers = [];
@@ -164,6 +164,13 @@ myApp.controller('containersCtrl', ['$scope', 'containersFactory', '$timeout', '
                 }
             }
         };
+
+        $scope.openForm = function(){
+            $state.transitionTo('containers.new');
+            $timeout(function(){
+                $location.hash('newContainer');
+            }, 200);
+        }
 
     }]);
 
