@@ -145,6 +145,7 @@ myApp.controller('containersCtrl', ['$scope', 'containersFactory', '$timeout', '
                     console.log(response.data);
                 } else {
                     console.log(response.data);
+                    dialogsService.error('Error', response.data.message);
                 }
             })
         };
