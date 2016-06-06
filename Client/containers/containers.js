@@ -58,7 +58,6 @@ myApp.controller('containersCtrl', ['$scope', 'containersFactory', '$timeout', '
 
         $scope.getContainersData = function (){
             containersFactory.getContainers(function(result){
-                console.log(result);
                 if (result.statusText == 'OK'){
                     $scope.dataContainers = result.data.data;
                 } else {
