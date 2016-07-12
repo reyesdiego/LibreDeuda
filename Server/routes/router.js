@@ -17,7 +17,7 @@ module.exports = function (app, socket) {
                 next();
             }
         });
-    }
+    };
 
     var account = require("./account.js")();
     app.use(account);
@@ -25,7 +25,7 @@ module.exports = function (app, socket) {
     var lde = require("./lde.js")(socket);
     app.use('/lde', verifyToken, lde);
 
-    app.get('/', (req, res) => {
+    app.get('/pm2test', (req, res) => {
         var pm2 = require('pm2');
         pm2.connect((err) => {
             if (err) {
@@ -38,6 +38,10 @@ module.exports = function (app, socket) {
                 });
             }
         });
-
     });
-}
+
+    app.get('/', (req, res) => {
+        res.status(200).send("Libre Deuda 1.0\n");
+    });
+
+};
