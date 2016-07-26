@@ -32,16 +32,16 @@ myApp.config(['$urlRouterProvider', '$stateProvider', 'USER_ROLES', function($ur
         url: '/login',
         templateUrl: 'login/login.html',
         controller: 'loginCtrl'
-    }).state('containers', {
-        url: '/containers',
-        templateUrl: 'containers/containers.html',
-        controller: 'containersCtrl',
+    }).state('lde', {
+        url: '/lde',
+        templateUrl: 'lde/lde.html',
+        controller: 'ldeCtrl',
         data: {
             authorizedRoles: [USER_ROLES.all]
         }
-    }).state('containers.new', {
+    }).state('lde.new', {
         url: '/new',
-        templateUrl: 'containers/containers.new.html',
+        templateUrl: 'lde/lde.new.html',
         data: {
             authorizedRoles: [USER_ROLES.all]
         }

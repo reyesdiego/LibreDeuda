@@ -11,7 +11,7 @@ var htmlreplace = require('gulp-html-replace');
 var uglify = require('gulp-uglify');
 
 gulp.task('uglify', function(){
-   gulp.src(['app.js', 'directives/*', 'filters/*', 'login/*.js', 'containers/*.js', 'services/*.js', 'services/dialogs/*.js'])
+   gulp.src(['app.js', 'directives/*', 'filters/*', 'login/*.js', 'lde/*.js', 'services/*.js', 'services/dialogs/*.js'])
        .pipe(concat('app.js'))
        .pipe(uglify())
        .pipe(gulp.dest('build/'))
@@ -54,7 +54,7 @@ gulp.task('html-replace', function() {
 gulp.task('copy-files', function(){
     var templates = {
         "login": "login/login.html",
-        "containers": "containers/*.html",
+        "containers": "lde/*.html",
         "services/dialogs": "services/dialogs/*.html",
         "lib": "lib/*",
         "images": "images/*",

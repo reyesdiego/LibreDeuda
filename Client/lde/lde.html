@@ -64,9 +64,11 @@
                 <td>{{ data.STATUS[0].AUD_TIME | date: 'dd/MM/yyyy HH:mm' }}</td>
                 <td>{{ data.STATUS[0].AUD_USER }}</td>
                 <td>
-                    <button type="button" class="btn btn-success btn-sm" ng-click="updateContainer($event, 'enable', data.CONTAINER)" uib-tooltip="Liberar"><span class="glyphicon glyphicon-ok"></span></button>
-                    <button type="button" class="btn btn-primary btn-sm" ng-click="updateContainer($event, 'invoice', data.CONTAINER)" uib-tooltip="Facturar"><span class="glyphicon glyphicon-edit"></span></button>
-                    <button type="button" class="btn btn-danger btn-sm" ng-click="updateContainer($event, 'disable', data.CONTAINER)" uib-tooltip="Cancelar"><span class="glyphicon glyphicon-remove"></span></button>
+                    <button type="button" class="btn btn-success btn-sm" ng-click="updateLde($event, 'enable', data.CONTAINER)" uib-tooltip="Liberar"><span class="glyphicon glyphicon-ok"></span></button>
+                    <button type="button" class="btn btn-primary btn-sm" ng-click="updateLdeEx($event, 'invoice', data.CONTAINER)" uib-tooltip="Facturar"><span class="glyphicon glyphicon-edit"></span></button>
+                    <button type="button" class="btn btn-danger btn-sm" ng-click="updateLde($event, 'disable', data.CONTAINER)" uib-tooltip="Cancelar"><span class="glyphicon glyphicon-remove"></span></button>
+                    <button type="button" class="btn btn-info btn-sm" ng-click="updateLdeEx($event, 'place', data.CONTAINER)" uib-tooltip="Cambiar lugar"><span class="glyphicon glyphicon-backward"></span></button>
+                    <button type="button" class="btn btn-info btn-sm" ng-click="updateLdeEx($event, 'forward', data.CONTAINER)" uib-tooltip="Forward"><span class="glyphicon glyphicon-forward"></span></button>
                 </td>
             </tr>
             <tr ng-repeat="detail in data.RETURN_TO" ng-init="data.SHOW = false" ng-show="data.SHOW" class="child-row">

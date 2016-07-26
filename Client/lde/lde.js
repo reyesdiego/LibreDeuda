@@ -1,8 +1,8 @@
 /**
  * Created by kolesnikov-a on 18/04/2016.
  */
-myApp.controller('containersCtrl', ['$scope', 'containersFactory', '$timeout', 'configService', 'dialogsService', '$q', '$location', '$state',
-    function($scope, containersFactory, $timeout, configService, dialogsService, $q, $location, $state){
+myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService', 'dialogsService', '$q', '$location', '$state', '$uibModal',
+    function($scope, ldeFactory, $timeout, configService, dialogsService, $q, $location, $state, $uibModal){
 
         $scope.search = '';
         $scope.dataContainers = [];
@@ -36,7 +36,7 @@ myApp.controller('containersCtrl', ['$scope', 'containersFactory', '$timeout', '
         };
 
         $scope.statesContainers = configService.statusContainersAsArray();
-        $scope.returnPlaces = containersFactory.getReturnPlaces();
+        $scope.returnPlaces = ldeFactory.getReturnPlaces();
 
         $scope.terminals = configService.terminalsArray;
 
@@ -56,8 +56,8 @@ myApp.controller('containersCtrl', ['$scope', 'containersFactory', '$timeout', '
             });
         });
 
-        $scope.getContainersData = function (){
-            containersFactory.getContainers(function(result){
+        $scope.getLdeData = function (){
+            ldeFactory.getLde(function(result){
                 if (result.statusText == 'OK'){
                     $scope.dataContainers = result.data.data;
                 } else {
@@ -83,8 +83,8 @@ myApp.controller('containersCtrl', ['$scope', 'containersFactory', '$timeout', '
             $scope.filteredData[realIndex].SHOW = !$scope.filteredData[realIndex].SHOW;
         };
 
-        $scope.saveContainer = function(){
-            containersFactory.saveContainer($scope.newContainer, function(response){
+        $scope.saveLde = function(){
+            ldeFactory.saveLde($scope.newContainer, function(response){
                 if (response.statusText == 'OK'){
                     dialogsService.notify('Nuevo contenedor', 'Los datos se han guardado correctamente.');
                     $scope.newContainer = {
@@ -113,7 +113,7 @@ myApp.controller('containersCtrl', ['$scope', 'containersFactory', '$timeout', '
 
         };
 
-        $scope.getContainersData();
+        $scope.getLdeData();
 
         $scope.datePopUp = {
             opened: false,
@@ -136,10 +136,57 @@ myApp.controller('containersCtrl', ['$scope', 'containersFactory', '$timeout', '
             }
         };
 
-        $scope.updateContainer = function(event, operation, container){
+        //Para facturar, cambiar lugar de devolución o CUIT, se requiere abrir un modal para agregar los demás datos
+        //antes de llamar al método de actualización
+        $scope.updateLdeEx = function(event, operation, container){
+            event.stopPropagation();
+            var modalInstance = $uibModal.open({
+                templateUrl: 'lde/update.lde.html',
+                controller: 'updateLdeCtrl',
+                backdrop: 'static',
+                resolve: {
+                    operation: function () {
+                        return operation;
+                    }
+                }
+            });
+            modalInstance.result.then(function(ldeData){
+                var updateData = null;
+                switch (operation){
+                    case 'invoice':
+                        updateData = {
+                            CONTENEDOR: container,
+                            EMAIL_CLIENTE: ldeData.EMAIL_CLIENTE
+                        };
+                        break;
+                    case 'place':
+                        //TODO averiguar si ID_CLIENTE es obligatorio y de donde se obtiene
+                        updateData = {
+                            CONTENEDOR: container,
+                            LUGAR_DEV: ldeData.LUGAR_DEV
+                        };
+                        break;
+                    case 'forward':
+                        updateData = {
+                            CONTENEDOR: container,
+                            CUIT: ldeData.CUIT,
+                            FECHA_DEV: ldeData.FECHA_DEV
+                        };
+                        break;
+                }
+                ldeFactory.updateLde(updateData, operation, function(response){
+                    console.log(response);
+                })
+            }, function(){
+                //TODO es realmente necesaria esta función?
+            })
+        };
+
+        //Para disable y enable, solo se requiere el contenedor
+        $scope.updateLde = function(event, operation, container){
             event.stopPropagation();
             var containerBody = {CONTENEDOR: container };
-            containersFactory.updateContainer(containerBody, operation, function(response){
+            ldeFactory.updateLde(containerBody, operation, function(response){
                 if (response.statusText == 'OK'){
                     console.log(response.data);
                 } else {
@@ -166,7 +213,7 @@ myApp.controller('containersCtrl', ['$scope', 'containersFactory', '$timeout', '
         };
 
         $scope.openForm = function(){
-            $state.transitionTo('containers.new');
+            $state.transitionTo('lde.new');
             $timeout(function(){
                 $location.hash('newContainer');
             }, 200);
@@ -182,7 +229,6 @@ myApp.filter('containerStatus', ['configService', function(configService){
         } else {
             return 'Sin definir';
         }
-
     }
 }]);
 
@@ -196,5 +242,50 @@ myApp.filter('containerClass', ['configService', function(configService){
         }
 
     }
+
+}]);
+
+//Controlador para modal de actualización, para cuando se requieren datos adicionales antes de actualizar
+myApp.controller('updateLdeCtrl', ['$scope', '$uibModalInstance', 'operation', function($scope, $uibModalInstance, operation){
+
+    //'invoice', 'place', 'forward'
+    $scope.operation = operation;
+
+    //El model incluye todos los posibles datos necesarios para cualquier operacion de update dado que no son muchos
+    //y así puedo usar el mismo controlador para cualquiera de ellas
+    $scope.updateModel = {
+        EMAIL_CLIENTE: '',
+        LUGAR_DEV: '',
+        FECHA_DEV: '',
+        CUIT: '',
+        ID_CLIENTE: ''
+    };
+
+    $scope.disableSave = function(){
+        switch ($scope.operation){
+            case 'invoice':
+                //Se requiere EMAIL_CLIENTE
+                return $scope.updateModel.EMAIL_CLIENTE == '';
+                break;
+            case 'place':
+                //Se requiere LUGAR_DEV
+                return $scope.updateModel.LUGAR_DEV == '';
+                break;
+            case 'forward':
+                //Se requiere CUIT
+                return $scope.updateModel.CUIT == '';
+                break;
+        }
+    };
+
+    $scope.save = function () {
+        //Siempre devuelvo el model completo y luego cada método toma únicamente los datos que necesita
+        $uibModalInstance.close($scope.updateModel);
+    };
+
+    $scope.cancel = function () {
+        $uibModalInstance.dismiss();
+    };
+
 
 }]);

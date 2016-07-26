@@ -1,0 +1,12 @@
+<div class="modal-header bg-info">
+    <h3 class="modal-title">Actualización LDE</h3>
+</div>
+<div class="modal-body">
+    <div ng-if="operation == 'invoice'"></div>
+    <div ng-if="operation == 'place'"></div>
+    <div ng-if="operation == 'forward'"></div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-click="save()">Guardar</button>
+    <button class="btn btn-default" type="button" ng-click="cancel()">Cancelar</button>
+</div>
