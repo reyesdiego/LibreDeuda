@@ -8,6 +8,7 @@ class Account {
     constructor () {
 
     }
+
     getAccount (user, password, callback) {
         var Account = require("../models/account");
 

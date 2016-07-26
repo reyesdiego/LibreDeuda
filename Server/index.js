@@ -50,6 +50,8 @@ var options = {
 };
 server = http.createServer(options, app);
 
+app.disable('x-powered-by');
+
 socket = socket(server, {
     transports: [
         'websocket',
