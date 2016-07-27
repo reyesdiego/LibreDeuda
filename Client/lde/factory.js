@@ -2,14 +2,7 @@
  * Created by kolesnikov-a on 18/04/2016.
  */
 
-myApp.factory('ldeFactory', ['$http', 'configService', 'storageService', function($http, configService, storageService){
-
-    var places = [
-        {id: 0, name: 'Depósito 1'},
-        {id: 1, name: 'Depósito 489'},
-        {id: 2, name: 'Hangar 18'},
-        {id: 3, name: 'Tu casa'}
-    ];
+myApp.factory('ldeFactory', ['$http', 'configService', function($http, configService){
 
     var factory = {
         //Obtener todos los LDE's
@@ -18,7 +11,6 @@ myApp.factory('ldeFactory', ['$http', 'configService', 'storageService', functio
             $http.get(insertUrl).then(function(response){
                 callback(response);
             }, function(response){
-                console.log(response);
                 callback(response);
             })
         },
@@ -33,13 +25,6 @@ myApp.factory('ldeFactory', ['$http', 'configService', 'storageService', functio
         //              'CUIT': '5654984321654',
         //              'ID_CLIENTE': '25' }
         saveLde: function(dataContainer, callback){
-            /*dataContainer.CLIENT[0].AUD_TIME = new Date();
-            dataContainer.CLIENT[0].AUD_USER = storageService.getObject('user').name;
-            dataContainer.RETURN_TO[0].AUD_TIME = new Date();
-            dataContainer.RETURN_TO[0].AUD_USER = storageService.getObject('user').name;
-            dataContainer.STATUS[0].AUD_TIME = new Date();
-            dataContainer.STATUS[0].AUD_USER = storageService.getObject('user').name;
-            console.log(dataContainer);*/
             var insertUrl = configService.serverUrl + '/lde';
             $http.post(insertUrl, dataContainer).then(function(response){
                 callback(response);
@@ -68,7 +53,6 @@ myApp.factory('ldeFactory', ['$http', 'configService', 'storageService', functio
         //Consulta de lugares de devolución - Opcionalmente se puede pasar un ID para obtener un lugar específico
         getReturnPlaces: function(callback){
             var insertUrl = configService.serverUrl + '/lde/lugar';
-            //return places;
             $http.get(insertUrl).then(function(response){
                 callback(response.data)
             }, function(response){
