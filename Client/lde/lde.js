@@ -138,7 +138,7 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService'
 
         //Para facturar, cambiar lugar de devolución o CUIT, se requiere abrir un modal para agregar los demás datos
         //antes de llamar al método de actualización
-        $scope.updateLdeEx = function(event, operation, container){
+        $scope.updateLdeEx = function(event, operation, lde){
             event.stopPropagation();
             var modalInstance = $uibModal.open({
                 templateUrl: 'lde/update.lde.html',
@@ -147,6 +147,12 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService'
                 resolve: {
                     operation: function () {
                         return operation;
+                    },
+                    ldeDate: function(){
+                        return lde.RETURN_TO[0].DATE_TO;
+                    },
+                    places: function(){
+                        return $scope.returnPlaces;
                     }
                 }
             });
@@ -155,20 +161,20 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService'
                 switch (operation){
                     case 'invoice':
                         updateData = {
-                            CONTENEDOR: container,
+                            CONTENEDOR: lde.CONTAINER,
                             EMAIL_CLIENTE: ldeData.EMAIL_CLIENTE
                         };
                         break;
                     case 'place':
                         //TODO averiguar si ID_CLIENTE es obligatorio y de donde se obtiene
                         updateData = {
-                            CONTENEDOR: container,
+                            CONTENEDOR: lde.CONTAINER,
                             LUGAR_DEV: ldeData.LUGAR_DEV
                         };
                         break;
                     case 'forward':
                         updateData = {
-                            CONTENEDOR: container,
+                            CONTENEDOR: lde.CONTAINER,
                             CUIT: ldeData.CUIT,
                             FECHA_DEV: ldeData.FECHA_DEV
                         };
@@ -185,7 +191,7 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService'
         //Para disable y enable, solo se requiere el contenedor
         $scope.updateLde = function(event, operation, container){
             event.stopPropagation();
-            var containerBody = {CONTENEDOR: container };
+            var containerBody = { CONTENEDOR: container };
             ldeFactory.updateLde(containerBody, operation, function(response){
                 if (response.statusText == 'OK'){
                     console.log(response.data);
@@ -246,36 +252,34 @@ myApp.filter('containerClass', ['configService', function(configService){
 }]);
 
 //Controlador para modal de actualización, para cuando se requieren datos adicionales antes de actualizar
-myApp.controller('updateLdeCtrl', ['$scope', '$uibModalInstance', 'operation', function($scope, $uibModalInstance, operation){
+myApp.controller('updateLdeCtrl', ['$scope', '$uibModalInstance', 'operation', 'ldeDate', 'places', function($scope, $uibModalInstance, operation, ldeDate, places){
 
     //'invoice', 'place', 'forward'
     $scope.operation = operation;
+
+    $scope.returnPlaces = places;
 
     //El model incluye todos los posibles datos necesarios para cualquier operacion de update dado que no son muchos
     //y así puedo usar el mismo controlador para cualquiera de ellas
     $scope.updateModel = {
         EMAIL_CLIENTE: '',
         LUGAR_DEV: '',
-        FECHA_DEV: '',
+        FECHA_DEV: ldeDate,
         CUIT: '',
         ID_CLIENTE: ''
     };
 
-    $scope.disableSave = function(){
-        switch ($scope.operation){
-            case 'invoice':
-                //Se requiere EMAIL_CLIENTE
-                return $scope.updateModel.EMAIL_CLIENTE == '';
-                break;
-            case 'place':
-                //Se requiere LUGAR_DEV
-                return $scope.updateModel.LUGAR_DEV == '';
-                break;
-            case 'forward':
-                //Se requiere CUIT
-                return $scope.updateModel.CUIT == '';
-                break;
+    $scope.datePopUp = {
+        opened: false,
+        format: 'dd/MM/yyyy',
+        options: {
+            formatYear: 'yyyy',
+            startingDay: 1
         }
+    };
+
+    $scope.openDate = function(){
+        $scope.datePopUp.opened = true;
     };
 
     $scope.save = function () {
