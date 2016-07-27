@@ -61,7 +61,7 @@ myApp.config(['$provide', '$httpProvider', function($provide, $httpProvider){
                     // do something on success
                     config.headers['Token'] = $rootScope.session.getToken();
                     //TODO verificar tiempos de respuestas para diferentes llamadas...
-                    config.timeout = 2000;
+                    //config.timeout = 2000;
 
                     return config;
                 },
@@ -83,7 +83,14 @@ myApp.config(['$provide', '$httpProvider', function($provide, $httpProvider){
                 'responseError': function(rejection) {
                     //TODO config custom messages for http Error status
                     console.log(rejection);
-                    if (rejection.status == 401){
+                    if (rejection.status == 404){ //Not found
+                        rejection.data = {
+                            status: 'ERROR',
+                            message: 'No se ha encontrado la ruta en el servidor.'
+                        }
+                    }
+
+                    if (rejection.status == 401){ //Forbidden
                         if (rejection.config.url != configService.serverUrl + '/login'){
                             $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
                             var deferred = $q.defer();

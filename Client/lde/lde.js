@@ -35,8 +35,12 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService'
             itemsPerPage: 10
         };
 
+        $scope.returnPlaces = [];
+
         $scope.statesContainers = configService.statusContainersAsArray();
-        $scope.returnPlaces = ldeFactory.getReturnPlaces();
+        ldeFactory.getReturnPlaces(function(data){
+            $scope.returnPlaces = data.data
+        });
 
         $scope.terminals = configService.terminalsArray;
 

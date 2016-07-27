@@ -39,7 +39,7 @@ myApp.service('Session', ['storageService', function(storageService){
             }
         },
         setData: function(user){
-            this.user = user.user;
+            this.user = user.USUARIO;
             this.role = user.role;
             this.keep = user.session;
             if (this.keep){

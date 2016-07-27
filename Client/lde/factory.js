@@ -70,9 +70,9 @@ myApp.factory('ldeFactory', ['$http', 'configService', 'storageService', functio
             var insertUrl = configService.serverUrl + '/lde/lugar';
             //return places;
             $http.get(insertUrl).then(function(response){
-                callback(response)
+                callback(response.data)
             }, function(response){
-                callback(response)
+                callback(response.data)
             })
         }
     };
