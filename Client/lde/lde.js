@@ -169,7 +169,7 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService'
                             EMAIL_CLIENTE: ldeData.EMAIL_CLIENTE
                         };
                         break;
-                    case 'place':
+                    case 'lugar':
                         //TODO averiguar si ID_CLIENTE es obligatorio y de donde se obtiene
                         updateData = {
                             CONTENEDOR: lde.CONTAINER,

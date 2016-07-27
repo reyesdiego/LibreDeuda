@@ -5,7 +5,7 @@
 myApp.factory('ldeFactory', ['$http', 'configService', function($http, configService){
 
     var factory = {
-        //Obtener todos los LDE's
+        //Obtener todos los LDE's - Deprecado
         getLde: function(callback){
             var insertUrl = configService.serverUrl + '/lde';
             $http.get(insertUrl).then(function(response){
@@ -38,7 +38,7 @@ myApp.factory('ldeFactory', ['$http', 'configService', function($http, configSer
         //---------------------------------------- Parámetros: { 'CONTENEDOR': 'SARASA', 'EMAIL_CLIENTE': 'MAIL' }
         //Operación 'disable' (solo agente marítimo) - Anular un LDE
         //-------------------------------------------- Parámetros: { 'CONTENEDOR': 'SARASA' }
-        //Operación 'place' (solo agente marítimo) - Cambiar lugar de devolución
+        //Operación 'lugar' (solo agente marítimo) - Cambiar lugar de devolución
         //------------------------------------------ Parámetros: { 'ID_CLIENTE': '25', 'CONTENEDOR': 'SARASA', 'LUGAR_DEV': 'LUGAR1' }
         //Operación 'forward' (solo Forwardings) - Habilitar LDE a un CUIT específico, puede especificar una fecha de devolución menor a la original
         //---------------------------------------- Parámetros: { 'CONTENEDOR': 'SARASA', 'CUIT': '6546865621654', 'FECHA_DEV': 'YYYY-MM-DD' }
