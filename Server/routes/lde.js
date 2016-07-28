@@ -144,8 +144,13 @@ module.exports = (socket) => {
                 let checkContainer = container(lde.CONTENEDOR);
                 let checkCuit = cuit(lde.CUIT);
 
+                let toDay = moment(moment().format("YYYY-MM-DD")).toDate();
+                let dateReturn = moment(lde.FECHA_DEV, "YYYY-MM-DD").toDate();
+
                 if (checkCuit === false) {
                     res.status(400).send({status: "ERROR", message: "El CUIT es inválido", data: {CUIT: lde.CUIT}});
+                } else if (dateReturn < toDay) {
+                    res.status(400).send({status: "ERROR", message: "La Fecha de Devolución no puede ser menor a la Fecha de Hoy", data: {FECHA_DEV: lde.FECHA_DEV}});
                 } else {
                     lde2insert = {
                         TERMINAL: (lde.TERMINAL !== undefined) ? lde.TERMINAL.trim() : '',
@@ -163,9 +168,11 @@ module.exports = (socket) => {
                             }
                         ],
                         STATUS: [
-                            {STATUS: 0,
+                            {
+                                STATUS: 0,
                                 AUD_USER: req.user.USUARIO,
-                                AUD_TIME: timestamp}
+                                AUD_TIME: timestamp
+                            }
                         ],
                         CLIENT: [
                             {
