@@ -148,14 +148,15 @@ module.exports = (socket) => {
                     res.status(400).send({status: "ERROR", message: "El CUIT es inválido", data: {CUIT: lde.CUIT}});
                 } else {
                     lde2insert = {
-                        TERMINAL: lde.TERMINAL,
-                        SHIP: lde.BUQUE,
-                        TRIP: lde.VIAJE,
-                        CONTAINER: lde.CONTENEDOR,
-                        BL: lde.BL,
-                        ID_CLIENT: lde.ID_CLIENTE,
+                        TERMINAL: (lde.TERMINAL !== undefined) ? lde.TERMINAL.trim() : '',
+                        SHIP: (lde.BUQUE !== undefined) ? lde.BUQUE.trim() : '',
+                        TRIP: (lde.VIAJE !== undefined) ? lde.VIAJE.trim() : '',
+                        CONTAINER: (lde.CONTENEDOR !== undefined) ? lde.CONTENEDOR.trim() : '',
+                        BL: (lde.BL !== undefined) ? lde.BL.trim() : '',
+                        ID_CLIENT: (lde.ID_CLIENTE !== undefined) ? lde.ID_CLIENTE.trim() : '',
                         RETURN_TO: [
-                            {PLACE: lde.LUGAR_DEV,
+                            {
+                                PLACE: (lde.LUGAR_DEV !== undefined) ? lde.LUGAR_DEV.trim() : '',
                                 DATE_TO: moment(lde.FECHA_DEV, "YYYY-MM-DD").format("YYYY-MM-DD"),
                                 AUD_USER: req.user.USUARIO,
                                 AUD_TIME: timestamp
@@ -167,12 +168,13 @@ module.exports = (socket) => {
                                 AUD_TIME: timestamp}
                         ],
                         CLIENT: [
-                            {CUIT: lde.CUIT,
-                                EMAIL_CLIENT: lde.EMAIL_CLIENTE,
+                            {
+                                CUIT: lde.CUIT,
+                                EMAIL_CLIENT: (lde.EMAIL_CLIENTE !== undefined) ? lde.EMAIL_CLIENTE.trim() : '',
                                 AUD_USER: req.user.USUARIO,
                                 AUD_TIME: timestamp}
                         ],
-                        EXPIRATION: (lde.VENCE === undefined) ? 0 : lde.VENCE
+                        EXPIRATION: (lde.VENCE.toString() === undefined) ? '0' : lde.VENCE.toString()
                     };
                     FreeDebt.create(lde2insert, function (err, data) {
                         if (err) {

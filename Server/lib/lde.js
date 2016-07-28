@@ -39,7 +39,7 @@ class ldeMongoDb {
                 CLIENT: {'$last': '$CLIENT'},
                 EXPIRATION: {'$first': '$EXPIRATION'}
             }},
-            {$match: {'STATUS.STATUS': 0, $or: [{EXPIRATION: 0}, {EXPIRATION: 1, 'RETURN_TO.DATE_TO': {$gte: toDay}}] }},
+            {$match: {'STATUS.STATUS': 0, $or: [{EXPIRATION: '0'}, {EXPIRATION: '1', 'RETURN_TO.DATE_TO': {$gte: toDay}}] }},
             {$project: {
                 '_id': false,
                 ID: '$_id._id',
