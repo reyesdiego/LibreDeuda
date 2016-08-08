@@ -235,7 +235,7 @@ myApp.filter('containerStatus', ['configService', function(configService){
 
     return function(status){
         if (angular.isDefined(status)){
-            return configService.statusContainers[status].name;
+            return configService.statusContainers[status] ? configService.statusContainers[status].name : 'Sin definir';
         } else {
             return 'Sin definir';
         }
@@ -246,7 +246,7 @@ myApp.filter('containerClass', ['configService', function(configService){
 
     return function (status){
         if (angular.isDefined(status)){
-            return configService.statusContainers[status].className;
+            return configService.statusContainers[status] ? configService.statusContainers[status].className : 'status-canceled';
         } else {
             return 'status-canceled'
         }
