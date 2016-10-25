@@ -123,7 +123,7 @@ module.exports = (socket) => {
     };
 
     let addFreeDebt = (req, res) => {
-        //TODO controlar que el LDE no exista previamente
+
         var lde = req.body;
         var container = require("../include/container.js");
         var cuit = require("../include/cuit.js");
@@ -137,7 +137,7 @@ module.exports = (socket) => {
                     message: `Yá existe un LDE para el contenedor ${lde.CONTENEDOR}`,
                     data: data.data
                 };
-                res.status(200).send(result);
+                res.status(400).send(result);
             })
             .catch(err => {
 

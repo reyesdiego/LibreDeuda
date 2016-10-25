@@ -57,44 +57,44 @@ class ldeMongoDb {
         ];
 
         this.model.aggregate(param)
-        .exec((err, data) => {
-            if (err) {
-                result = {
-                    status: "ERROR",
-                    message: err.message,
-                    data: err};
-                callback(result);
-            } else {
-                if (data.length === 0) {
+            .exec((err, data) => {
+                if (err) {
                     result = {
                         status: "ERROR",
-                        message: "No existe Libre Deuda para este Contenedor."};
+                        message: err.message,
+                        data: err};
                     callback(result);
                 } else {
-                    let lde = data[0];
-                    result = {
-                        status: "OK",
-                        message: "El Libre Deuda es Válido",
-                        data: {
-                            ID: lde.ID,
-                            BUQUE: lde.SHIP,
-                            VIAJE: lde.TRIP,
-                            CONTENEDOR: lde.CONTAINER,
-                            BL: lde.BL,
-                            ID_CLIENTE: lde.ID_CLIENT,
-                            CUIT: lde.CLIENT.CUIT,
-                            EMAIL_CLIENT: lde.CLIENT.EMAIL_CLIENT,
-                            LUGAR_DEV: lde.RETURN_TO.PLACE,
-                            FECHA_DEV: lde.RETURN_TO.DATE_TO,
-                            STATUS: lde.STATUS.STATUS,
-                            TERMINAL: lde.TERMINAL,
-                            VENCE: lde.EXPIRATION
-                        }
-                    };
-                    callback(undefined, result);
+                    if (data.length === 0) {
+                        result = {
+                            status: "ERROR",
+                            message: "No existe Libre Deuda para este Contenedor."};
+                        callback(result);
+                    } else {
+                        let lde = data[0];
+                        result = {
+                            status: "OK",
+                            message: "El Libre Deuda es Válido",
+                            data: {
+                                ID: lde.ID,
+                                BUQUE: lde.SHIP,
+                                VIAJE: lde.TRIP,
+                                CONTENEDOR: lde.CONTAINER,
+                                BL: lde.BL,
+                                ID_CLIENTE: lde.ID_CLIENT,
+                                CUIT: lde.CLIENT.CUIT,
+                                EMAIL_CLIENT: lde.CLIENT.EMAIL_CLIENT,
+                                LUGAR_DEV: lde.RETURN_TO.PLACE,
+                                FECHA_DEV: lde.RETURN_TO.DATE_TO,
+                                STATUS: lde.STATUS.STATUS,
+                                TERMINAL: lde.TERMINAL,
+                                VENCE: lde.EXPIRATION
+                            }
+                        };
+                        callback(undefined, result);
+                    }
                 }
-            }
-        });
+            });
     }
 
     disableLde (params, callback) {
@@ -222,76 +222,83 @@ class ldeMongoDb {
                 return callback(result);
             } else {
                 if (lde.status === 'OK') {
-                    lde = lde.data[0];
-                    var lastStatus = lde.STATUS[lde.STATUS.length - 1];
-                    if (lastStatus.STATUS !== 0 && lastStatus.STATUS !== 3) {
+                    if (lde.data.length>0) {
+                        lde = lde.data[0];
+                        var lastStatus = lde.STATUS[lde.STATUS.length - 1];
+                        if (lastStatus.STATUS !== 0 && lastStatus.STATUS !== 3) {
+                            callback({
+                                status: "ERROR",
+                                message: `No se encuentra Libre Deuda del Contenedor ${lde.CONTENEDOR}`
+                            });
+                        } else {
+                            this.model.findOne({_id: lde._id})
+                                .exec((err, lde) => {
+                                    if (err) {
+                                        result = {
+                                            status: "ERROR",
+                                            message: err.message,
+                                            data: err
+                                        };
+                                        return callback(result);
+                                    } else {
+                                        var aud_date = new Date();
+                                        let client = {
+                                            CUIT: params.cuit,
+                                            AUD_TIME: aud_date,
+                                            AUD_USER: params.user.USUARIO
+                                        };
+                                        lde.CLIENT.push(client);
+
+                                        let return_to = {};
+
+                                        if (params.fecha_dev) {
+                                            var placeFirst = lde.RETURN_TO[0];
+                                            var placeLast = lde.RETURN_TO[lde.RETURN_TO.length - 1];
+                                            if (placeFirst.DATE_TO > params.fecha_dev) {
+                                                return_to.DATE_TO = params.fecha_dev;
+                                                return_to.PLACE = placeLast.PLACE;
+                                                return_to.AUD_USER = params.user.USUARIO;
+                                                return_to.AUD_TIME = aud_date;
+                                                lde.RETURN_TO.push(return_to);
+                                            } else {
+                                                return callback({
+                                                    status: "ERROR",
+                                                    message: `La nueva fecha de devolución no puede superar a la vigente ${place.DATE_TO}`
+                                                });
+                                            }
+                                        }
+
+                                        lde.save((err, dataSaved, rowsAffected) => {
+                                            if (err) {
+                                                result = {
+                                                    status: "ERROR",
+                                                    message: err.message,
+                                                    data: err
+                                                };
+                                                callback(result);
+                                            } else {
+                                                let cuit = dataSaved.CLIENT[dataSaved.CLIENT.length - 1].CUIT;
+                                                let fecha_dev = dataSaved.RETURN_TO[dataSaved.RETURN_TO.length - 1].DATE_TO;
+                                                result = {
+                                                    status: "OK",
+                                                    message: `El Libre Deuda ha sido Habilitado para el CUIT ${cuit}`,
+                                                    data: {
+                                                        ID: dataSaved._id,
+                                                        CUIT: cuit,
+                                                        FECHA_DEV: fecha_dev
+                                                    }
+                                                };
+                                                callback(undefined, result);
+                                            }
+                                        });
+                                    }
+                                });
+                        }
+                    } else {
                         callback({
                             status: "ERROR",
-                            message: `No se encuentra Libre Deuda del Contenedor ${lde.CONTENEDOR}`
+                            message: `No se encuentra Libre Deuda del Contenedor`
                         });
-                    } else {
-                        this.model.findOne({_id: lde._id})
-                            .exec((err, lde) => {
-                                if (err) {
-                                    result = {
-                                        status: "ERROR",
-                                        message: err.message,
-                                        data: err
-                                    };
-                                    return callback(result);
-                                } else {
-                                    var aud_date = new Date();
-                                    let client = {
-                                        CUIT: params.cuit,
-                                        AUD_TIME: aud_date,
-                                        AUD_USER: params.user.USUARIO
-                                    };
-                                    lde.CLIENT.push(client);
-
-                                    let return_to = {};
-
-                                    if (params.fecha_dev) {
-                                        var placeFirst = lde.RETURN_TO[0];
-                                        var placeLast = lde.RETURN_TO[lde.RETURN_TO.length - 1];
-                                        if (placeFirst.DATE_TO > params.fecha_dev) {
-                                            return_to.DATE_TO = params.fecha_dev;
-                                            return_to.PLACE = placeLast.PLACE;
-                                            return_to.AUD_USER = params.user.USUARIO;
-                                            return_to.AUD_TIME = aud_date;
-                                            lde.RETURN_TO.push(return_to);
-                                        } else {
-                                            return callback({
-                                                status: "ERROR",
-                                                message: `La nueva fecha de devolución no puede superar a la vigente ${place.DATE_TO}`
-                                            });
-                                        }
-                                    }
-
-                                    lde.save((err, dataSaved, rowsAffected) => {
-                                        if (err) {
-                                            result = {
-                                                status: "ERROR",
-                                                message: err.message,
-                                                data: err
-                                            };
-                                            callback(result);
-                                        } else {
-                                            let cuit = dataSaved.CLIENT[dataSaved.CLIENT.length - 1].CUIT;
-                                            let fecha_dev = dataSaved.RETURN_TO[dataSaved.RETURN_TO.length - 1].DATE_TO;
-                                            result = {
-                                                status: "OK",
-                                                message: `El Libre Deuda ha sido Habilitado para el CUIT ${cuit}`,
-                                                data: {
-                                                    ID: dataSaved._id,
-                                                    CUIT: cuit,
-                                                    FECHA_DEV: fecha_dev
-                                                }
-                                            };
-                                            callback(undefined, result);
-                                        }
-                                    });
-                                }
-                            });
                     }
                 }
             }
