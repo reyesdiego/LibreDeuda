@@ -122,16 +122,16 @@ myApp.config(['$provide', '$httpProvider', function($provide, $httpProvider){
 myApp.config(['IdleProvider', 'KeepaliveProvider', function(IdleProvider, KeepaliveProvider) {
     IdleProvider.idle(900); // 15 min
     IdleProvider.timeout(60);
-    KeepaliveProvider.interval(600); // heartbeat every 10 min
+    KeepaliveProvider.interval(45); // heartbeat every 45 seconds
 }]);
 
-myApp.run(['$rootScope', 'appSocket', 'loginFactory', 'storageService', '$state', '$http', 'dialogsService', 'Idle', 'AUTH_EVENTS', 'Session', '$timeout', 'Title',
-    function($rootScope, appSocket, loginFactory, storageService, $state, $http, dialogsService, Idle, AUTH_EVENTS, Session, $timeout, Title){
+myApp.run(['$rootScope', 'appSocket', 'storageService', '$state', '$http', 'dialogsService', 'Idle', 'AUTH_EVENTS', 'Session', '$timeout', 'Title',
+    function($rootScope, appSocket, storageService, $state, $http, dialogsService, Idle, AUTH_EVENTS, Session, $timeout, Title){
 
         Title.timedOutMessage('Su sesión ha expirado.');
         Title.idleMessage('Tiene {{ seconds }} hasta que su sesión expire.');
 
-        $rootScope.session = new Session();
+        $rootScope.session = Session;
 
         if ($rootScope.session.isAuthenticated()){
             Idle.watch();
@@ -167,11 +167,10 @@ myApp.run(['$rootScope', 'appSocket', 'loginFactory', 'storageService', '$state'
         });
 
         $rootScope.$on('Keepalive', function(){
-            /*loginFactory.keepAlive(function(response){
-                if (response.statusText == 'OK'){
-                    $rootScope.session.setToken(response.data);
-                }
-            });*/
+            console.log('hago keep alive');
+            $rootScope.session.keepAlive(() => {}, (error) => {
+                console.log(error);
+            })
         });
 
         $rootScope.$on(AUTH_EVENTS.notAuthorized, function(){
@@ -182,10 +181,10 @@ myApp.run(['$rootScope', 'appSocket', 'loginFactory', 'storageService', '$state'
             if ($rootScope.routeChange.from != 'login'){
                 var loginDialog = dialogsService.login();
                 loginDialog.result.then(function(result){
-                    if (result.statusText != 'OK'){
+                    /*if (result.statusText != 'OK'){
                         dialogsService.error('Error', result.data);
                         $state.transitionTo('login');
-                    }
+                    }*/
                 }, function(){
                     $state.transitionTo('login');
                 });
@@ -194,12 +193,12 @@ myApp.run(['$rootScope', 'appSocket', 'loginFactory', 'storageService', '$state'
             }
         });
 
-        $rootScope.$on(AUTH_EVENTS.loginSucces, function(ev, token, user) {
+        $rootScope.$on(AUTH_EVENTS.loginSucces, function() {
             Title.restore();
             Idle.watch();
 
-            $rootScope.session.setData(user);
-            $rootScope.session.setToken(token);
+            //$rootScope.session.setData(user);
+            //$rootScope.session.setToken(token);
 
             if ($rootScope.requests401.length > 0){
                 var i, requests = $rootScope.requests401;

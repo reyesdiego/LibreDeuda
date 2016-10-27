@@ -61,7 +61,7 @@
                     <div class="form-group">
                         <label for="return" class="col-lg-2 control-label"><span class="glyphicon"></span> Lugar devolución</label>
                         <div class="input-group col-lg-9">
-                            <input type="text" class="form-control" ng-model="newContainer.RETURN_TO[0].RETURN_PLACE" id="return" placeholder="" ng-required="true" uib-typeahead="place.id as place.name for place in returnPlaces | filter:$viewValue | limitTo:8" typeahead-editable="false" typeahead-input-formatter="formatPlace($model)">
+                            <input type="text" class="form-control" ng-model="newContainer.RETURN_TO[0].RETURN_PLACE" id="return" placeholder="" ng-required="true" uib-typeahead="place._id as place.NOMBRE for place in returnPlaces | filter:$viewValue | limitTo:8" typeahead-editable="false" typeahead-input-formatter="formatPlace($model)">
                         <span class="input-group-btn">
                             <button type="button" class="btn btn-default" ng-click="eraseField('RETURN_PLACE', 'RETURN_TO')"><i class="glyphicon glyphicon-remove"></i></button>
                         </span>

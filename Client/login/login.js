@@ -2,18 +2,13 @@
  * Created by kolesnikov-a on 15/04/2016.
  */
 
-myApp.controller('loginCtrl', ['$rootScope', '$scope', '$state', 'loginFactory', 'storageService', 'dialogsService',
-    function($rootScope, $scope, $state, loginFactory, storageService, dialogsService){
+myApp.controller('loginCtrl', ['$rootScope', '$scope', '$state', 'storageService', 'dialogsService', 'Session',
+    function($rootScope, $scope, $state, storageService, dialogsService, Session){
 
-        $scope.user = {
-            USUARIO: '',
-            CLAVE: '',
-            session: false,
-            role: 'admin'
-        };
+        $scope.user = Session;
 
         $scope.login = function(){
-            loginFactory.login($scope.user, function(result){
+            $scope.user.login().then((result) => {
                 if (result.statusText == 'OK'){
                     //$rootScope.loggedUser = $scope.user.user;
                     //storageService.setObject('user', $scope.user);
@@ -21,7 +16,7 @@ myApp.controller('loginCtrl', ['$rootScope', '$scope', '$state', 'loginFactory',
                 } else {
                     dialogsService.error('Error', result.data.message);
                 }
-            })
+            });
         }
 
     }]);

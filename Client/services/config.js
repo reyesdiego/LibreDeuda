@@ -5,6 +5,7 @@
 myApp.service('configService', [function(){
 
     return {
+        //serverUrl: 'https://terminales.puertobuenosaires.gob.ar:8086', //Servidor produccion
         serverUrl: 'https://10.10.0.223:8086', //Servidor Diego
         //serverUrl: 'https://localhost:8086', //Local contra base en pc de diego
         statusContainers: {'0': {

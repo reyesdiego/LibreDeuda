@@ -39,6 +39,7 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService'
 
         $scope.statesContainers = configService.statusContainersAsArray();
         ldeFactory.getReturnPlaces(function(data){
+            console.log(data);
             $scope.returnPlaces = data.data
         });
 
@@ -216,8 +217,8 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService'
 
         $scope.formatPlace = function(model){
             for (var i=0; i< $scope.returnPlaces.length; i++) {
-                if (model === $scope.returnPlaces[i].id) {
-                    return $scope.returnPlaces[i].name;
+                if (model === $scope.returnPlaces[i]._id) {
+                    return $scope.returnPlaces[i].NOMBRE;
                 }
             }
         };

@@ -8,13 +8,13 @@
                 <div class="form-group">
                     <div class="input-group col-lg-12">
                         <span class="input-group-addon glyphicon glyphicon-user"></span>
-                        <input type="text" class="form-control" ng-model="user.USUARIO" placeholder="Ingresar usuario" ng-required="true" autocomplete="off">
+                        <input type="text" class="form-control" ng-model="user.data.USUARIO" placeholder="Ingresar usuario" ng-required="true" autocomplete="off">
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="input-group col-lg-12">
                         <span class="input-group-addon glyphicon glyphicon-lock"></span>
-                        <input type="password" class="form-control" ng-model="user.CLAVE" id="inputPassword" placeholder="Ingresar contraseña" ng-required="true" autocomplete="off">
+                        <input type="password" class="form-control" ng-model="user.data.CLAVE" id="inputPassword" placeholder="Ingresar contraseña" ng-required="true" autocomplete="off">
                     </div>
                 </div>
                 <div class="form-group text-right col-lg-12">
@@ -23,7 +23,7 @@
                 <div class="form-group hidden-xs">
                     <br>
                     <div class="col-sm-4 text-center text-white">
-                        <input type="checkbox" ng-model="user.session">No cerrar sesión
+                        <input type="checkbox" ng-model="user.data.keep">No cerrar sesión
                     </div>
                     <div class="col-sm-8 text-right">
                         <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-log-in"></span> Ingresar</button>

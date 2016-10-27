@@ -62,19 +62,16 @@ myApp.controller('dialogsCtrl', ['$scope', '$uibModalInstance', 'title', 'messag
 
 }]);
 
-myApp.controller('loginDialogCtrl', ['$scope', '$uibModalInstance', 'loginFactory',  function($scope, $uibModalInstance, loginFactory){
+myApp.controller('loginDialogCtrl', ['$scope', '$uibModalInstance',  'Session', function($scope, $uibModalInstance, Session){
 
-    $scope.user = {
-        name: '',
-        password: '',
-        session: false,
-        role: 'admin'
-    };
+    $scope.user = Session;
 
     $scope.login = function(){
-        loginFactory.login($scope.user, function(result){
-            $uibModalInstance.close(result);
-        })
+        $scope.user.login().then(() => {
+            $uibModalInstance.close();
+        }, (error) => {
+
+        });
     };
 
     $scope.cancel = function(){
