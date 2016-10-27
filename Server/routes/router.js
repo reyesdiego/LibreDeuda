@@ -22,6 +22,9 @@ module.exports = function (app, socket) {
     var account = require("./account.js")();
     app.use(account);
 
+    var ctvp = require("./ctvp.js")(socket);
+    app.use('/ctvp', verifyToken, ctvp);
+
     var lde = require("./lde.js")(socket);
     app.use('/lde', verifyToken, lde);
 

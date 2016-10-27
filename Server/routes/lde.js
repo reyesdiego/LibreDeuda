@@ -123,7 +123,7 @@ module.exports = (socket) => {
     };
 
     let addFreeDebt = (req, res) => {
-        //TODO controlar que el LDE no exista previamente
+
         var lde = req.body;
         var container = require("../include/container.js");
         var cuit = require("../include/cuit.js");
@@ -137,7 +137,7 @@ module.exports = (socket) => {
                     message: `Yá existe un LDE para el contenedor ${lde.CONTENEDOR}`,
                     data: data.data
                 };
-                res.status(200).send(result);
+                res.status(400).send(result);
             })
             .catch(err => {
 
@@ -181,7 +181,7 @@ module.exports = (socket) => {
                                 AUD_USER: req.user.USUARIO,
                                 AUD_TIME: timestamp}
                         ],
-                        EXPIRATION: (lde.VENCE.toString() === undefined) ? '0' : lde.VENCE.toString()
+                        EXPIRATION: (lde.VENCE === undefined) ? '0' : lde.VENCE.toString()
                     };
                     FreeDebt.create(lde2insert, function (err, data) {
                         if (err) {
