@@ -23,11 +23,14 @@
     <!-- build:app -->
     <!-- APP SCRIPT -->
     <script src="app.js"></script>
+    <!-- CLASSES -->
+    <script src="class/lde.class.js"></script>
     <!-- CONTROLLERS -->
     <script src="login/login.js"></script>
-    <script src="lde/lde.js"></script>
+    <script src="lde/new/lde.new.controller.js"></script>
+    <script src="lde/search/lde.search.controller.js"></script>
     <!-- FACTORIES -->
-    <script src="lde/factory.js"></script>
+    <script src="lde/lde.factory.js"></script>
     <!-- DIRECTIVES -->
     <script src="directives/toUpper.js"></script>
     <!-- SERVICES -->
@@ -46,10 +49,10 @@
 </head>
 <body class="container-fluid" ng-class="loginScreen ? 'image-background' : ''">
 
-<nav class="navbar navbar-default navbar-fixed-top" ng-hide="loginScreen">
+<nav class="navbar navbar-default navbar-fixed-top">
     <div class="container-fluid">
         <div class="navbar-header" uib-dropdown>
-            <button type="button" class="navbar-toggle collapsed" data-target="#main-navigation" aria-expanded="false" ng-click="isCollapsed = !isCollapsed">
+            <button type="button" class="navbar-toggle collapsed" data-target="#user" aria-expanded="false" ng-click="isCollapsed = !isCollapsed">
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
@@ -58,7 +61,15 @@
             <a href class="navbar-brand"><img src="images/logo-libredeuda-chico.PNG" height="30"></a>
         </div>
 
-        <div class="collapse navbar-collapse" id="main-navigation" aria-expanded="false" uib-collapse="isCollapsed">
+        <div class="collapse navbar-collapse" id="register" aria-expanded="false" uib-collapse="isCollapsed" ng-if="!session.isAuthenticated()">
+            <ul class="nav navbar-nav navbar-right">
+                <li class="navbar-btn"  ui-sref="register">
+                    <a href><span class="glyphicon glyphicon-user"></span> Solicitar usuario</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="collapse navbar-collapse" id="user" aria-expanded="false" uib-collapse="isCollapsed" ng-if="session.isAuthenticated()">
             <ul class="nav navbar-nav navbar-right">
                 <li class="dropdown open" uib-dropdown>
                     <a href="#" class="dropdown-toggle"  uib-dropdown-toggle data-toggle="dropdown" role="button" aria-expanded="true"><span uib-dropdown-toggle class="glyphicon glyphicon-user"></span> {{ session.getName() }} <span class="caret"></span></a>

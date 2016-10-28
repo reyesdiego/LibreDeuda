@@ -1,8 +1,8 @@
 /**
  * Created by kolesnikov-a on 18/04/2016.
  */
-myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService', 'dialogsService', '$q', '$location', '$state', '$uibModal',
-    function($scope, ldeFactory, $timeout, configService, dialogsService, $q, $location, $state, $uibModal){
+myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService', 'dialogsService', '$q', '$location', '$state', '$uibModal', 'Lde',
+    function($scope, ldeFactory, $timeout, configService, dialogsService, $q, $location, $state, $uibModal, Lde){
 
         $scope.search = '';
         $scope.dataContainers = [];
@@ -12,36 +12,13 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService'
             message: '',
             title: 'Error'
         };
-        $scope.newContainer = {
-            TERMINAL: '',
-            SHIP: '',
-            TRIP: '',
-            CONTAINER: '',
-            BL: '',
-            CLIENT: [{
-                COMPANY: 'RAZONSOCIALPRUEBA',
-                CUIT: ''
-            }],
-            RETURN_TO: [{
-                DATE_TO: new Date(),
-                RETURN_PLACE: 0
-            }],
-            STATUS: [{
-                STATUS: 0
-            }]
-        };
+
         $scope.pagination = {
             currentPage: 1,
             itemsPerPage: 10
         };
 
-        $scope.returnPlaces = [];
-
         $scope.statesContainers = configService.statusContainersAsArray();
-        ldeFactory.getReturnPlaces(function(data){
-            console.log(data);
-            $scope.returnPlaces = data.data
-        });
 
         $scope.terminals = configService.terminalsArray;
 
@@ -61,7 +38,7 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService'
             });
         });
 
-        $scope.getLdeData = function (){
+        /*$scope.getLdeData = function (){
             ldeFactory.getLde(function(result){
                 if (result.statusText == 'OK'){
                     $scope.dataContainers = result.data.data;
@@ -70,7 +47,7 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService'
                     $scope.errorResponse.message = result.data.message;
                 }
             })
-        };
+        };*/
 
         $scope.pageChanged = function(){
             $scope.animate = false;
@@ -86,59 +63,6 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService'
         $scope.showDetail = function(index){
             var realIndex = ($scope.pagination.currentPage - 1) * $scope.pagination.itemsPerPage + index;
             $scope.filteredData[realIndex].SHOW = !$scope.filteredData[realIndex].SHOW;
-        };
-
-        $scope.saveLde = function(){
-            ldeFactory.saveLde($scope.newContainer, function(response){
-                if (response.statusText == 'OK'){
-                    dialogsService.notify('Nuevo contenedor', 'Los datos se han guardado correctamente.');
-                    $scope.newContainer = {
-                        TERMINAL: '',
-                        SHIP: '',
-                        TRIP: '',
-                        CONTAINER: '',
-                        BL: '',
-                        CLIENT: [{
-                            COMPANY: 'RAZONSOCIALPRUEBA',
-                            CUIT: ''
-                        }],
-                        RETURN_TO: [{
-                            DATE_TO: new Date(),
-                            RETURN_PLACE: 0
-                        }],
-                        STATUS: [{
-                            STATUS: 0
-                        }]
-                    };
-                } else {
-                    console.log(response);
-                    dialogsService.error('Contenedor', response.data.message);
-                }
-            })
-
-        };
-
-        $scope.getLdeData();
-
-        $scope.datePopUp = {
-            opened: false,
-            format: 'dd/MM/yyyy',
-            options: {
-                formatYear: 'yyyy',
-                startingDay: 1
-            }
-        };
-
-        $scope.openDate = function(){
-            $scope.datePopUp.opened = true;
-        };
-
-        $scope.eraseField = function(field, detail){
-            if (!detail){
-                $scope.newContainer[field] = '';
-            } else {
-                $scope.newContainer[detail][0][field] = '';
-            }
         };
 
         //Para facturar, cambiar lugar de devolución o CUIT, se requiere abrir un modal para agregar los demás datos
@@ -205,22 +129,6 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService'
                     dialogsService.error('Error', response.data.message);
                 }
             })
-        };
-
-        $scope.formatStatus = function(model){
-            for (var i=0; i< $scope.statesContainers.length; i++) {
-                if (model === $scope.statesContainers[i].id) {
-                    return $scope.statesContainers[i].formatted;
-                }
-            }
-        };
-
-        $scope.formatPlace = function(model){
-            for (var i=0; i< $scope.returnPlaces.length; i++) {
-                if (model === $scope.returnPlaces[i]._id) {
-                    return $scope.returnPlaces[i].NOMBRE;
-                }
-            }
         };
 
         $scope.openForm = function(){

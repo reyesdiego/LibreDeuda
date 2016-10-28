@@ -45,6 +45,7 @@ html, body {
 }
 
 .logo-image {
+    margin-top: 50px;
     width:540px; /* you can use % */
     height: auto;
 
