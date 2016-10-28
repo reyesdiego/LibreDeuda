@@ -2,7 +2,7 @@
  * Created by diego on 4/18/16.
  */
 
-module.exports = (socket) => {
+module.exports = (socket, log) => {
     "use strict";
     var express = require("express");
     var router = express.Router();
@@ -132,10 +132,17 @@ module.exports = (socket) => {
 
         Lde.checkLde({contenedor: lde.CONTENEDOR})
             .then(data => {
+                data = data.data;
                 let result = {
                     status: "ERROR",
                     message: `Yá existe un LDE para el contenedor ${lde.CONTENEDOR}`,
-                    data: data.data
+                    data: {
+                        ID: data.ID,
+                        CONTENEDOR: data.CONTAINER,
+                        ID_CLIENT: data.ID_CLIENT,
+                        STATUS: data.STATUS,
+                        FECHA_DEV: data.FECHA_DEV
+                    }
                 };
                 res.status(400).send(result);
             })
@@ -146,11 +153,24 @@ module.exports = (socket) => {
 
                 let toDay = moment(moment().format("YYYY-MM-DD")).toDate();
                 let dateReturn = moment(lde.FECHA_DEV, "YYYY-MM-DD").toDate();
-
+                let errMsg;
                 if (checkCuit === false) {
-                    res.status(400).send({status: "ERROR", message: "El CUIT es inválido", data: {CUIT: lde.CUIT}});
+                    errMsg = {
+                        status: "ERROR",
+                        code: "AGP-0004",
+                        message: "El CUIT es inválido",
+                        data: {CUIT: lde.CUIT}
+                    };
+                    log.logger.error(errMsg);
+                    res.status(400).send(errMsg);
                 } else if (dateReturn < toDay) {
-                    res.status(400).send({status: "ERROR", message: "La Fecha de Devolución no puede ser menor a la Fecha de Hoy", data: {FECHA_DEV: lde.FECHA_DEV}});
+                    errMsg = {
+                        status: "ERROR",
+                        code: "AGP-0005",
+                        message: "La Fecha de Devolución no puede ser menor a la Fecha de Hoy",
+                        data: {FECHA_DEV: lde.FECHA_DEV}};
+                    log.logger.error(errMsg);
+                    res.status(400).send(errMsg);
                 } else {
                     lde2insert = {
                         TERMINAL: (lde.TERMINAL !== undefined) ? lde.TERMINAL.trim() : '',
@@ -162,7 +182,7 @@ module.exports = (socket) => {
                         RETURN_TO: [
                             {
                                 PLACE: (lde.LUGAR_DEV !== undefined) ? lde.LUGAR_DEV.trim() : '',
-                                DATE_TO: moment(lde.FECHA_DEV, "YYYY-MM-DD").format("YYYY-MM-DD"),
+                                DATE_TO: dateReturn,
                                 AUD_USER: req.user.USUARIO,
                                 AUD_TIME: timestamp
                             }
@@ -183,10 +203,8 @@ module.exports = (socket) => {
                         ],
                         EXPIRATION: (lde.VENCE === undefined) ? '0' : lde.VENCE.toString()
                     };
-                    FreeDebt.create(lde2insert, function (err, data) {
-                        if (err) {
-                            res.status(500).send({status: "ERROR", message: err.message, data: err});
-                        } else {
+                    Lde.add(lde2insert)
+                    .then(data => {
                             socket.emit('container', lde2insert);
                             let result = {
                                 status: "OK",
@@ -198,9 +216,13 @@ module.exports = (socket) => {
                             if (checkContainer === false) {
                                 result.message = "El Contenedor no es válido por su dígito verificador";
                             }
-                            res.status(200).send(result);
-                        }
-                    });
+                            log.logger.insert("Insert LDE - %j", JSON.stringify(data));
+                            res.status(200).send(data);
+                    })
+                    .catch(err => {
+                            log.logger.error(err);
+                            res.status(500).send(err);
+                        });
                 }
             });
     };
