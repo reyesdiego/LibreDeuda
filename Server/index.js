@@ -76,7 +76,7 @@ app.get('/killme', (req, res) => {
     server.close();
 });
 
-require("./routes/router.js")(app, socket);
+require("./routes/router.js")(app, socket, log);
 
 process.on('exit', () => {
     log.logger.error('exiting');

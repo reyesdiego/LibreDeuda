@@ -9,150 +9,156 @@ class ldeMongoDb {
         this.model = model;
     }
 
-    checkLde (params, callback) {
-        var result;
-        var contenedor = params.contenedor;
-        var match = {CONTAINER: contenedor};
-        var toDay = new Date();
-
-        if (params.ID_CLIENTE !== undefined) {
-            match.ID_CLIENT = params.id_cliente;
-        }
-        var param = [
-            {$match: match
-            },
-            {$unwind: '$STATUS'},
-            {$unwind: '$RETURN_TO'},
-            {$unwind: '$CLIENT'},
-            {$sort: {'STATUS.AUD_TIME': 1, 'RETURN_TO.AUD_TIME': 1}},
-            {$group: {
-                _id: {
-                    _id: '$_id'},
-                TERMINAL: {'$first': '$TERMINAL'},
-                SHIP: {'$first': '$SHIP'},
-                TRIP: {'$first': '$TRIP'},
-                CONTAINER: {'$first': '$CONTAINER'},
-                BL: {'$first': '$BL'},
-                ID_CLIENT: {'$first': '$ID_CLIENT'},
-                STATUS: {'$last': '$STATUS'},
-                RETURN_TO: {'$last': '$RETURN_TO'},
-                CLIENT: {'$last': '$CLIENT'},
-                EXPIRATION: {'$first': '$EXPIRATION'}
-            }},
-            {$match: {'STATUS.STATUS': 0, $or: [{EXPIRATION: '0'}, {EXPIRATION: '1', 'RETURN_TO.DATE_TO': {$gte: toDay}}] }},
-            {$project: {
-                '_id': false,
-                ID: '$_id._id',
-                TERMINAL: true,
-                SHIP: true,
-                TRIP: true,
-                CONTAINER: true,
-                BL: true,
-                ID_CLIENT: true,
-                STATUS: true,
-                RETURN_TO: true,
-                CLIENT: true,
-                EXPIRATION: true
-            }}
-        ];
-
-        this.model.aggregate(param)
-            .exec((err, data) => {
+    add (params) {
+        return new Promise((resolve, reject) => {
+            this.model.create(params, function (err, data) {
                 if (err) {
-                    result = {
-                        status: "ERROR",
-                        message: err.message,
-                        data: err};
-                    callback(result);
+                    reject({status: "ERROR", message: err.message, data: err});
                 } else {
-                    if (data.length === 0) {
-                        result = {
-                            status: "ERROR",
-                            message: "No existe Libre Deuda para este Contenedor."};
-                        callback(result);
-                    } else {
-                        let lde = data[0];
-                        result = {
-                            status: "OK",
-                            message: "El Libre Deuda es Válido",
-                            data: {
-                                ID: lde.ID,
-                                BUQUE: lde.SHIP,
-                                VIAJE: lde.TRIP,
-                                CONTENEDOR: lde.CONTAINER,
-                                BL: lde.BL,
-                                ID_CLIENTE: lde.ID_CLIENT,
-                                CUIT: lde.CLIENT.CUIT,
-                                EMAIL_CLIENT: lde.CLIENT.EMAIL_CLIENT,
-                                LUGAR_DEV: lde.RETURN_TO.PLACE,
-                                FECHA_DEV: lde.RETURN_TO.DATE_TO,
-                                STATUS: lde.STATUS.STATUS,
-                                TERMINAL: lde.TERMINAL,
-                                VENCE: lde.EXPIRATION
-                            }
-                        };
-                        callback(undefined, result);
-                    }
+                    let result = {
+                        status: "OK",
+                        data: {
+                            ID: data._id,
+                            ID_CLIENTE: data.ID_CLIENT
+                        }};
+                    resolve(result);
                 }
             });
+        });
     }
 
-    disableLde (params, callback) {
-        var result;
-        this.checkLde(params, (err, data) => {
-            if (err) {
-                result = {
-                    status: "ERROR",
-                    message: err.message,
-                    data: err
-                };
-                callback(result);
-            } else {
-                if (data.status === 'OK') {
-                    let ID = data.data.ID;
-                    this.model.findOne({_id: ID})
-                        .exec((err, lde) => {
-                            if (err) {
-                                result = {
-                                    status: "ERROR",
-                                    message: err.message,
-                                    data: err
-                                };
-                                callback(result);
-                            } else {
-                                var aud_date = new Date();
-                                var status = {
-                                    STATUS: 9,
-                                    AUD_TIME: aud_date,
-                                    AUD_USER: params.user.USUARIO
-                                };
-                                lde.STATUS.push(status);
+    checkLde (params) {
+        return new Promise((resolve, reject) => {
+            var moment = require("moment");
+            var result;
+            var contenedor = params.contenedor;
+            var match = {CONTAINER: contenedor};
+            var toDay = moment(moment().format("YYYY-MM-DD")).toDate();
 
-                                lde.save((err, dataSaved, rowsAffected) => {
-                                    if (err) {
-                                        result = {
-                                            status: "ERROR",
-                                            message: err.message,
-                                            data: err
-                                        };
-                                        callback(result);
-                                    } else {
-                                        result = {
-                                            status: "OK",
-                                            message: `El Libre Deuda ha sido Anulado`,
-                                            data: {
-                                                ID: dataSaved._id,
-                                                STATUS: status
-                                            }
-                                        }
-                                        callback(undefined, result);
-                                    }
-                                });
-                            }
-                        });
-                }
+            if (params.ID_CLIENTE !== undefined) {
+                match.ID_CLIENT = params.id_cliente;
             }
+            var param = [
+                {$match: match
+                },
+                {$unwind: '$STATUS'},
+                {$unwind: '$RETURN_TO'},
+                {$unwind: '$CLIENT'},
+                {$sort: {'STATUS.AUD_TIME': 1, 'RETURN_TO.AUD_TIME': 1}},
+                {$group: {
+                    _id: {
+                        _id: '$_id'},
+                    TERMINAL: {'$first': '$TERMINAL'},
+                    SHIP: {'$first': '$SHIP'},
+                    TRIP: {'$first': '$TRIP'},
+                    CONTAINER: {'$first': '$CONTAINER'},
+                    BL: {'$first': '$BL'},
+                    ID_CLIENT: {'$first': '$ID_CLIENT'},
+                    STATUS: {'$last': '$STATUS'},
+                    RETURN_TO: {'$last': '$RETURN_TO'},
+                    CLIENT: {'$last': '$CLIENT'},
+                    EXPIRATION: {'$first': '$EXPIRATION'}
+                }},
+                {$match: {'STATUS.STATUS': 0, $or: [{EXPIRATION: '0'}, {EXPIRATION: '1', 'RETURN_TO.DATE_TO': {$gte: toDay}}] }},
+                {$project: {
+                    '_id': false,
+                    ID: '$_id._id',
+                    TERMINAL: true,
+                    SHIP: true,
+                    TRIP: true,
+                    CONTAINER: true,
+                    BL: true,
+                    ID_CLIENT: true,
+                    CUIT: '$CLIENT.CUIT',
+                    EMAIL_CLIENT: '$CLIENT.EMAIL_CLIENT',
+                    LUGAR_DEV: '$RETURN_TO.PLACE',
+                    FECHA_DEV: '$RETURN_TO.DATE_TO',
+                    STATUS: '$STATUS.STATUS',
+                    VENCE: '$EXPIRATION'
+                }}
+            ];
+
+            this.model.aggregate(param)
+                .exec((err, data) => {
+                    if (err) {
+                        result = {
+                            status: "ERROR",
+                            message: err.message,
+                            data: err};
+                        reject(result);
+                    } else {
+                        if (data.length === 0) {
+                            result = {
+                                status: "ERROR",
+                                message: "No existe Libre Deuda para este Contenedor."};
+                            reject(result);
+                        } else {
+                            let lde = data[0];
+                            result = {
+                                status: "OK",
+                                message: "El Libre Deuda es Válido",
+                                data: lde
+                            };
+                            resolve(result);
+                        }
+                    }
+                });
         });
+    }
+
+    disableLde (params) {
+        return new Promise((resolve, reject) => {
+            var result;
+            this.checkLde(params)
+                .then(data => {
+                    if (data.status === 'OK') {
+                        let ID = data.data.ID;
+                        this.model.findOne({_id: ID})
+                            .exec((err, lde) => {
+                                if (err) {
+                                    result = {
+                                        status: "ERROR",
+                                        message: err.message,
+                                        data: err
+                                    };
+                                    reject(result);
+                                } else {
+                                    var aud_date = new Date();
+                                    var status = {
+                                        STATUS: 9,
+                                        AUD_TIME: aud_date,
+                                        AUD_USER: params.user.USUARIO
+                                    };
+                                    lde.STATUS.push(status);
+
+                                    lde.save((err, dataSaved) => {
+                                        if (err) {
+                                            result = {
+                                                status: "ERROR",
+                                                message: err.message,
+                                                data: err
+                                            };
+                                            reject(result);
+                                        } else {
+                                            result = {
+                                                status: "OK",
+                                                message: `El Libre Deuda ha sido Anulado`,
+                                                data: {
+                                                    ID: dataSaved._id,
+                                                    STATUS: status
+                                                }
+                                            }
+                                            resolve(result);
+                                        }
+                                    });
+                                }
+                            });
+                    }
+                })
+                .catch(err => {
+                    reject(err);
+                });
+            });
     }
 
     enableLde (params, callback) {
@@ -183,7 +189,7 @@ class ldeMongoDb {
                                 AUD_USER: params.user.USUARIO
                             };
                             lde.STATUS.push(status);
-                            lde.save((err, dataSaved, rowsAffected) => {
+                            lde.save((err, dataSaved) => {
                                 if (err) {
                                     result = {
                                         status: "ERROR",
@@ -305,73 +311,79 @@ class ldeMongoDb {
         });
     }
 
-    invoiceLde (params, callback) {
-        var result;
-        this.checkLde(params, (err, data) => {
-            if (err) {
-                result = {
-                    status: "ERROR",
-                    message: err.message,
-                    data: err
-                };
-                callback(result);
-            } else {
-                if (data.status === 'OK') {
-                    let ID = data.data.ID;
-                    this.model.findOne({_id: ID})
-                        .exec((err, lde) => {
-                            if (err) {
-                                result = {
-                                    status: "ERROR",
-                                    message: err.message,
-                                    data: err
-                                };
-                                callback(result);
-                            } else {
+    invoiceLde (params) {
+        return new Promise((resolve, reject) => {
+            var result;
+            this.checkLde(params)
+            .catch(err => {
+                    result = {
+                        status: "ERROR",
+                        message: err.message,
+                        data: err
+                    };
+                    reject(result);
+                })
+            .then(data => {
+                    if (data.status === 'OK') {
+                        let ID = data.data.ID;
+                        this.model.findOne({_id: ID})
+                            .exec((err, lde) => {
+                                if (err) {
+                                    result = {
+                                        status: "ERROR",
+                                        message: err.message,
+                                        data: err
+                                    };
+                                    reject(result);
+                                } else {
 
-                                var aud_date = new Date();
-                                var status = {
-                                    STATUS: 3,
-                                    AUD_TIME: aud_date,
-                                    AUD_USER: params.user.USUARIO
-                                };
-                                lde.STATUS.push(status);
-
-                                if (params.email) {
-                                    let client = lde.CLIENT[lde.CLIENT.length -1];
-                                    let newClient = {
-                                        CUIT: client.CUIT,
-                                        EMAIL_CLIENT: params.email,
+                                    var aud_date = new Date();
+                                    var status = {
+                                        STATUS: 3,
                                         AUD_TIME: aud_date,
                                         AUD_USER: params.user.USUARIO
                                     };
-                                    lde.CLIENT.push(newClient);
-                                }
-                                lde.save((err, dataSaved, rowsAffected) => {
-                                    if (err) {
-                                        result = {
-                                            status: "ERROR",
-                                            message: err.message,
-                                            data: err
+                                    lde.STATUS.push(status);
+
+                                    let newClient = {};
+                                    if (params.email) {
+                                        let client = lde.CLIENT[lde.CLIENT.length - 1];
+                                        newClient = {
+                                            CUIT: client.CUIT,
+                                            EMAIL_CLIENT: params.email,
+                                            AUD_TIME: aud_date,
+                                            AUD_USER: params.user.USUARIO
                                         };
-                                        callback(result);
-                                    } else {
-                                        result = {
-                                            status: "OK",
-                                            message: `El Libre Deuda ha sido Entregado`,
-                                            data: {
-                                                ID: dataSaved._id,
-                                                STATUS: status
-                                            }
-                                        };
-                                        callback(undefined, result);
+                                        lde.CLIENT.push(newClient);
                                     }
-                                });
-                            }
-                        });
-                }
-            }
-        });
+                                    lde.save((err, dataSaved) => {
+                                        if (err) {
+                                            result = {
+                                                status: "ERROR",
+                                                message: err.message,
+                                                data: err
+                                            };
+                                            reject(result);
+                                        } else {
+                                            result = {
+                                                status: "OK",
+                                                message: `El Libre Deuda ha sido Entregado`,
+                                                data: {
+                                                    ID: dataSaved._id,
+                                                    STATUS: status,
+                                                    CLIENT: newClient
+                                                }
+                                            };
+                                            resolve(result);
+                                        }
+                                    });
+                                }
+                            });
+                    } else {
+                        reject(data);
+                    }
+                });
+            });
     }
 
     getLde (params, callback) {
@@ -388,9 +400,23 @@ class ldeMongoDb {
                     };
                     callback(result);
                 } else {
+
                     result = {
                         status: "OK",
-                        data: data
+                        data: data.map(lde => ({
+                            ID: lde._id,
+                            ID_CLIENT: lde.ID_CLIENT,
+                            CUIT: lde.CUIT,
+                            CONTENEDOR: lde.CONTAINER,
+                            TERMINAL: lde.TERMINAL,
+                            BUQUE: lde.SHIP,
+                            VIAJE: lde.TRIP,
+                            BL: lde.BL,
+                            VENCE: lde.EXPIRATION,
+                            STATUS: lde.STATUS,
+                            CLIENT: lde.CLIENT,
+                            RETURN_TO: lde.RETURN_TO
+                        }))
                     };
                     callback(undefined, result);
                 }
@@ -409,6 +435,10 @@ class lde {
         }
     }
 
+    add (params) {
+        return this.clase.add(params);
+    }
+
     getLde (params) {
         var promise = new Promise((resolve, reject) => {
             this.clase.getLde(params, (err, data) => {
@@ -423,29 +453,11 @@ class lde {
     }
 
     checkLde (params) {
-        var promise = new Promise((resolve, reject) => {
-            this.clase.checkLde(params, (err, data) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(data);
-                }
-            });
-        });
-        return promise;
+        return this.clase.checkLde(params);
     }
 
     disableLde (params) {
-        var promise = new Promise((resolve, reject) => {
-            this.clase.disableLde(params, (err, data) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(data);
-                }
-            });
-        });
-        return promise;
+        return this.clase.disableLde(params);
     }
 
     enableLde (params) {
@@ -475,16 +487,7 @@ class lde {
     }
 
     invoiceLde (params) {
-        var promise = new Promise((resolve, reject) => {
-            this.clase.invoiceLde(params, (err, data) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(data);
-                }
-            });
-        });
-        return promise;
+        return this.clase.invoiceLde(params);
     }
 }
 

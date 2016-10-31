@@ -2,7 +2,7 @@
  * Created by diego on 28/04/16.
  */
 
-module.exports = function (app, socket) {
+module.exports = function (app, socket, log) {
     "use strict";
 
     let verifyToken = (req, res, next) => {
@@ -25,7 +25,7 @@ module.exports = function (app, socket) {
     var ctvp = require("./ctvp.js")(socket);
     app.use('/ctvp', verifyToken, ctvp);
 
-    var lde = require("./lde.js")(socket);
+    var lde = require("./lde.js")(socket, log);
     app.use('/lde', verifyToken, lde);
 
     app.get('/pm2test', (req, res) => {
