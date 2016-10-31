@@ -38,6 +38,9 @@ class ldeMongoDb {
             if (params.ID_CLIENTE !== undefined) {
                 match.ID_CLIENT = params.id_cliente;
             }
+            if (params.ID !== undefined) {
+                match._id = params.ID;
+            }
             var param = [
                 {$match: match
                 },
@@ -47,7 +50,7 @@ class ldeMongoDb {
                 {$sort: {'STATUS.AUD_TIME': 1, 'RETURN_TO.AUD_TIME': 1}},
                 {$group: {
                     _id: {
-                        _id: '$_id'},
+                        id: '$_id'},
                     TERMINAL: {'$first': '$TERMINAL'},
                     SHIP: {'$first': '$SHIP'},
                     TRIP: {'$first': '$TRIP'},
@@ -62,7 +65,7 @@ class ldeMongoDb {
                 {$match: {'STATUS.STATUS': 0, $or: [{EXPIRATION: '0'}, {EXPIRATION: '1', 'RETURN_TO.DATE_TO': {$gte: toDay}}] }},
                 {$project: {
                     '_id': false,
-                    ID: '$_id._id',
+                    ID: '$_id.id',
                     TERMINAL: true,
                     SHIP: true,
                     TRIP: true,
@@ -386,41 +389,124 @@ class ldeMongoDb {
             });
     }
 
-    getLde (params, callback) {
-        var result;
-        var contenedor = params.contenedor;
+    getLde (params) {
+        return new Promise((resolve, reject) => {
+            var result;
+            var param, match;
+            var contenedor = params.contenedor;
 
-        this.model.find({CONTAINER: contenedor})
-            .exec((err, data) => {
-                if (err) {
-                    result = {
-                        status: "ERROR",
-                        message: err.message,
-                        data: err
-                    };
-                    callback(result);
-                } else {
+            match = {
+                CONTAINER: contenedor
+            };
+            if (params.id_cliente !== undefined) {
+                match.ID_CLIENT = params.id_cliente;
+            }
+            if (params.id !== undefined) {
+                match._id = params.id;
+            }
 
-                    result = {
-                        status: "OK",
-                        data: data.map(lde => ({
-                            ID: lde._id,
-                            ID_CLIENT: lde.ID_CLIENT,
-                            CUIT: lde.CUIT,
-                            CONTENEDOR: lde.CONTAINER,
-                            TERMINAL: lde.TERMINAL,
-                            BUQUE: lde.SHIP,
-                            VIAJE: lde.TRIP,
-                            BL: lde.BL,
-                            VENCE: lde.EXPIRATION,
-                            STATUS: lde.STATUS,
-                            CLIENT: lde.CLIENT,
-                            RETURN_TO: lde.RETURN_TO
-                        }))
-                    };
-                    callback(undefined, result);
-                }
-            });
+            param = [
+                {$unwind: '$STATUS'},
+                {$sort: {'STATUS.AUD_TIME': 1}},
+                {$group: {
+                    _id: {id: '$_id'},
+                    TERMINAL: {'$first': '$TERMINAL'},
+                    SHIP: {'$first': '$SHIP'},
+                    TRIP: {'$first': '$TRIP'},
+                    CONTAINER: {'$first': '$CONTAINER'},
+                    BL: {'$first': '$BL'},
+                    ID_CLIENT: {'$first': '$ID_CLIENT'},
+                    STATUS: {'$last': '$STATUS'}
+                }},
+                {$match: match},
+                {$project: {
+                    //ID: '$_id.id',
+                    TERMINAL: true,
+                    SHIP: true,
+                    TRIP: true,
+                    CONTAINER: true,
+                    BL: true,
+                    ID_CLIENT: true,
+                    STATUS: true
+                }}
+            ];
+            this.model.aggregate(param)
+                .exec((err, data) => {
+                    if (err) {
+                        result = {
+                            status: "ERROR",
+                            message: err.message,
+                            data: err
+                        };
+                        reject(result);
+                    } else {
+
+                        result = {
+                            status: "OK",
+                            data: data.map(lde => ({
+                                ID: lde._id,
+                                ID_CLIENT: lde.ID_CLIENT,
+                                CUIT: lde.CUIT,
+                                CONTENEDOR: lde.CONTAINER,
+                                TERMINAL: lde.TERMINAL,
+                                BUQUE: lde.SHIP,
+                                VIAJE: lde.TRIP,
+                                BL: lde.BL,
+                                VENCE: lde.EXPIRATION,
+                                STATUS: lde.STATUS,
+                                CLIENT: lde.CLIENT,
+                                RETURN_TO: lde.RETURN_TO
+                            }))
+                        };
+                        resolve(result);
+                    }
+                });
+        });
+    }
+
+    changePlace (params) {
+        return new Promise((resolve, reject) => {
+            this.getLde(params)
+            .then(data => {
+                    data = data.data.filter(item => (item.STATUS.STATUS === 3 || item.STATUS.STATUS === 0));
+                    let lde = data[0];
+                    this.model.find({_id: lde.ID.id}, (err, data) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            let lde = data[0];
+                            /** Si no recibe lugar o fecha de devolucion se utiliza la ultima que tenia*/
+                            let lastReturn = lde.RETURN_TO[lde.RETURN_TO.length-1];
+
+                            /**La fecha de devolucion no puede ser menor a la fecha original*/
+                            if (lde.RETURN_TO[0].DATE_TO < params.fecha_dev) {
+                                reject({
+                                    status: "ERROR",
+                                    message: "La nueva fecha de devolución debe ser menos a la original."
+                                });
+                            } else {
+                                let newReturn_To = {
+                                    PLACE: (params.lugar_dev !== undefined) ? params.lugar_dev : lastReturn.PLACE,
+                                    DATE_TO: (params.fecha_dev !== undefined) ? params.fecha_dev : lastReturn.DATE_TO,
+                                    AUD_TIME: new Date(),
+                                    AUD_USER: params.user.USUARIO
+                                };
+                                lde.RETURN_TO.push(newReturn_To);
+                                lde.save((err, data) => {
+                                    if (err) {
+                                        reject(err);
+                                    } else {
+                                        resolve(data);
+                                    }
+                                });
+                            }
+                        }
+                    });
+                })
+            .catch(err => {
+                    reject(err);
+                });
+        });
     }
 }
 
@@ -440,16 +526,7 @@ class lde {
     }
 
     getLde (params) {
-        var promise = new Promise((resolve, reject) => {
-            this.clase.getLde(params, (err, data) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(data);
-                }
-            });
-        });
-        return promise;
+        return this.clase.getLde(params);
     }
 
     checkLde (params) {
@@ -488,6 +565,10 @@ class lde {
 
     invoiceLde (params) {
         return this.clase.invoiceLde(params);
+    }
+
+    changePlace (params) {
+        return this.clase.changePlace(params);
     }
 }
 
