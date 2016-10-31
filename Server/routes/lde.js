@@ -78,48 +78,64 @@ module.exports = (socket, log) => {
     };
 
     let forwardLde = (req, res) => {
+        var user = req.user;
         var Cuit = require("../include/cuit.js");
         var moment = require("moment");
 
-        var checkCuit = Cuit(req.body.CUIT);
-        if (checkCuit === false) {
-            res.status(400).send({status: "ERROR", message: "El CUIT es inválido", data: {CUIT: req.body.CUIT}});
+        if (user.data.group !== 'FOR') {
+            res.status(500).send({
+                status: "ERROR",
+                message: "No tiene permisos para realizar esta operación"
+            });
         } else {
-            let fecha = moment(req.body.FECHA_DEV, "YYYY-MM-DD").toDate();
-            if (fecha < new Date()) {
-                res.status(400).send({status: "ERROR", message: "La Fecha de Devolución debe ser mayor a la fecha actual", data: {FECHA_DEV: fecha}});
+            var checkCuit = Cuit(req.body.CUIT);
+            if (checkCuit === false) {
+                res.status(400).send({status: "ERROR", message: "El CUIT es inválido", data: {CUIT: req.body.CUIT}});
             } else {
-                var param = {
-                    user: req.user,
-                    contenedor: req.body.CONTENEDOR,
-                    cuit: req.body.CUIT,
-                    fecha_dev: moment(req.body.FECHA_DEV, "YYYY-MM-DD").toDate()
-                };
-                Lde.forwardLde(param)
-                    .then(data => {
-                        res.status(200).send(data);
-                    })
-                    .catch(err => {
-                        res.status(500).send(err);
-                    });
+                let fecha = moment(req.body.FECHA_DEV, "YYYY-MM-DD").toDate();
+                if (fecha < new Date()) {
+                    res.status(400).send({status: "ERROR", message: "La Fecha de Devolución debe ser mayor a la fecha actual", data: {FECHA_DEV: fecha}});
+                } else {
+                    var param = {
+                        user: user,
+                        contenedor: req.body.CONTENEDOR,
+                        cuit: req.body.CUIT,
+                        fecha_dev: moment(req.body.FECHA_DEV, "YYYY-MM-DD").toDate()
+                    };
+                    Lde.forwardLde(param)
+                        .then(data => {
+                            res.status(200).send(data);
+                        })
+                        .catch(err => {
+                            res.status(500).send(err);
+                        });
+                }
             }
         }
     };
 
     let invoiceFreeDebt = (req, res) => {
+        var user = req.user.data;
         var param = {
             contenedor: req.body.CONTENEDOR,
             email: req.body.EMAIL_CLIENTE,
             user: req.user
         };
 
-        Lde.invoiceLde(param)
-            .then(data => {
-                res.status(200).send(data);
-            })
-            .catch(err => {
-                res.status(500).send(err);
+        if (user.group !== 'TER') {
+            res.status(500).send({
+                status: "ERROR",
+                message: "No tiene permisos para realizar esta operación"
             });
+        } else {
+            Lde.invoiceLde(param)
+                .then(data => {
+                    res.status(200).send(data);
+                })
+                .catch(err => {
+                    res.status(500).send(err);
+                });
+        }
     };
 
     let addFreeDebt = (req, res) => {
@@ -228,23 +244,32 @@ module.exports = (socket, log) => {
     };
 
     let changePlace = (req, res) => {
-
-        var contenedor = req.body.CONTENEDOR;
-        var id_cliente = req.body.ID_CLIENTE;
+        var user = req.user;
+        var moment = require("moment");
 
         var param = {
-            contenedor: contenedor,
-            id_cliente: id_cliente,
-            lugar_dev: req.body.LUGAR_DEV
+            contenedor: req.body.CONTENEDOR,
+            id_cliente: req.body.ID_CLIENTE,
+            id: req.body.ID,
+            lugar_dev: req.body.LUGAR_DEV,
+            fecha_dev: moment(req.body.FECHA_DEV, "YYYY-MM-DD").toDate(),
+            user: user
         };
 
-        Lde.checkLde(param)
-            .then(data => {
-                res.status(200).send(data);
-            })
-            .catch(err => {
-                res.status(500).send(err);
+        if (user.data.group !== 'AGE') {
+            res.status(500).send({
+                status: "ERROR",
+                message: "No tiene permisos para realizar esta operación"
             });
+        } else {
+            Lde.changePlace(param)
+                .then(data => {
+                    res.status(200).send(data);
+                })
+                .catch(err => {
+                    res.status(500).send(err);
+                });
+        }
     };
 
     router.get("/:contenedor", getFreeDebt);

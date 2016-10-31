@@ -9,12 +9,24 @@ module.exports = function (app, socket, log) {
         var incomingToken = req.headers.token,
             token = require("../include/token.js");
 
+        var account = require("../lib/account.js");
+        account = new account();
+
         token.verifyToken(incomingToken, (err, payload) => {
             if (err) {
                 res.status(401).send({status: 'ERROR', message: "Token Invalido", data: err});
             } else {
-                req.user = payload;
-                next();
+                account.getAccount(payload.USUARIO, payload.CLAVE, (err, data) => {
+                    req.user = payload;
+                    if (err) {
+                        res.status(401).send(err);
+                    } else {
+                        if (data.status === 'OK') {
+                            req.user.data = data.data;
+                        }
+                        next();
+                    }
+                });
             }
         });
     };
