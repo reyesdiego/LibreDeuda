@@ -48,8 +48,10 @@ myApp.service('Session', ['$rootScope', 'storageService', '$http', 'configServic
         }
         console.log(user);
         this.data.USUARIO = user.USUARIO;
+        this.data.CLAVE = user.CLAVE;
         this.data.role = user.role;
         this.data.keep = keep;
+
     }
 
     this.setToken = function(token){

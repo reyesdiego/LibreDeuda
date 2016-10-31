@@ -12,6 +12,7 @@ myApp.controller('registerCtrl', ['$scope', 'configService', 'Register', 'dialog
 	};
 
 	$scope.confirmPassword = '';
+	$scope.validCuit = false;
 
 	$scope.getTerminals = function(){
 		let terminalsArray = [];
@@ -20,6 +21,37 @@ myApp.controller('registerCtrl', ['$scope', 'configService', 'Register', 'dialog
 			if (value) terminalsArray.push(value);
 		}
 		$scope.user.data.terminales = terminalsArray;
+	};
+
+	$scope.validateCuit = function(){
+		const feed = '5432765432';
+
+		let result = false;
+		let sum  = 0;
+		let digit = 0;
+		let cuit = '';
+
+		try {
+			cuit = $scope.user.data.cuit.toString();
+
+			if (cuit.length === 11) {
+				for (var i = 0; i < 10; i++) {
+					sum += (parseInt(feed[i]) * parseInt(cuit[i]));
+				}
+				digit = 11 - (sum % 11);
+
+				if (digit === 1) {
+					digit = 9;
+				}
+				if (digit === parseInt(cuit[10])) {
+					result = true;
+				}
+			}
+		} catch (err) {
+			result = false;
+		}
+		$scope.validCuit = result;
+		console.log($scope.validCuit);
 	};
 
 	$scope.send = function(){
@@ -35,7 +67,6 @@ myApp.controller('registerCtrl', ['$scope', 'configService', 'Register', 'dialog
 			$scope.user.clave = '';
 			$scope.confirmPassword = '';
 		}
-
 
 	}
 

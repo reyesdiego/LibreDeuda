@@ -2,17 +2,25 @@
  * Created by kolesnikov-a on 18/04/2016.
  */
 
-myApp.factory('ldeFactory', ['$http', 'configService', function($http, configService){
+myApp.factory('ldeFactory', ['$http', 'configService', '$q', function($http, configService, $q){
 
     var factory = {
         //Obtener todos los LDE's - Deprecado
-        getLde: function(callback){
-            var insertUrl = configService.serverUrl + '/lde';
-            $http.get(insertUrl).then(function(response){
-                callback(response);
-            }, function(response){
-                callback(response);
-            })
+        getLde: function(container){
+            let deferred = $q.defer();
+            const insertUrl = `${configService.serverUrl}/lde/${container}`;
+            $http.get(insertUrl).then((response) => {
+                if (response.statusText == 'OK'){
+                    deferred.resolve(response.data.data);
+                } else {
+                    deferred.reject(response.data);
+                }
+            }, (response) => {
+                console.log(response);
+                deferred.reject(response.data);
+                //callback(response);
+            });
+            return deferred.promise;
         },
         //Informar un nuevo LDE
         //Parámetros: { 'TERMINAL': 'TRP',

@@ -20,7 +20,7 @@
                     <div class="form-group">
                         <label for="ship" class="col-lg-2 control-label"><span class="glyphicon"></span> Buque</label>
                         <div class="input-group col-lg-9">
-                            <input type="text" class="form-control" ng-model="newContainer.BUQUE" id="ship" placeholder="" ng-required="true" toupper>
+                            <input type="text" class="form-control" ng-model="newContainer.BUQUE" id="ship" placeholder="" ng-required="true" disallow-spaces toupper>
                         <span class="input-group-btn">
                             <button type="button" class="btn btn-default" ng-click="eraseField('BUQUE')"><i class="glyphicon glyphicon-remove"></i></button>
                         </span>
@@ -29,7 +29,7 @@
                     <div class="form-group">
                         <label for="trip" class="col-lg-2 control-label"><span class="glyphicon"></span> Viaje</label>
                         <div class="input-group col-lg-9">
-                            <input type="text" class="form-control" ng-model="newContainer.VIAJE" id="trip" placeholder="" ng-required="true" toupper>
+                            <input type="text" class="form-control" ng-model="newContainer.VIAJE" id="trip" placeholder="" ng-required="true" disallow-spaces toupper>
                         <span class="input-group-btn">
                             <button type="button" class="btn btn-default" ng-click="eraseField('VIAJE')"><i class="glyphicon glyphicon-remove"></i></button>
                         </span>
@@ -38,7 +38,7 @@
                     <div class="form-group">
                         <label for="container" class="col-lg-2 control-label"><span class="glyphicon"></span> Contenedor</label>
                         <div class="input-group col-lg-9">
-                            <input type="text" class="form-control" ng-model="newContainer.CONTENEDOR" id="container" placeholder="" ng-required="true" toupper>
+                            <input type="text" class="form-control" ng-model="newContainer.CONTENEDOR" id="container" placeholder="" ng-required="true" disallow-spaces toupper>
                         <span class="input-group-btn">
                             <button type="button" class="btn btn-default" ng-click="eraseField('CONTENEDOR')"><i class="glyphicon glyphicon-remove"></i></button>
                         </span>
@@ -47,7 +47,7 @@
                     <div class="form-group">
                         <label for="bl" class="col-lg-2 control-label"><span class="glyphicon"></span> Conocimiento</label>
                         <div class="input-group col-lg-9">
-                            <input type="text" class="form-control" ng-model="newContainer.BL" id="bl" placeholder="" ng-required="true" toupper>
+                            <input type="text" class="form-control" ng-model="newContainer.BL" id="bl" placeholder="" ng-required="true" disallow-spaces toupper>
                         <span class="input-group-btn">
                             <button type="button" class="btn btn-default" ng-click="eraseField('BL')"><i class="glyphicon glyphicon-remove"></i></button>
                         </span>
@@ -74,7 +74,7 @@
                     <div class="form-group">
                         <label for="cuit" class="col-lg-2 control-label"><span class="glyphicon"></span> CUIT</label>
                         <div class="input-group col-lg-9">
-                            <input type="text" class="form-control" ng-model="newContainer.CUIT" id="cuit" placeholder="" ng-required="true" toupper>
+                            <input type="text" class="form-control" ng-model="newContainer.CUIT" id="cuit" placeholder="" ng-required="true" disallow-spaces toupper>
                         <span class="input-group-btn">
                             <button type="button" class="btn btn-default" ng-click="eraseField('CUIT')"><i class="glyphicon glyphicon-remove"></i></button>
                         </span>

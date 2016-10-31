@@ -129,3 +129,8 @@ html, body {
     -webkit-justify-content : center;
     justify-content : center;
 }
+
+.bad-input {
+    border-color: red;
+    background-color: rgba(255, 158, 33, 0.47);
+}
