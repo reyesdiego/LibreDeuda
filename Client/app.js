@@ -52,6 +52,10 @@ myApp.config(['$urlRouterProvider', '$stateProvider', 'USER_ROLES', function($ur
         data: {
             authorizedRoles: [USER_ROLES.all]
         }
+    }).state('register', {
+        url: '/register',
+        templateUrl: 'register/register.html',
+        controller: 'registerCtrl'
     })
 
 }]);
