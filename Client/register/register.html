@@ -31,7 +31,7 @@
                             <div class="col-lg-12 form-group">
                                 <label for="inputCuit" class="control-label"> CUIT</label>
                                 <div>
-                                    <input type="text" class="form-control" ng-class="user.data.cuit != '' && !validCuit ? 'bad-input' : ''" ng-model="user.data.cuit" id="inputCuit" placeholder="Ingresar CUIT" ng-required="true" ng-change="validateCuit()">
+                                    <input type="text" class="form-control" ng-class="user.data.cuit != '' && !validCuit ? 'bad-input' : ''" ng-model="user.data.cuit" id="inputCuit" placeholder="Ingresar CUIT" ng-required="true" ng-change="validateCuit()" only-digits disallow-spaces>
                                 </div>
                             </div>
                             <div class="col-lg-12 form-group">
@@ -43,7 +43,7 @@
                             <div class="col-lg-12 form-group">
                                 <label for="inputTelefono" class="control-label"> Teléfono</label>
                                 <div>
-                                    <input type="text" class="form-control" ng-model="user.data.telefono" id="inputTelefono" placeholder="Ingresar teléfono" ng-required="true">
+                                    <input type="text" class="form-control" ng-model="user.data.telefono" id="inputTelefono" placeholder="Ingresar teléfono" ng-required="true" only-digits>
                                 </div>
                             </div>
                             <div ng-hide="user.data.entidad == 'terminal'">

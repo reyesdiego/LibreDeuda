@@ -38,6 +38,7 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService'
             //ZCSU2576607
             $scope.lde = '';
             ldeFactory.getLde($scope.search).then((data) =>{
+                console.log(data);
                 $scope.lde = new Lde(data);
                 console.log($scope.lde);
                 //$scope.dataContainers.push($scope.lde);
@@ -49,7 +50,7 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService'
 
         //Para facturar, cambiar lugar de devolución o CUIT, se requiere abrir un modal para agregar los demás datos
         //antes de llamar al método de actualización
-        $scope.updateLdeEx = function(event, operation){
+        $scope.updateWithModal = function(event, operation){
             event.stopPropagation();
             var modalInstance = $uibModal.open({
                 templateUrl: 'lde/search/update.lde.html',
@@ -80,7 +81,7 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService'
                     case 'forward':
                         promise = $scope.lde.forward(ldeData.CUIT, ldeData.FECHA_DEV);
                         break;
-                };
+                }
                 promise.then((data) => {
                     console.log(data);
                 }, (error) => {
@@ -90,16 +91,21 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService'
         };
 
         //Para disable y enable, solo se requiere el contenedor
-        $scope.updateLde = function(event, operation, container){
+        $scope.update = function(event, operation){
             event.stopPropagation();
-            var containerBody = { CONTENEDOR: container };
-            ldeFactory.updateLde(containerBody, operation, function(response){
-                if (response.statusText == 'OK'){
-                    console.log(response.data);
-                } else {
-                    console.log(response.data);
-                    dialogsService.error('Error', response.data.message);
-                }
+            let promise = {};
+            if (operation == 'disable'){
+                promise = $scope.lde.disable();
+            } else {
+                promise = $scope.lde.enable();
+            }
+            promise.then((data) => {
+                dialogsService.notify('Libre deuda', data.message);
+                console.log('todo ok');
+                console.log(data);
+            }, (error) => {
+                console.log('todo mal');
+                console.log(error)
             })
         };
 
