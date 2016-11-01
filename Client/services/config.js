@@ -18,7 +18,7 @@ myApp.service('configService', [function(){
             name:'Retirado',
             className: 'status-retired'
         }, '9': {
-            name:'Cancelado',
+            name:'Anulado',
             className: 'status-canceled'
         }},
         statusContainersAsArray: function(){

@@ -1,5 +1,7 @@
 //Controlador para modal de actualización, para cuando se requieren datos adicionales antes de actualizar
-myApp.controller('updateLdeCtrl', ['$scope', '$uibModalInstance', 'operation', 'ldeDate', 'places', function($scope, $uibModalInstance, operation, ldeDate, places){
+myApp.controller('updateLdeCtrl', ['$scope', '$uibModalInstance', 'operation', 'ldeDate', 'places', 'validatorService', function($scope, $uibModalInstance, operation, ldeDate, places, validatorService){
+
+	$scope.validCuit = false;
 
 	//'invoice', 'place', 'forward'
 	$scope.operation = operation;
@@ -30,9 +32,19 @@ myApp.controller('updateLdeCtrl', ['$scope', '$uibModalInstance', 'operation', '
 		$scope.datePopUp.opened = true;
 	};
 
+	$scope.validateCuit = function(){
+		$scope.validCuit = validatorService.validateCuit($scope.updateModel.CUIT);
+	};
+
 	$scope.save = function () {
 		//Siempre devuelvo el model completo y luego cada método toma únicamente los datos que necesita
-		$uibModalInstance.close($scope.updateModel);
+		if (operation == 'forward') {
+			if (validatorService.validateCuit($scope.updateModel.CUIT)){
+				$uibModalInstance.close($scope.updateModel);
+			}
+		} else {
+			$uibModalInstance.close($scope.updateModel);
+		}
 	};
 
 	$scope.cancel = function () {

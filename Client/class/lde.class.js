@@ -52,6 +52,30 @@ myApp.factory('Lde', ['$http', '$q', 'configService', function($http, $q, config
 
 			$http.put(insertUrl, params).then((response) => {
 				console.log(response);
+				if (response.data.status == 'OK'){
+					this.STATUS = response.data.data.STATUS.STATUS;
+					deferred.resolve(response.data);
+				} else {
+					deferred.reject(response.data);
+				}
+			}, (response) => {
+				console.log(response);
+				deferred.reject(response.data);
+			});
+			return deferred.promise;
+		}
+
+		enable(){
+			const deferred = $q.defer();
+			const insertUrl = `${configService.serverUrl}/lde/enable`;
+			const params = {
+				CONTENEDOR: this.CONTAINER,
+				ID_CLIENTE: this.ID_CLIENT,
+				ID: this.ID
+			};
+
+			$http.put(insertUrl, params).then((response) => {
+				console.log(response);
 				deferred.resolve(response.data);
 			}, (response) => {
 				console.log(response);
