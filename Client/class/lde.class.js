@@ -41,6 +41,8 @@ myApp.factory('Lde', ['$http', '$q', 'configService', function($http, $q, config
 
 		}
 
+		//Probando branch
+
 		disable(){
 			const deferred = $q.defer();
 			const insertUrl = `${configService.serverUrl}/lde/disable`;
