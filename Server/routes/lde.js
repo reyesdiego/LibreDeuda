@@ -6,7 +6,6 @@ module.exports = (socket, log) => {
     "use strict";
     var express = require("express");
     var router = express.Router();
-    var FreeDebt = require("../models/freeDebt.js");
     var moment = require("moment");
     var Lde = require('../lib/lde.js');
     Lde = new Lde();
@@ -81,6 +80,7 @@ module.exports = (socket, log) => {
         var user = req.user;
         var Cuit = require("../include/cuit.js");
         var moment = require("moment");
+        var fecha_dev;
 
         if (user.data.group !== 'FOR') {
             res.status(500).send({
@@ -90,18 +90,28 @@ module.exports = (socket, log) => {
         } else {
             var checkCuit = Cuit(req.body.CUIT);
             if (checkCuit === false) {
-                res.status(400).send({status: "ERROR", message: "El CUIT es inválido", data: {CUIT: req.body.CUIT}});
+                res.status(400).send({status: "ERROR", message: `El CUIT ${req.body.CUIT} no es válido`, data: {CUIT: req.body.CUIT}});
             } else {
-                let fecha = moment(req.body.FECHA_DEV, "YYYY-MM-DD").toDate();
-                if (fecha < new Date()) {
-                    res.status(400).send({status: "ERROR", message: "La Fecha de Devolución debe ser mayor a la fecha actual", data: {FECHA_DEV: fecha}});
+                if (req.body.FECHA_DEV) {
+                    fecha_dev = moment(req.body.FECHA_DEV, "YYYY-MM-DD").toDate();
+                }
+
+                if (fecha_dev !== undefined && fecha_dev > moment() ) {
+                    fecha_dev = moment(fecha_dev).format("DD/MM/YYYY");
+                    res.status(400).send({
+                        status: `ERROR`,
+                        message: `La Fecha de Devolución ${fecha_dev} es menor a la fecha actual`, data: {FECHA_DEV: fecha_dev}
+                    });
                 } else {
                     var param = {
                         user: user,
                         contenedor: req.body.CONTENEDOR,
-                        cuit: req.body.CUIT,
-                        fecha_dev: moment(req.body.FECHA_DEV, "YYYY-MM-DD").toDate()
+                        cuit: req.body.CUIT
                     };
+                    if (fecha_dev !== undefined) {
+                        param.fecha_dev = fecha_dev;
+                    }
+
                     Lde.forwardLde(param)
                         .then(data => {
                             res.status(200).send(data);

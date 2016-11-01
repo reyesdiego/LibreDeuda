@@ -164,83 +164,82 @@ class ldeMongoDb {
             });
     }
 
-    enableLde (params, callback) {
-        var result;
-        this.getLde(params, (err, lde) => {
-            if (err) {
-                result = {
-                    status: "ERROR",
-                    message: err.message,
-                    data: err
-                };
-                callback(result);
-            } else {
-                if (lde.status === 'OK') {
-                    lde = lde.data[0];
-                    var lastStatus = lde.STATUS[lde.STATUS.length-1];
-                    if (lastStatus.STATUS !== 9) {
-                        callback({
-                            status: "ERROR",
-                            message: `No se encuentra Libre Deuda del Contenedor ${lde.CONTENEDOR} para habilitar`
-                        });
-                    } else {
-                        this.model.findOne({_id: lde._id}, (err, lde) => {
-                            let aud_date = new Date();
-                            let status = {
-                                STATUS: 0,
-                                AUD_TIME: aud_date,
-                                AUD_USER: params.user.USUARIO
-                            };
-                            lde.STATUS.push(status);
-                            lde.save((err, dataSaved) => {
-                                if (err) {
-                                    result = {
-                                        status: "ERROR",
-                                        message: err.message,
-                                        data: err
-                                    };
-                                    callback(result);
-                                } else {
-                                    result = {
-                                        status: "OK",
-                                        message: "El Libre Deuda ha sido Habilitado",
-                                        data: {
-                                            ID: dataSaved._id,
-                                            STATUS: status
-                                        }
-                                    };
-                                    callback(undefined, result);
-                                }
+    enableLde (params) {
+        return new Promise((resolve, reject) => {
+            var result;
+            this.getLde(params)
+            .catch(err => {
+                    result = {
+                        status: "ERROR",
+                        message: err.message,
+                        data: err
+                    };
+                    reject(result);
+                })
+            .then(data => {
+
+                        lde = data.data[0];
+                        var lastStatus = lde.STATUS[lde.STATUS.length-1];
+                        if (lastStatus.STATUS !== 9) {
+                            reject({
+                                status: "ERROR",
+                                message: `No se encuentra Libre Deuda del Contenedor ${lde.CONTENEDOR} para habilitar`
                             });
-                        });
-                    }
-                }
-            }
+                        } else {
+                            this.model.findOne({_id: lde.ID.id}, (err, lde) => {
+                                let aud_date = new Date();
+                                let status = {
+                                    STATUS: 0,
+                                    AUD_TIME: aud_date,
+                                    AUD_USER: params.user.USUARIO
+                                };
+                                lde.STATUS.push(status);
+                                lde.save((err, dataSaved) => {
+                                    if (err) {
+                                        result = {
+                                            status: "ERROR",
+                                            message: err.message,
+                                            data: err
+                                        };
+                                        reject(result);
+                                    } else {
+                                        result = {
+                                            status: "OK",
+                                            message: "El Libre Deuda ha sido Habilitado",
+                                            data: {
+                                                ID: dataSaved._id,
+                                                STATUS: status
+                                            }
+                                        };
+                                        resolve(result);
+                                    }
+                                });
+                            });
+                        }
+                });
         });
     }
 
-    forwardLde (params, callback) {
-        var result;
-        this.getLde(params, (err, lde) => {
-            if (err) {
-                result = {
-                    status: "ERROR",
-                    message: err.message,
-                    data: err
-                };
-                return callback(result);
-            } else {
-                if (lde.status === 'OK') {
-                    if (lde.data.length>0) {
-                        lde = lde.data[0];
-                        var lastStatus = lde.STATUS[lde.STATUS.length - 1];
-                        if (lastStatus.STATUS !== 0 && lastStatus.STATUS !== 3) {
-                            callback({
-                                status: "ERROR",
-                                message: `No se encuentra Libre Deuda del Contenedor ${lde.CONTENEDOR}`
+    forwardLde (params) {
+        return new Promise((resolve, reject) => {
+            var result;
+            this.checkLde(params)
+                .then(lde => {
+                    if (lde.data.length <= 0) {
+                        reject({
+                            status: `ERROR`,
+                            message: `No se encuentra Libre Deuda del Contenedor ${params.contenedor}`
+                        });
+                    } else {
+                        lde = lde.data;
+                        var lastStatus = lde.STATUS;
+                        if (lastStatus !== 0 && lastStatus !== 3) {
+                            reject({
+                                status: `ERROR`,
+                                message: `No se encuentra Libre Deuda del Contenedor ${params.contenedor}`
                             });
                         } else {
-                            this.model.findOne({_id: lde._id})
+                            this.model.findOne({_id: lde.ID})
                                 .exec((err, lde) => {
                                     if (err) {
                                         result = {
@@ -248,7 +247,7 @@ class ldeMongoDb {
                                             message: err.message,
                                             data: err
                                         };
-                                        return callback(result);
+                                        reject(result);
                                     } else {
                                         var aud_date = new Date();
                                         let client = {
@@ -270,21 +269,21 @@ class ldeMongoDb {
                                                 return_to.AUD_TIME = aud_date;
                                                 lde.RETURN_TO.push(return_to);
                                             } else {
-                                                return callback({
+                                                return reject({
                                                     status: "ERROR",
-                                                    message: `La nueva fecha de devolución no puede superar a la vigente ${place.DATE_TO}`
+                                                    message: `La nueva fecha de devolución no puede superar a la vigente ${placeFirst.DATE_TO}`
                                                 });
                                             }
                                         }
 
-                                        lde.save((err, dataSaved, rowsAffected) => {
+                                        lde.save((err, dataSaved) => {
                                             if (err) {
                                                 result = {
                                                     status: "ERROR",
                                                     message: err.message,
                                                     data: err
                                                 };
-                                                callback(result);
+                                                reject(result);
                                             } else {
                                                 let cuit = dataSaved.CLIENT[dataSaved.CLIENT.length - 1].CUIT;
                                                 let fecha_dev = dataSaved.RETURN_TO[dataSaved.RETURN_TO.length - 1].DATE_TO;
@@ -297,20 +296,22 @@ class ldeMongoDb {
                                                         FECHA_DEV: fecha_dev
                                                     }
                                                 };
-                                                callback(undefined, result);
+                                                resolve(result);
                                             }
                                         });
                                     }
                                 });
                         }
-                    } else {
-                        callback({
-                            status: "ERROR",
-                            message: `No se encuentra Libre Deuda del Contenedor`
-                        });
                     }
-                }
-            }
+                })
+                .catch(err => {
+                    result = {
+                        status: "ERROR",
+                        message: err.message,
+                        data: err
+                    };
+                    reject(result);
+                });
         });
     }
 
@@ -538,29 +539,11 @@ class lde {
     }
 
     enableLde (params) {
-        var promise = new Promise((resolve, reject) => {
-            this.clase.enableLde(params, (err, data) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(data);
-                }
-            });
-        });
-        return promise;
+        return this.clase.enableLde(params);
     }
 
     forwardLde (params) {
-        var promise = new Promise((resolve, reject) => {
-            this.clase.forwardLde(params, (err, data) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(data);
-                }
-            });
-        });
-        return promise;
+        return this.clase.forwardLde(params);
     }
 
     invoiceLde (params) {
