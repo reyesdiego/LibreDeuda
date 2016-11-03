@@ -181,6 +181,7 @@ myApp.run(['$rootScope', 'appSocket', 'storageService', '$state', '$http', 'dial
             console.log('hago keep alive');
             $rootScope.session.keepAlive(() => {}, (error) => {
                 console.log(error);
+                $rootScope.logOut();
             })
         });
 

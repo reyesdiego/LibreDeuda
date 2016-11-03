@@ -61,25 +61,27 @@ class ldeMongoDb {
                     RETURN_TO: {'$last': '$RETURN_TO'},
                     CLIENT: {'$last': '$CLIENT'},
                     EXPIRATION: {'$first': '$EXPIRATION'}
-                }},
-                {$match: {'STATUS.STATUS': 0, $or: [{EXPIRATION: '0'}, {EXPIRATION: '1', 'RETURN_TO.DATE_TO': {$gte: toDay}}] }},
-                {$project: {
-                    '_id': false,
-                    ID: '$_id.id',
-                    TERMINAL: true,
-                    SHIP: true,
-                    TRIP: true,
-                    CONTAINER: true,
-                    BL: true,
-                    ID_CLIENT: true,
-                    CUIT: '$CLIENT.CUIT',
-                    EMAIL_CLIENT: '$CLIENT.EMAIL_CLIENT',
-                    LUGAR_DEV: '$RETURN_TO.PLACE',
-                    FECHA_DEV: '$RETURN_TO.DATE_TO',
-                    STATUS: '$STATUS.STATUS',
-                    VENCE: '$EXPIRATION'
                 }}
             ];
+            if (!params.all) {
+                param.push({$match: {'STATUS.STATUS': 0, $or: [{EXPIRATION: '0'}, {EXPIRATION: '1', 'RETURN_TO.DATE_TO': {$gte: toDay}}] }});
+            }
+            param.push({$project: {
+                '_id': false,
+                ID: '$_id.id',
+                TERMINAL: true,
+                SHIP: true,
+                TRIP: true,
+                CONTAINER: true,
+                BL: true,
+                ID_CLIENT: true,
+                CUIT: '$CLIENT.CUIT',
+                EMAIL_CLIENT: '$CLIENT.EMAIL_CLIENT',
+                LUGAR_DEV: '$RETURN_TO.PLACE',
+                FECHA_DEV: '$RETURN_TO.DATE_TO',
+                STATUS: '$STATUS.STATUS',
+                VENCE: '$EXPIRATION'
+            }});
 
             this.model.aggregate(param)
                 .exec((err, data) => {
@@ -179,13 +181,15 @@ class ldeMongoDb {
             .then(data => {
 
                         lde = data.data[0];
-                        var lastStatus = lde.STATUS[lde.STATUS.length-1];
-                        if (lastStatus.STATUS !== 9) {
+                        var lastStatus = lde.STATUS.STATUS;
+                        console.log(lastStatus);
+                        if (lastStatus !== 9) {
                             reject({
                                 status: "ERROR",
                                 message: `No se encuentra Libre Deuda del Contenedor ${lde.CONTENEDOR} para habilitar`
                             });
                         } else {
+                            console.log(lde.ID.id);
                             this.model.findOne({_id: lde.ID.id}, (err, lde) => {
                                 let aud_date = new Date();
                                 let status = {

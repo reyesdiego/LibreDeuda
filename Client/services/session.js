@@ -28,9 +28,9 @@ myApp.service('Session', ['$rootScope', 'storageService', '$http', 'configServic
 
     this.keepAlive = function(){
         const deferred = $q.defer();
-        const inserturl = configService.serverUrl + '/login';
+        const inserturl = `${configService.serverUrl}/keepAlive`;
 
-        $http.post(inserturl, this.data).then((response) => {
+        $http.get(inserturl).then((response) => {
             this.setToken(response.data.data);
             deferred.resolve();
         }, (response) => {

@@ -60,7 +60,7 @@ socket = socket(server, {
     ]
 });
 
-server.listen(port, () => {
+server.listen(port, '127.0.0.1', () => {
     log.logger.info("#%s Nodejs %s Running on %s://localhost:%s", process.pid, process.version, 'http', port);
     /** Conecta a la base de datos MongoDb */
     require('./include/mongoose.js')(config.mongo.url, config.mongo.options, log);

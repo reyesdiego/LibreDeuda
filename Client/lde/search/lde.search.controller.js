@@ -14,7 +14,9 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService'
         $scope.returnPlaces = [];
 
         ldeFactory.getReturnPlaces((data) => {
-            $scope.returnPlaces = data.data
+            for (let place of data.data){
+                $scope.returnPlaces[place._id] = place;
+            }
         });
 
         $scope.$on('socket:container', function(ev, data){
@@ -63,9 +65,7 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService'
                     ldeDate: function(){
                         return $scope.lde.FECHA_DEV;
                     },
-                    places: function(){
-                        return $scope.returnPlaces;
-                    }
+                    places: ldeFactory.getReturnPlaces
                 }
             });
             modalInstance.result.then(function(ldeData){

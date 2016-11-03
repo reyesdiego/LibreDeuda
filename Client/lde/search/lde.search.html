@@ -63,7 +63,7 @@
                 <td>{{ lde.CONTAINER }}</td>
                 <td>{{ lde.BL }}</td>
                 <td>{{ lde.FECHA_DEV | date: 'dd/MM/yyyy' }}</td>
-                <td>{{ lde.LUGAR_DEV }}</td>
+                <td>{{ returnPlaces[lde.LUGAR_DEV].NOMBRE }}</td>
                 <td>{{ lde.CUIT }}</td>
                 <td class="{{ lde.STATUS | containerClass }}" >{{ lde.STATUS | containerStatus }}</td>
                 <td>

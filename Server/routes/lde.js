@@ -34,6 +34,8 @@ module.exports = (socket, log) => {
                     });
             }
         } else {
+            req.params.all = req.query.allStatus == 1;
+
             Lde.checkLde(req.params)
                 .then(data => {
                     res.status(200).send(data);

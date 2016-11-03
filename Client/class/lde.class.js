@@ -78,7 +78,12 @@ myApp.factory('Lde', ['$http', '$q', 'configService', function($http, $q, config
 
 			$http.put(insertUrl, params).then((response) => {
 				console.log(response);
-				deferred.resolve(response.data);
+				if (response.data.status == 'OK'){
+					this.STATUS = response.data.data.STATUS.STATUS;
+					deferred.resolve(response.data);
+				} else {
+					deferred.reject(response.data);
+				}
 			}, (response) => {
 				console.log(response);
 				deferred.reject(response.data);

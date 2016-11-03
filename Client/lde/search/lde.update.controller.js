@@ -6,7 +6,7 @@ myApp.controller('updateLdeCtrl', ['$scope', '$uibModalInstance', 'operation', '
 	//'invoice', 'place', 'forward'
 	$scope.operation = operation;
 
-	$scope.returnPlaces = places;
+	$scope.returnPlaces = places.data;
 
 	//El model incluye todos los posibles datos necesarios para cualquier operacion de update dado que no son muchos
 	//y así puedo usar el mismo controlador para cualquiera de ellas

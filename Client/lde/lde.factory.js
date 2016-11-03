@@ -9,7 +9,7 @@ myApp.factory('ldeFactory', ['$http', 'configService', '$q', function($http, con
         getLde: function(container){
             let deferred = $q.defer();
             const insertUrl = `${configService.serverUrl}/lde/${container}`;
-            $http.get(insertUrl).then((response) => {
+            $http.get(insertUrl, {params: {allStatus: 1}}).then((response) => {
                 console.log(response);
                 if (response.statusText == 'OK'){
                     deferred.resolve(response.data.data);
@@ -61,7 +61,7 @@ myApp.factory('ldeFactory', ['$http', 'configService', '$q', function($http, con
         },
         //Consulta de lugares de devolución - Opcionalmente se puede pasar un ID para obtener un lugar específico
         getReturnPlaces: function(callback){
-            var insertUrl = configService.serverUrl + '/lde/lugar';
+            var insertUrl = `${configService.serverUrl}/lde/lugar`;
             $http.get(insertUrl).then(function(response){
                 callback(response.data)
             }, function(response){
