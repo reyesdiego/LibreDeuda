@@ -7,9 +7,13 @@ module.exports = (socket, log) => {
     var express = require("express");
     var router = express.Router();
     var moment = require("moment");
+    var contentCheck = require("../include/contentType.js");
+    var Error = require("../include/error.js");
+
     var Lde = require('../lib/lde.js');
     Lde = new Lde();
 
+    /** GET */
     let getFreeDebt = (req, res) => {
         if (req.url.indexOf('/lugar') >= 0) {
             let place = require('../lib/place.js');
@@ -22,7 +26,7 @@ module.exports = (socket, log) => {
                         res.status(200).send(data);
                     })
                     .catch(err => {
-                        res.status(500).send(err);
+                        res.status(err.http_status).send(err);
                     });
             } else {
                 place.getPlaces()
@@ -39,13 +43,15 @@ module.exports = (socket, log) => {
                     res.status(200).send(data);
                 })
                 .catch(err => {
-                    res.status(500).send(err);
+                    res.status(err.http_status).send(err);
                 });
         }
 
     };
 
+    /** PUT */
     let enableFreeDebt = (req, res) => {
+
         var param = {
             contenedor: req.body.CONTENEDOR,
             user: req.user
@@ -56,10 +62,11 @@ module.exports = (socket, log) => {
                 res.status(200).send(data);
             })
             .catch(err => {
-                res.status(500).send(err);
+                res.status(err.http_status).send(err);
             });
     };
 
+    /** PUT */
     let disableFreeDebt = (req, res) => {
 
         var param = {
@@ -72,10 +79,11 @@ module.exports = (socket, log) => {
                 res.status(200).send(data);
             })
         .catch(err => {
-                res.status(500).send(err);
+                res.status(err.http_status).send(err);
             });
     };
 
+    /** PUT */
     let forwardLde = (req, res) => {
         var user = req.user;
         var Cuit = require("../include/cuit.js");
@@ -83,10 +91,8 @@ module.exports = (socket, log) => {
         var fecha_dev;
 
         if (user.data.group !== 'FOR') {
-            res.status(500).send({
-                status: "ERROR",
-                message: "No tiene permisos para realizar esta operación"
-            });
+            var result = Error.ERROR("AGP-0008").data();
+            res.status(result.http_status).send(result);
         } else {
             var checkCuit = Cuit(req.body.CUIT);
             if (checkCuit === false) {
@@ -124,6 +130,7 @@ module.exports = (socket, log) => {
         }
     };
 
+    /** PUT */
     let invoiceFreeDebt = (req, res) => {
         var user = req.user.data;
         var param = {
@@ -133,10 +140,8 @@ module.exports = (socket, log) => {
         };
 
         if (user.group !== 'TER') {
-            res.status(500).send({
-                status: "ERROR",
-                message: "No tiene permisos para realizar esta operación"
-            });
+            var result = Error.ERROR("AGP-0008").data();
+            res.status(result.http_status).send(result);
         } else {
             Lde.invoiceLde(param)
                 .then(data => {
@@ -148,6 +153,7 @@ module.exports = (socket, log) => {
         }
     };
 
+    /** POST */
     let addFreeDebt = (req, res) => {
 
         var lde = req.body;
@@ -155,22 +161,19 @@ module.exports = (socket, log) => {
         var cuit = require("../include/cuit.js");
         var timestamp = moment().toDate();
         var lde2insert;
+        var result;
 
         Lde.checkLde({contenedor: lde.CONTENEDOR})
             .then(data => {
                 data = data.data;
-                let result = {
-                    status: "ERROR",
-                    message: `Yá existe un LDE para el contenedor ${lde.CONTENEDOR}`,
-                    data: {
-                        ID: data.ID,
-                        CONTENEDOR: data.CONTAINER,
-                        ID_CLIENT: data.ID_CLIENT,
-                        STATUS: data.STATUS,
-                        FECHA_DEV: data.FECHA_DEV
-                    }
-                };
-                res.status(400).send(result);
+                result = Error.ERROR("AGP-0005").data({
+                    ID: data.ID,
+                    CONTENEDOR: data.CONTAINER,
+                    ID_CLIENT: data.ID_CLIENT,
+                    STATUS: data.STATUS,
+                    FECHA_DEV: data.FECHA_DEV
+                });
+                res.status(result.http_status).send(result);
             })
             .catch(err => {
 
@@ -179,24 +182,13 @@ module.exports = (socket, log) => {
 
                 let toDay = moment(moment().format("YYYY-MM-DD")).toDate();
                 let dateReturn = moment(lde.FECHA_DEV, "YYYY-MM-DD").toDate();
-                let errMsg;
+
                 if (checkCuit === false) {
-                    errMsg = {
-                        status: "ERROR",
-                        code: "AGP-0004",
-                        message: "El CUIT es inválido",
-                        data: {CUIT: lde.CUIT}
-                    };
-                    log.logger.error(errMsg);
-                    res.status(400).send(errMsg);
+                    result = Error.ERROR("AGP-0004").data({CUIT: lde.CUIT});
+                    res.status(result.http_status).send(result);
                 } else if (dateReturn < toDay) {
-                    errMsg = {
-                        status: "ERROR",
-                        code: "AGP-0005",
-                        message: "La Fecha de Devolución no puede ser menor a la Fecha de Hoy",
-                        data: {FECHA_DEV: lde.FECHA_DEV}};
-                    log.logger.error(errMsg);
-                    res.status(400).send(errMsg);
+                    result = Error.ERROR("AGP-0006").data({FECHA_DEV: lde.FECHA_DEV});
+                    res.status(result.http_status).send(result);
                 } else {
                     lde2insert = {
                         TERMINAL: (lde.TERMINAL !== undefined) ? lde.TERMINAL.trim() : '',
@@ -246,13 +238,14 @@ module.exports = (socket, log) => {
                             res.status(200).send(data);
                     })
                     .catch(err => {
-                            log.logger.error(err);
-                            res.status(500).send(err);
+                            log.logger.error("Insert LDE - %s, %j", JSON.stringify(err), JSON.stringify(lde2insert));
+                            res.status(err.http_status).send(err);
                         });
                 }
             });
     };
 
+    /** PUT */
     let changePlace = (req, res) => {
         var user = req.user;
         var moment = require("moment");
@@ -267,7 +260,7 @@ module.exports = (socket, log) => {
         };
 
         if (user.data.group !== 'AGE') {
-            res.status(500).send({
+            res.status(401).send({
                 status: "ERROR",
                 message: "No tiene permisos para realizar esta operación"
             });
@@ -283,12 +276,12 @@ module.exports = (socket, log) => {
     };
 
     router.get("/:contenedor", getFreeDebt);
-    router.put("/disable", disableFreeDebt);
-    router.put("/enable", enableFreeDebt);
-    router.put("/invoice", invoiceFreeDebt);
-    router.post("/", addFreeDebt);
-    router.put("/lugar", changePlace);
-    router.put("/forward", forwardLde);
+    router.put("/disable", contentCheck.isApplicationJson, disableFreeDebt);
+    router.put("/enable", contentCheck.isApplicationJson, enableFreeDebt);
+    router.put("/invoice", contentCheck.isApplicationJson, invoiceFreeDebt);
+    router.post("/", contentCheck.isApplicationJson, addFreeDebt);
+    router.put("/lugar", contentCheck.isApplicationJson, changePlace);
+    router.put("/forward", contentCheck.isApplicationJson, forwardLde);
 
     return router;
 };

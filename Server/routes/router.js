@@ -14,7 +14,7 @@ module.exports = function (app, socket, log) {
 
         token.verifyToken(incomingToken, (err, payload) => {
             if (err) {
-                res.status(401).send({status: 'ERROR', message: "Token Invalido", data: err});
+                res.status(401).send({status: 'ERROR', message: "Token Inválido", data: err});
             } else {
                 account.getAccount(payload.USUARIO, payload.CLAVE, (err, data) => {
                     req.user = payload;
