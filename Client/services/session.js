@@ -7,6 +7,7 @@ myApp.service('Session', ['$rootScope', 'storageService', '$http', 'configServic
     this.data = {
         USUARIO: '',
         CLAVE: '',
+        TYPE: 'full',
         keep: false,
         role: 'admin'
     };
@@ -17,8 +18,9 @@ myApp.service('Session', ['$rootScope', 'storageService', '$http', 'configServic
 
         $http.post(inserturl, this.data).then((response) => {
             $rootScope.$broadcast(AUTH_EVENTS.loginSucces);
-            this.setData();
-            this.setToken(response.data.data);
+            //console.log(response.data.data);
+            this.setData(response.data.data);
+            this.setToken(response.data.data.token);
             deferred.resolve(response);
         }, function(response){
             deferred.reject(response);
@@ -46,12 +48,9 @@ myApp.service('Session', ['$rootScope', 'storageService', '$http', 'configServic
         } else {
             user = storageService.getSessionObject('user');
         }
-        console.log(user);
-        this.data.USUARIO = user.USUARIO;
-        this.data.CLAVE = user.CLAVE;
-        this.data.role = user.role;
+        //console.log(user);
+        angular.extend(this.data, user);
         this.data.keep = keep;
-
     }
 
     this.setToken = function(token){
@@ -70,7 +69,8 @@ myApp.service('Session', ['$rootScope', 'storageService', '$http', 'configServic
         }
     }
 
-    this.setData = function(){
+    this.setData = function(userData){
+        angular.extend(this.data, userData);
         if (this.data.keep){
             storageService.setObject('user', this.data);
         } else {
@@ -80,6 +80,10 @@ myApp.service('Session', ['$rootScope', 'storageService', '$http', 'configServic
 
     this.getName = function(){
         return this.data.USUARIO;
+    }
+
+    this.getFullName = function(){
+        return this.data.full_name;
     }
 
     this.isAuthenticated = function(){

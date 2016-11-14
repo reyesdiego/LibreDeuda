@@ -67,11 +67,11 @@
                 <td>{{ lde.CUIT }}</td>
                 <td class="{{ lde.STATUS | containerClass }}" >{{ lde.STATUS | containerStatus }}</td>
                 <td>
-                    <button type="button" class="btn btn-success btn-sm" ng-click="update($event, 'enable')" uib-tooltip="Liberar"><span class="glyphicon glyphicon-ok"></span></button>
-                    <button type="button" class="btn btn-primary btn-sm" ng-click="updateWithModal($event, 'invoice')" uib-tooltip="Facturar"><span class="glyphicon glyphicon-edit"></span></button>
-                    <button type="button" class="btn btn-danger btn-sm" ng-click="update($event, 'disable')" uib-tooltip="Cancelar"><span class="glyphicon glyphicon-remove"></span></button>
-                    <button type="button" class="btn btn-info btn-sm" ng-click="updateWithModal($event, 'place')" uib-tooltip="Cambiar lugar"><span class="glyphicon glyphicon-backward"></span></button>
-                    <button type="button" class="btn btn-info btn-sm" ng-click="updateWithModal($event, 'forward')" uib-tooltip="Forward"><span class="glyphicon glyphicon-forward"></span></button>
+                    <button type="button"  ng-if="session.data.group == 'AGE'" class="btn btn-success btn-sm" ng-click="update($event, 'enable')" uib-tooltip="Liberar" ng-disabled="lde.STATUS == 0"><span class="glyphicon glyphicon-ok"></span></button>
+                    <button type="button"  ng-if="session.data.group == 'TER'" class="btn btn-primary btn-sm" ng-click="updateWithModal($event, 'invoice')" uib-tooltip="Facturar"><span class="glyphicon glyphicon-edit"></span></button>
+                    <button type="button"  ng-if="session.data.group == 'AGE'" class="btn btn-danger btn-sm" ng-click="update($event, 'disable')" uib-tooltip="Anular"><span class="glyphicon glyphicon-remove"></span></button>
+                    <button type="button"  ng-if="session.data.group == 'AGE'" class="btn btn-info btn-sm" ng-click="updateWithModal($event, 'place')" uib-tooltip="Cambiar lugar"><span class="glyphicon glyphicon-backward"></span></button>
+                    <button type="button"  ng-if="session.data.group == 'FOR'" class="btn btn-info btn-sm" ng-click="updateWithModal($event, 'forward')" uib-tooltip="Forward"><span class="glyphicon glyphicon-forward"></span></button>
                 </td>
             </tr>
             <!--<tr ng-repeat="detail in data.RETURN_TO" ng-init="data.SHOW = false" ng-show="data.SHOW" class="child-row">

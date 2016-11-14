@@ -70,12 +70,13 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService'
             });
             modalInstance.result.then(function(ldeData){
                 console.log(ldeData);
+                console.log(operation);
                 let promise = {};
                 switch (operation){
                     case 'invoice':
                         promise = $scope.lde.deliver(ldeData.EMAIL_CLIENTE);
                         break;
-                    case 'lugar':
+                    case 'place':
                         promise = $scope.lde.updatePlace(ldeData.LUGAR_DEV);
                         break;
                     case 'forward':
@@ -86,6 +87,7 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService'
                     console.log(data);
                 }, (error) => {
                     console.log(error);
+                    dialogsService.error('LDE', error.message);
                 })
             })
         };

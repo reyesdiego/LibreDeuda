@@ -78,7 +78,7 @@
         <div class="collapse navbar-collapse" id="user" aria-expanded="false" uib-collapse="isCollapsed" ng-if="session.isAuthenticated()">
             <ul class="nav navbar-nav navbar-right">
                 <li class="dropdown open" uib-dropdown>
-                    <a href="#" class="dropdown-toggle"  uib-dropdown-toggle data-toggle="dropdown" role="button" aria-expanded="true"><span uib-dropdown-toggle class="glyphicon glyphicon-user"></span> {{ session.getName() }} <span class="caret"></span></a>
+                    <a href="#" class="dropdown-toggle"  uib-dropdown-toggle data-toggle="dropdown" role="button" aria-expanded="true"><span uib-dropdown-toggle class="glyphicon glyphicon-user"></span> {{ session.getFullName() }} <span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu" uib-dropdown-menu>
                         <li ng-click="logOut()"><a href ><span class="glyphicon glyphicon-log-out"></span> Salir</a></li>
                     </ul>

@@ -71,6 +71,7 @@ myApp.config(['$provide', '$httpProvider', function($provide, $httpProvider){
                 'request': function(config) {
                     // do something on success
                     config.headers['Token'] = $rootScope.session.getToken();
+                    config.headers['Content-Type'] = 'application/json';
                     //TODO verificar tiempos de respuestas para diferentes llamadas...
                     //config.timeout = 2000;
 
@@ -103,15 +104,17 @@ myApp.config(['$provide', '$httpProvider', function($provide, $httpProvider){
 
                     if (rejection.status == 401){ //Forbidden
                         if (rejection.config.url != configService.serverUrl + '/login'){
-                            $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
-                            var deferred = $q.defer();
-                            var req = {
-                                config: rejection.config,
-                                deferred: deferred
-                            };
-                            $rootScope.requests401.push(req);
+                            if (rejection.data.message != 'No tiene privilegios para realizar esta petición.' && rejection.data.message != 'No tiene permisos para realizar esta operación'){
+                                $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
+                                var deferred = $q.defer();
+                                var req = {
+                                    config: rejection.config,
+                                    deferred: deferred
+                                };
+                                $rootScope.requests401.push(req);
 
-                            return deferred.promise;
+                                return deferred.promise;
+                            }
                             //$state.transitionTo('login');
                         }
                     }
@@ -145,6 +148,7 @@ myApp.run(['$rootScope', 'appSocket', 'storageService', '$state', '$http', 'dial
         $rootScope.session = Session;
 
         if ($rootScope.session.isAuthenticated()){
+            //$rootScope.session.reloadData();
             Idle.watch();
         }
 
@@ -178,7 +182,7 @@ myApp.run(['$rootScope', 'appSocket', 'storageService', '$state', '$http', 'dial
         });
 
         $rootScope.$on('Keepalive', function(){
-            console.log('hago keep alive');
+            //console.log('hago keep alive');
             $rootScope.session.keepAlive(() => {}, (error) => {
                 console.log(error);
             })
