@@ -11,20 +11,23 @@ class Account {
 
     getAccount (user, password, callback) {
         var Account = require("../models/account");
+        var Error = require('../include/error.js');
+        var result;
 
         Account.findOne({email: user})
         .lean()
         .exec((err, dataAccount) => {
             if (err) {
-                callback({status: "ERROR",
-                    message: err.message,
-                    data: err});
+                result = Error.ERROR("MONGO-ERROR").data(err);
+                callback(result);
             } else {
                 if (!dataAccount) {
-                    callback({status: "ERROR", message: "El Usuario No Existe."});
+                    result = Error.ERROR("AGP-0010").data({USUARIO: user});
+                    callback(result);
                 } else {
                     if (dataAccount.password !== password) {
-                        callback({status: "ERROR", message: "La Clave es Incorrecta."});
+                        result = Error.ERROR("AGP-0011").data({USUARIO: user, CLAVE: password});
+                        callback(result);
                     } else {
                         callback(undefined, {status: "OK", data: dataAccount });
                     }

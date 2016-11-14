@@ -4,22 +4,25 @@
 
 module.exports = function (app, socket, log) {
     "use strict";
+    var Error = require('../include/error.js');
 
     let verifyToken = (req, res, next) => {
         var incomingToken = req.headers.token,
             token = require("../include/token.js");
+        var result;
 
         var account = require("../lib/account.js");
         account = new account();
 
         token.verifyToken(incomingToken, (err, payload) => {
             if (err) {
-                res.status(401).send({status: 'ERROR', message: "Token Inválido", data: err});
+                result = Error.ERROR("AGP-0009").data(err);
+                res.status(result.http_status).send(result);
             } else {
                 account.getAccount(payload.USUARIO, payload.CLAVE, (err, data) => {
                     req.user = payload;
                     if (err) {
-                        res.status(401).send(err);
+                        res.status(err.http_status).send(err);
                     } else {
                         if (data.status === 'OK') {
                             req.user.data = data.data;
@@ -36,6 +39,9 @@ module.exports = function (app, socket, log) {
 
     var ctvp = require("./ctvp.js")(socket);
     app.use('/ctvp', verifyToken, ctvp);
+
+    var error = require("./error.js")();
+    app.use('/errors', verifyToken, error);
 
     var lde = require("./lde.js")(socket, log);
     app.use('/lde', verifyToken, lde);
