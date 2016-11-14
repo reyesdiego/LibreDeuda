@@ -13,20 +13,29 @@ var errors = [
     {code: `AGP-0005`, message: `Libre deuda yá existe para este contenedor.`, http_status: 409},
     {code: `AGP-0006`, message: `La fecha no puede ser menor a la fecha de hoy.`, http_status: 409},
     {code: `AGP-0007`, message: `La nueva fecha de devolución debe ser menor a la fecha de devolución vigente.`, http_status: 409},
-    {code: `AGP-0008`, message: `No tiene privilegios para realizar esta petición.`, http_status: 401}
+    {code: `AGP-0008`, message: `No tiene privilegios para realizar esta petición.`, http_status: 401},
+    {code: `AGP-0009`, message: `Token inválido`, http_status: 401},
+    {code: `AGP-0010`, message: `El usuario no existe`, http_status: 401},
+    {code: `AGP-0011`, message: `La clave es incorrecta`, http_status: 401}
 ];
 //module.exports.errors = errors;
 
 var getError = code => {
     var result;
-    result = errors.filter(item => {
-        if (item.code === code) {
-            return true;
-        }
-    });
-    return result[0];
-}
-//module.exports.getError = getError;
+    if (code) {
+        result = errors.filter(item => {
+            if (item.code === code) {
+                return true;
+            }
+        });
+        return result[0] || null;
+    } else {
+        return errors;
+    }
+
+};
+
+module.exports.getErrors = getError;
 
 var ERROR = code => {
     let err = getError(code);
