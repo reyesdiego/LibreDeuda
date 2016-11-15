@@ -31,12 +31,6 @@ myApp.config(['$urlRouterProvider', '$stateProvider', 'USER_ROLES', function($ur
         url: '/login',
         templateUrl: 'login/login.html',
         controller: 'loginCtrl'
-    }).state('main', {
-        url: '/main',
-        templateUrl: 'main/main.html',
-        data: {
-            authorizedRoles: [USER_ROLES.all]
-        }
     }).state('lde', {
         url: '/lde',
         templateUrl: 'lde/search/lde.search.html',
@@ -44,12 +38,12 @@ myApp.config(['$urlRouterProvider', '$stateProvider', 'USER_ROLES', function($ur
         data: {
             authorizedRoles: [USER_ROLES.all]
         }
-    }).state('new', {
+    }).state('lde.new', {
         url: '/new',
         templateUrl: 'lde/new/lde.new.html',
         controller: 'newLdeCtrl',
         data: {
-            authorizedRoles: [USER_ROLES.all]
+            authorizedRoles: [USER_ROLES.agent]
         }
     }).state('register', {
         url: '/register',
@@ -213,7 +207,7 @@ myApp.run(['$rootScope', 'appSocket', 'storageService', '$state', '$http', 'dial
             //$rootScope.session.setData(user);
             //$rootScope.session.setToken(token);
 
-            if ($rootScope.requests401.length > 0){
+            /*if ($rootScope.requests401.length > 0){
                 var i, requests = $rootScope.requests401;
                 for (i = 0; i < requests.length; i++) {
                     retry(requests[i]);
@@ -226,14 +220,14 @@ myApp.run(['$rootScope', 'appSocket', 'storageService', '$state', '$http', 'dial
                     from: ''
                 };
                 $state.transitionTo(next);
-            }
+            }*/
 
 
-            function retry(req) {
+            /*function retry(req) {
                 $http(req.config).then(function(response) {
                     req.deferred.resolve(response);
                 });
-            }
+            }*/
         });
 
         $rootScope.socket = appSocket;
@@ -246,6 +240,8 @@ myApp.run(['$rootScope', 'appSocket', 'storageService', '$state', '$http', 'dial
         });
 
         $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){
+
+            console.log('hoooooolaaaaaaaa');
 
             if (angular.isDefined(toState.data)){ //state requires logged user
                 var authorizedRoles = toState.data.authorizedRoles;

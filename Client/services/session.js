@@ -3,7 +3,6 @@
  */
 myApp.service('Session', ['$rootScope', 'storageService', '$http', 'configService', 'AUTH_EVENTS', '$q', function($rootScope, storageService, $http, configService, AUTH_EVENTS, $q){
 
-
     this.data = {
         USUARIO: '',
         CLAVE: '',
@@ -21,7 +20,7 @@ myApp.service('Session', ['$rootScope', 'storageService', '$http', 'configServic
             this.setData(response.data.data);
             this.setToken(response.data.data.token);
             deferred.resolve(response);
-        }, function(response){
+        }, (response) => {
             deferred.reject(response);
         });
         return deferred.promise;
@@ -99,7 +98,7 @@ myApp.service('Session', ['$rootScope', 'storageService', '$http', 'configServic
 
     this.isAuthorized = function(authorizedRoles){
         return (this.isAuthenticated() &&
-        (authorizedRoles.indexOf(this.data.group) !== -1 || authorizedRoles.indexOf('*') !== -1));
+            (authorizedRoles.indexOf(this.data.group) !== -1 || authorizedRoles.indexOf('*') !== -1));
     };
 
     this.logOut = function(){

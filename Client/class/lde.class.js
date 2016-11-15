@@ -7,6 +7,7 @@ myApp.factory('Lde', ['$http', '$q', 'configService', function($http, $q, config
 	class Lde {
 
 		constructor(ldeData){
+			this.ID = {};
 			if (ldeData){
 				angular.extend(this, ldeData)
 			} else {
@@ -45,9 +46,9 @@ myApp.factory('Lde', ['$http', '$q', 'configService', function($http, $q, config
 			const deferred = $q.defer();
 			const insertUrl = `${configService.serverUrl}/lde/disable`;
 			const params = {
-				CONTENEDOR: this.CONTAINER,
+				CONTENEDOR: this.CONTENEDOR,
 				ID_CLIENTE: this.ID_CLIENT,
-				ID: this.ID
+				ID: this.ID.id
 			};
 
 			$http.put(insertUrl, params).then((response) => {
@@ -69,13 +70,14 @@ myApp.factory('Lde', ['$http', '$q', 'configService', function($http, $q, config
 			const deferred = $q.defer();
 			const insertUrl = `${configService.serverUrl}/lde/enable`;
 			const params = {
-				CONTENEDOR: this.CONTAINER,
+				CONTENEDOR: this.CONTENEDOR,
 				ID_CLIENTE: this.ID_CLIENT,
-				ID: this.ID
+				ID: this.ID.id
 			};
 
 			$http.put(insertUrl, params).then((response) => {
 				console.log(response);
+				this.STATUS = response.data.data.STATUS.STATUS;
 				deferred.resolve(response.data);
 			}, (response) => {
 				console.log(response);
@@ -88,10 +90,10 @@ myApp.factory('Lde', ['$http', '$q', 'configService', function($http, $q, config
 			const deferred = $q.defer();
 			const insertUrl = `${configService.serverUrl}/lde/lugar`;
 			const params = {
-				CONTENEDOR: this.CONTAINER,
+				CONTENEDOR: this.CONTENEDOR,
 				LUGAR_DEV: newPlace,
 				ID_CLIENTE: this.ID_CLIENT,
-				ID: this.ID
+				ID: this.ID.id
 			};
 			$http.put(insertUrl, params).then((response) => {
 				console.log(response);
@@ -107,7 +109,7 @@ myApp.factory('Lde', ['$http', '$q', 'configService', function($http, $q, config
 			const deferred = $q.defer();
 			const insertUrl = `${configService.serverUrl}/lde/forward`;
 			const params = {
-				CONTENEDOR: this.CONTAINER,
+				CONTENEDOR: this.CONTENEDOR,
 				CUIT: cuit,
 				FECHA_DEV: fechaDev
 			};
@@ -126,12 +128,13 @@ myApp.factory('Lde', ['$http', '$q', 'configService', function($http, $q, config
 			const deferred = $q.defer();
 			const insertUrl = `${configService.serverUrl}/lde/invoice`;
 			const params = {
-				CONTENEDOR: this.CONTAINER,
+				CONTENEDOR: this.CONTENEDOR,
 				EMAIL_CLIENTE: email
 			};
 
 			$http.put(insertUrl, params).then((response) => {
 				console.log(response);
+				this.STATUS = response.data.data.STATUS.STATUS;
 				deferred.resolve(response.data);
 			}, (response) => {
 				console.log(response);

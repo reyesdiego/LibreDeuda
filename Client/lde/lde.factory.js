@@ -5,6 +5,18 @@
 myApp.factory('ldeFactory', ['$http', 'configService', '$q', function($http, configService, $q){
 
     var factory = {
+        getAllLde: function(){
+            const deferred = $q.defer();
+            const insertUrl = `${configService.serverUrl}/lde`;
+            $http.get(insertUrl).then(response => {
+                console.log(response);
+                deferred.resolve(response.data);
+            }, response => {
+                console.log(response);
+                deferred.reject(response.data);
+            });
+            return deferred.promise;
+        },
         //Obtener todos los LDE's - Deprecado
         getLde: function(container){
             let deferred = $q.defer();

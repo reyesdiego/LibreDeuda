@@ -4,26 +4,43 @@
 myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService', 'dialogsService', '$q', '$location', '$state', '$uibModal', 'Lde',
     function($scope, ldeFactory, $timeout, configService, dialogsService, $q, $location, $state, $uibModal, Lde){
 
-        $scope.lde = '';
-        $scope.search = 'ZCSU2576607';
+        //$scope.search = 'ZCSU2576607';
+        $scope.search = '';
 
-        $scope.panelMessage = `Ingrese un contenedor y presione el botón de buscar para obtener datos del libre deuda.`;
+        $scope.panelMessage = `Aguarde mientras se cargan los datos.`;
 
         $scope.statesContainers = configService.statusContainersAsArray();
         $scope.terminals = configService.terminalsArray;
         $scope.returnPlaces = [];
+
+        $scope.dataContainers = [];
 
         ldeFactory.getReturnPlaces((data) => {
             $scope.returnPlaces = data.data
         });
 
         $scope.$on('socket:container', function(ev, data){
-            data.ANIMATE = true;
-            $scope.dataContainers.unshift(data);
-            $scope.reAnimate($scope.dataContainers[0]);
+            console.log('esto');
+            //data.ANIMATE = true;
+            console.log(data);
+            let ldeData = {
+                TERMINAL: data.TERMINAL,
+                BUQUE: data.SHIP,
+                VIAJE: data.TRIP,
+                CONTENEDOR: data.CONTAINER,
+                BL: data.BL,
+                FECHA_DEV: data.RETURN_TO[0].DATE_TO,
+                LUGAR_DEV: data.RETURN_TO[0].PLACE,
+                CUIT: data.CLIENT[0].CUIT,
+                STATUS: data.STATUS[0].STATUS
+            };
+            $scope.dataContainers.unshift(new Lde(ldeData));
+            //$scope.reAnimate($scope.dataContainers[0]);
         });
 
         $scope.$on('socket:status', function(ev, data){
+            console.log('y esto');
+
             $scope.dataContainers.forEach(function(registry){
 
                 if (registry.CONTAINER == data.CONTAINER) {
@@ -34,23 +51,23 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService'
             });
         });
 
-        $scope.getLdeData = function (){
-            //ZCSU2576607
-            $scope.lde = '';
-            ldeFactory.getLde($scope.search).then((data) =>{
-                console.log(data);
-                $scope.lde = new Lde(data);
-                console.log($scope.lde);
-                //$scope.dataContainers.push($scope.lde);
-            }, (error) => {
+        $scope.getLdeData = function(){
+            $scope.dataContainers = [];
+            ldeFactory.getAllLde().then(data => {
+                //console.log(data);
+                for (let lde of data.data){
+                    lde = new Lde(lde);
+                    $scope.dataContainers.push(lde);
+                }
+            }, error => {
                 console.log(error);
-                $scope.panelMessage = error.message;
+                dialogsService.error('Libre Deuda', `Se ha producido un error al cargar los datos. ${error.message}`);
             })
         };
 
         //Para facturar, cambiar lugar de devolución o CUIT, se requiere abrir un modal para agregar los demás datos
         //antes de llamar al método de actualización
-        $scope.updateWithModal = function(event, operation){
+        $scope.updateWithModal = function(event, operation, lde){
             event.stopPropagation();
             var modalInstance = $uibModal.open({
                 templateUrl: 'lde/search/update.lde.html',
@@ -61,7 +78,7 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService'
                         return operation;
                     },
                     ldeDate: function(){
-                        return $scope.lde.FECHA_DEV;
+                        return lde.FECHA_DEV;
                     },
                     places: function(){
                         return $scope.returnPlaces;
@@ -74,13 +91,13 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService'
                 let promise = {};
                 switch (operation){
                     case 'invoice':
-                        promise = $scope.lde.deliver(ldeData.EMAIL_CLIENTE);
+                        promise = lde.deliver(ldeData.EMAIL_CLIENTE);
                         break;
                     case 'place':
-                        promise = $scope.lde.updatePlace(ldeData.LUGAR_DEV);
+                        promise = lde.updatePlace(ldeData.LUGAR_DEV);
                         break;
                     case 'forward':
-                        promise = $scope.lde.forward(ldeData.CUIT, ldeData.FECHA_DEV);
+                        promise = lde.forward(ldeData.CUIT, ldeData.FECHA_DEV);
                         break;
                 }
                 promise.then((data) => {
@@ -93,13 +110,13 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService'
         };
 
         //Para disable y enable, solo se requiere el contenedor
-        $scope.update = function(event, operation){
+        $scope.update = function(event, operation, lde){
             event.stopPropagation();
             let promise = {};
             if (operation == 'disable'){
-                promise = $scope.lde.disable();
+                promise = lde.disable();
             } else {
-                promise = $scope.lde.enable();
+                promise = lde.enable();
             }
             promise.then((data) => {
                 dialogsService.notify('Libre deuda', data.message);
@@ -108,8 +125,11 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService'
             }, (error) => {
                 console.log('todo mal');
                 console.log(error)
+                dialogsService.error('LDE', error.message);
             })
         };
+
+        $scope.getLdeData();
 
     }]);
 
