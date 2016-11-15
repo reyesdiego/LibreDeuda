@@ -31,7 +31,12 @@ myApp.service('Session', ['$rootScope', 'storageService', '$http', 'configServic
         const deferred = $q.defer();
         const inserturl = configService.serverUrl + '/login';
 
-        $http.post(inserturl, this.data).then((response) => {
+        let param = {
+            USUARIO: this.data.USUARIO,
+            CLAVE: this.data.CLAVE
+        };
+
+        $http.post(inserturl, param).then((response) => {
             this.setToken(response.data.data);
             deferred.resolve();
         }, (response) => {
