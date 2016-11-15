@@ -8,8 +8,7 @@ myApp.service('Session', ['$rootScope', 'storageService', '$http', 'configServic
         USUARIO: '',
         CLAVE: '',
         TYPE: 'full',
-        keep: false,
-        role: 'admin'
+        keep: false
     };
 
     this.login = function(){
@@ -51,7 +50,7 @@ myApp.service('Session', ['$rootScope', 'storageService', '$http', 'configServic
         //console.log(user);
         angular.extend(this.data, user);
         this.data.keep = keep;
-    }
+    };
 
     this.setToken = function(token){
         if (this.data.keep){
@@ -59,7 +58,7 @@ myApp.service('Session', ['$rootScope', 'storageService', '$http', 'configServic
         } else {
             storageService.setSessionKey('token', token);
         }
-    }
+    };
 
     this.getToken = function(){
         if (this.data.keep){
@@ -67,33 +66,36 @@ myApp.service('Session', ['$rootScope', 'storageService', '$http', 'configServic
         } else {
             return storageService.getSessionKey('token');
         }
-    }
+    };
 
     this.setData = function(userData){
-        angular.extend(this.data, userData);
+        //angular.extend(this.data, userData);
+        this.data.full_name = userData.full_name;
+        this.data.token = userData.token;
+        this.data.group = userData.group;
         if (this.data.keep){
             storageService.setObject('user', this.data);
         } else {
             storageService.setSessionObject('user', this.data);
         }
-    }
+    };
 
     this.getName = function(){
         return this.data.USUARIO;
-    }
+    };
 
     this.getFullName = function(){
         return this.data.full_name;
-    }
+    };
 
     this.isAuthenticated = function(){
         return (this.getToken() !== null);
-    }
+    };
 
     this.isAuthorized = function(authorizedRoles){
         return (this.isAuthenticated() &&
-        (authorizedRoles.indexOf(this.data.role) !== -1 || authorizedRoles.indexOf('*') !== -1));
-    }
+        (authorizedRoles.indexOf(this.data.group) !== -1 || authorizedRoles.indexOf('*') !== -1));
+    };
 
     this.logOut = function(){
         if (this.data.keep){
@@ -103,7 +105,7 @@ myApp.service('Session', ['$rootScope', 'storageService', '$http', 'configServic
             storageService.deleteSessionKey('user');
             storageService.deleteSessionKey('token');
         }
-    }
+    };
 
     if (storageService.getKey('token') !== null){
         this.reloadData(true);

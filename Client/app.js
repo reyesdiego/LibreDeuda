@@ -13,10 +13,9 @@ var myApp = angular.module('libreDeuda', [
 
 myApp.constant('USER_ROLES', {
     all: '*',
-    admin: 'admin',
-    terminal: 'terminal',
-    agent: 'agent',
-    builder: 'builder'
+    terminal: 'TER',
+    agent: 'AGE',
+    forwarder: 'FOR'
 });
 
 myApp.constant('AUTH_EVENTS', {
@@ -102,7 +101,7 @@ myApp.config(['$provide', '$httpProvider', function($provide, $httpProvider){
                         }
                     }
 
-                    if (rejection.status == 401){ //Forbidden
+                    /*if (rejection.status == 401){ //Forbidden
                         if (rejection.config.url != configService.serverUrl + '/login'){
                             if (rejection.data.message != 'No tiene privilegios para realizar esta petición.' && rejection.data.message != 'No tiene permisos para realizar esta operación'){
                                 $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
@@ -117,7 +116,7 @@ myApp.config(['$provide', '$httpProvider', function($provide, $httpProvider){
                             }
                             //$state.transitionTo('login');
                         }
-                    }
+                    }*/
 
                     if (rejection.status == -1) rejection.data = { message: 'No se ha podido establecer comunicación con el servidor.', status: 'ERROR' };
                     // do something on error
@@ -152,7 +151,7 @@ myApp.run(['$rootScope', 'appSocket', 'storageService', '$state', '$http', 'dial
             Idle.watch();
         }
 
-        $rootScope.requests401 = [];
+        //$rootScope.requests401 = [];
         $rootScope.routeChange = {
             to: '',
             from: ''
@@ -182,7 +181,6 @@ myApp.run(['$rootScope', 'appSocket', 'storageService', '$state', '$http', 'dial
         });
 
         $rootScope.$on('Keepalive', function(){
-            //console.log('hago keep alive');
             $rootScope.session.keepAlive(() => {}, (error) => {
                 console.log(error);
             })
@@ -192,21 +190,21 @@ myApp.run(['$rootScope', 'appSocket', 'storageService', '$state', '$http', 'dial
             dialogsService.notify('Error de acceso', 'Su usario no se encuentra autorizado para realizar esa operación.')
         });
 
-        $rootScope.$on(AUTH_EVENTS.notAuthenticated, function(){
+        /*$rootScope.$on(AUTH_EVENTS.notAuthenticated, function(){
             if ($rootScope.routeChange.from != 'login'){
                 var loginDialog = dialogsService.login();
                 loginDialog.result.then(function(result){
                     /*if (result.statusText != 'OK'){
                         dialogsService.error('Error', result.data);
                         $state.transitionTo('login');
-                    }*/
+                    }
                 }, function(){
                     $state.transitionTo('login');
                 });
             } else {
                 dialogsService.notify('No autorizado', 'Se requiere un inicio de sesión antes de poder continuar.')
             }
-        });
+        });*/
 
         $rootScope.$on(AUTH_EVENTS.loginSucces, function() {
             Title.restore();

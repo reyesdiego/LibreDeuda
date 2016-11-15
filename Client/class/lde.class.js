@@ -85,7 +85,6 @@ myApp.factory('Lde', ['$http', '$q', 'configService', function($http, $q, config
 		}
 
 		updatePlace(newPlace){
-			console.log('0update place');
 			const deferred = $q.defer();
 			const insertUrl = `${configService.serverUrl}/lde/lugar`;
 			const params = {
@@ -94,7 +93,6 @@ myApp.factory('Lde', ['$http', '$q', 'configService', function($http, $q, config
 				ID_CLIENTE: this.ID_CLIENT,
 				ID: this.ID
 			};
-			console.log(params);
 			$http.put(insertUrl, params).then((response) => {
 				console.log(response);
 				deferred.resolve(response.data);
