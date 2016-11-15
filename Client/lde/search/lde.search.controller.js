@@ -124,7 +124,7 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService'
                 console.log(data);
             }, (error) => {
                 console.log('todo mal');
-                console.log(error)
+                console.log(error);
                 dialogsService.error('LDE', error.message);
             })
         };

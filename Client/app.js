@@ -241,8 +241,6 @@ myApp.run(['$rootScope', 'appSocket', 'storageService', '$state', '$http', 'dial
 
         $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){
 
-            console.log('hoooooolaaaaaaaa');
-
             if (angular.isDefined(toState.data)){ //state requires logged user
                 var authorizedRoles = toState.data.authorizedRoles;
                 if ($rootScope.session.isAuthenticated()){

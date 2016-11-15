@@ -12,7 +12,7 @@ myApp.service('Session', ['$rootScope', 'storageService', '$http', 'configServic
 
     this.login = function(){
         const deferred = $q.defer();
-        const inserturl = configService.serverUrl + '/login';
+        const inserturl = `${configService.serverUrl}/login`;
 
         $http.post(inserturl, this.data).then((response) => {
             $rootScope.$broadcast(AUTH_EVENTS.loginSucces);
@@ -28,7 +28,7 @@ myApp.service('Session', ['$rootScope', 'storageService', '$http', 'configServic
 
     this.keepAlive = function(){
         const deferred = $q.defer();
-        const inserturl = configService.serverUrl + '/login';
+        const inserturl = `${configService.serverUrl}/login`;
 
         let param = {
             USUARIO: this.data.USUARIO,

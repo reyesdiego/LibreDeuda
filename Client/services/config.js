@@ -28,7 +28,7 @@ myApp.service('configService', [function(){
                 if (status.hasOwnProperty(key)) {
                     var newValue = {
                         id: parseInt(key),
-                        formatted: key + ' - ' + status[key].name,
+                        formatted: `${key} - ${status[key].name}`,
                         className: status[key].className
                     };
                     result.push(newValue);
