@@ -20,9 +20,8 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService'
         });
 
         $scope.$on('socket:container', function(ev, data){
-            console.log('esto');
             //data.ANIMATE = true;
-            console.log(data);
+            //console.log(data);
             let ldeData = {
                 TERMINAL: data.TERMINAL,
                 BUQUE: data.SHIP,
@@ -39,7 +38,6 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService'
         });
 
         $scope.$on('socket:status', function(ev, data){
-            console.log('y esto');
 
             $scope.dataContainers.forEach(function(registry){
 
@@ -60,7 +58,7 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService'
                     $scope.dataContainers.push(lde);
                 }
             }, error => {
-                console.log(error);
+                //console.log(error);
                 dialogsService.error('Libre Deuda', `Se ha producido un error al cargar los datos. ${error.message}`);
             })
         };
@@ -86,8 +84,6 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService'
                 }
             });
             modalInstance.result.then(function(ldeData){
-                console.log(ldeData);
-                console.log(operation);
                 let promise = {};
                 switch (operation){
                     case 'invoice':
@@ -101,9 +97,9 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService'
                         break;
                 }
                 promise.then((data) => {
-                    console.log(data);
+                    //console.log(data);
                 }, (error) => {
-                    console.log(error);
+                    //console.log(error);
                     dialogsService.error('LDE', error.message);
                 })
             })
@@ -120,11 +116,11 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService'
             }
             promise.then((data) => {
                 dialogsService.notify('Libre deuda', data.message);
-                console.log('todo ok');
-                console.log(data);
+                //console.log('todo ok');
+                //console.log(data);
             }, (error) => {
-                console.log('todo mal');
-                console.log(error);
+                //console.log('todo mal');
+                //console.log(error);
                 dialogsService.error('LDE', error.message);
             })
         };
