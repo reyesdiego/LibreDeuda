@@ -7,7 +7,10 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService'
         //$scope.search = 'ZCSU2576607';
         $scope.search = '';
 
-        $scope.panelMessage = `Aguarde mientras se cargan los datos.`;
+        $scope.panelLde = {
+            type: 'panel-info',
+            message: `Aguarde mientras se cargan los datos.`
+        };
 
         $scope.statesContainers = configService.statusContainersAsArray();
         $scope.terminals = configService.terminalsArray;
@@ -55,11 +58,17 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService'
                 //console.log(data);
                 for (let lde of data.data){
                     lde = new Lde(lde);
+
                     $scope.dataContainers.push(lde);
                 }
             }, error => {
                 //console.log(error);
-                dialogsService.error('Libre Deuda', `Se ha producido un error al cargar los datos. ${error.message}`);
+                let message = `Se ha producido un error al cargar los datos. ${error.message}`;
+                dialogsService.error('Libre Deuda', message);
+                $scope.panelLde = {
+                    type: 'panel-danger',
+                    message: message
+                }
             })
         };
 
@@ -149,6 +158,16 @@ myApp.filter('containerClass', ['configService', function(configService){
             return 'status-canceled'
         }
 
+    }
+
+}]);
+
+myApp.filter('lugarDevolucion', [function(){
+
+    return function(idPlace, places){
+        for (let lugar of places){
+            if (idPlace == lugar._id) return lugar.NOMBRE
+        }
     }
 
 }]);
