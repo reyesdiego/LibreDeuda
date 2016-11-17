@@ -8,13 +8,20 @@ var concatCss = require('gulp-concat-css');
 var cleanCss = require('gulp-clean-css');
 var duration = require('gulp-duration');
 var htmlreplace = require('gulp-html-replace');
-var uglify = require('gulp-uglify');
+var minify = require('gulp-minify');
+var babel = require('gulp-babel');
 
-gulp.task('uglify', function(){
-   gulp.src(['app.js', 'directives/*', 'filters/*', 'login/*.js', 'lde/*.js', 'services/*.js', 'services/dialogs/*.js'])
-       .pipe(concat('app.js'))
-       .pipe(uglify())
-       .pipe(gulp.dest('build/'))
+
+gulp.task('minify', function(){
+    gulp.src(['app.js', 'class/*.js', 'directives/*', 'filters/*', 'login/*.js', 'lde/**/*.js', 'register/*.js', 'services/**/*.js'])
+        .pipe(concat('app.js'))
+        .pipe(babel({
+            presets: ['es2015']
+        }))
+        .pipe(minify({ noSource: true }).on('error', function(e) {
+                console.log(e);
+            }))
+        .pipe(gulp.dest('build/'))
 });
 
 gulp.task('minify-css', function() {
@@ -45,7 +52,7 @@ gulp.task('html-replace', function() {
                     'lib/ng-idle/angular-idle.min.js'
                 ]
             },
-            'app': 'app.js',
+            'app': 'app-min.js',
             'socket': 'lib/socket.io.min.js'
         }))
         .pipe(gulp.dest('build/'));
@@ -54,7 +61,8 @@ gulp.task('html-replace', function() {
 gulp.task('copy-files', function(){
     var templates = {
         "login": "login/login.html",
-        "containers": "lde/*.html",
+        "register": "register/register.html",
+        "lde": "lde/**/*.html",
         "services/dialogs": "services/dialogs/*.html",
         "lib": "lib/*",
         "images": "images/*",
@@ -62,7 +70,8 @@ gulp.task('copy-files', function(){
         "css": "css/bootstrap-cosmo.min.css"
     };
     for (var template in templates) {
-      gulp.src(templates[template])
+        console.log(template);
+        gulp.src(templates[template])
           .pipe(gulp.dest("build/" + template))
     }
 });
@@ -85,9 +94,10 @@ gulp.task("copy-bower-dependencies", function () {
     };
 
     for (var destinationDir in bower) {
+        console.log(destinationDir);
         gulp.src(paths.bower + bower[destinationDir])
             .pipe(gulp.dest(paths.lib + destinationDir));
     }
 });
 
-gulp.task('default', ['minify-css', 'html-replace', 'copy-bower-dependencies', 'copy-files', 'uglify']);
+gulp.task('default', ['minify-css', 'html-replace', 'copy-bower-dependencies', 'copy-files', 'minify']);
