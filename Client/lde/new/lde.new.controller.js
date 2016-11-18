@@ -15,7 +15,7 @@ myApp.controller('newLdeCtrl', ['$scope', 'Lde', 'dialogsService', 'ldeFactory',
 	$scope.saveLde = function(){
 		$scope.newContainer.save().then((data) => {
 			console.log(data);
-			dialogsService.notify('Nuevo contenedor', `Los datos se han guardado correctamente.\n${data.message}`);
+			dialogsService.notify('Nuevo contenedor', `Los datos se han guardado correctamente.\n${data.message || ''}`);
 			$scope.newContainer = new Lde();
 		}, (error) => {
 			console.log(error);

@@ -12,7 +12,7 @@ myApp.controller('loginCtrl', ['$rootScope', '$scope', '$state', 'storageService
                 if (result.statusText == 'OK'){
                     //$rootScope.loggedUser = $scope.user.user;
                     //storageService.setObject('user', $scope.user);
-                    $state.transitionTo('main');
+                    $state.transitionTo('lde');
                 } else {
                     dialogsService.error('Error', result.data.message);
                 }

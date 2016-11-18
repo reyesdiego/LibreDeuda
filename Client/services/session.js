@@ -3,24 +3,24 @@
  */
 myApp.service('Session', ['$rootScope', 'storageService', '$http', 'configService', 'AUTH_EVENTS', '$q', function($rootScope, storageService, $http, configService, AUTH_EVENTS, $q){
 
-
     this.data = {
         USUARIO: '',
         CLAVE: '',
-        keep: false,
-        role: 'admin'
+        TYPE: 'full',
+        keep: false
     };
 
     this.login = function(){
         const deferred = $q.defer();
-        const inserturl = configService.serverUrl + '/login';
+        const inserturl = `${configService.serverUrl}/login`;
 
         $http.post(inserturl, this.data).then((response) => {
             $rootScope.$broadcast(AUTH_EVENTS.loginSucces);
-            this.setData();
-            this.setToken(response.data.data);
+            //console.log(response.data.data);
+            this.setData(response.data.data);
+            this.setToken(response.data.data.token);
             deferred.resolve(response);
-        }, function(response){
+        }, (response) => {
             deferred.reject(response);
         });
         return deferred.promise;
@@ -28,9 +28,14 @@ myApp.service('Session', ['$rootScope', 'storageService', '$http', 'configServic
 
     this.keepAlive = function(){
         const deferred = $q.defer();
-        const inserturl = configService.serverUrl + '/login';
+        const inserturl = `${configService.serverUrl}/login`;
 
-        $http.post(inserturl, this.data).then((response) => {
+        let param = {
+            USUARIO: this.data.USUARIO,
+            CLAVE: this.data.CLAVE
+        };
+
+        $http.post(inserturl, param).then((response) => {
             this.setToken(response.data.data);
             deferred.resolve();
         }, (response) => {
@@ -46,13 +51,10 @@ myApp.service('Session', ['$rootScope', 'storageService', '$http', 'configServic
         } else {
             user = storageService.getSessionObject('user');
         }
-        console.log(user);
-        this.data.USUARIO = user.USUARIO;
-        this.data.CLAVE = user.CLAVE;
-        this.data.role = user.role;
+        //console.log(user);
+        angular.extend(this.data, user);
         this.data.keep = keep;
-
-    }
+    };
 
     this.setToken = function(token){
         if (this.data.keep){
@@ -60,7 +62,7 @@ myApp.service('Session', ['$rootScope', 'storageService', '$http', 'configServic
         } else {
             storageService.setSessionKey('token', token);
         }
-    }
+    };
 
     this.getToken = function(){
         if (this.data.keep){
@@ -68,28 +70,36 @@ myApp.service('Session', ['$rootScope', 'storageService', '$http', 'configServic
         } else {
             return storageService.getSessionKey('token');
         }
-    }
+    };
 
-    this.setData = function(){
+    this.setData = function(userData){
+        //angular.extend(this.data, userData);
+        this.data.full_name = userData.full_name;
+        this.data.token = userData.token;
+        this.data.group = userData.group;
         if (this.data.keep){
             storageService.setObject('user', this.data);
         } else {
             storageService.setSessionObject('user', this.data);
         }
-    }
+    };
 
     this.getName = function(){
         return this.data.USUARIO;
-    }
+    };
+
+    this.getFullName = function(){
+        return this.data.full_name;
+    };
 
     this.isAuthenticated = function(){
         return (this.getToken() !== null);
-    }
+    };
 
     this.isAuthorized = function(authorizedRoles){
         return (this.isAuthenticated() &&
-        (authorizedRoles.indexOf(this.data.role) !== -1 || authorizedRoles.indexOf('*') !== -1));
-    }
+            (authorizedRoles.indexOf(this.data.group) !== -1 || authorizedRoles.indexOf('*') !== -1));
+    };
 
     this.logOut = function(){
         if (this.data.keep){
@@ -99,7 +109,7 @@ myApp.service('Session', ['$rootScope', 'storageService', '$http', 'configServic
             storageService.deleteSessionKey('user');
             storageService.deleteSessionKey('token');
         }
-    }
+    };
 
     if (storageService.getKey('token') !== null){
         this.reloadData(true);

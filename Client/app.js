@@ -13,10 +13,9 @@ var myApp = angular.module('libreDeuda', [
 
 myApp.constant('USER_ROLES', {
     all: '*',
-    admin: 'admin',
-    terminal: 'terminal',
-    agent: 'agent',
-    builder: 'builder'
+    terminal: 'TER',
+    agent: 'AGE',
+    forwarder: 'FOR'
 });
 
 myApp.constant('AUTH_EVENTS', {
@@ -32,12 +31,6 @@ myApp.config(['$urlRouterProvider', '$stateProvider', 'USER_ROLES', function($ur
         url: '/login',
         templateUrl: 'login/login.html',
         controller: 'loginCtrl'
-    }).state('main', {
-        url: '/main',
-        templateUrl: 'main/main.html',
-        data: {
-            authorizedRoles: [USER_ROLES.all]
-        }
     }).state('lde', {
         url: '/lde',
         templateUrl: 'lde/search/lde.search.html',
@@ -45,12 +38,12 @@ myApp.config(['$urlRouterProvider', '$stateProvider', 'USER_ROLES', function($ur
         data: {
             authorizedRoles: [USER_ROLES.all]
         }
-    }).state('new', {
+    }).state('lde.new', {
         url: '/new',
         templateUrl: 'lde/new/lde.new.html',
         controller: 'newLdeCtrl',
         data: {
-            authorizedRoles: [USER_ROLES.all]
+            authorizedRoles: [USER_ROLES.agent]
         }
     }).state('register', {
         url: '/register',
@@ -71,6 +64,7 @@ myApp.config(['$provide', '$httpProvider', function($provide, $httpProvider){
                 'request': function(config) {
                     // do something on success
                     config.headers['Token'] = $rootScope.session.getToken();
+                    config.headers['Content-Type'] = 'application/json';
                     //TODO verificar tiempos de respuestas para diferentes llamadas...
                     //config.timeout = 2000;
 
@@ -101,20 +95,22 @@ myApp.config(['$provide', '$httpProvider', function($provide, $httpProvider){
                         }
                     }
 
-                    if (rejection.status == 401){ //Forbidden
+                    /*if (rejection.status == 401){ //Forbidden
                         if (rejection.config.url != configService.serverUrl + '/login'){
-                            $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
-                            var deferred = $q.defer();
-                            var req = {
-                                config: rejection.config,
-                                deferred: deferred
-                            };
-                            $rootScope.requests401.push(req);
+                            if (rejection.data.message != 'No tiene privilegios para realizar esta petición.' && rejection.data.message != 'No tiene permisos para realizar esta operación'){
+                                $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
+                                var deferred = $q.defer();
+                                var req = {
+                                    config: rejection.config,
+                                    deferred: deferred
+                                };
+                                $rootScope.requests401.push(req);
 
-                            return deferred.promise;
+                                return deferred.promise;
+                            }
                             //$state.transitionTo('login');
                         }
-                    }
+                    }*/
 
                     if (rejection.status == -1) rejection.data = { message: 'No se ha podido establecer comunicación con el servidor.', status: 'ERROR' };
                     // do something on error
@@ -145,10 +141,11 @@ myApp.run(['$rootScope', 'appSocket', 'storageService', '$state', '$http', 'dial
         $rootScope.session = Session;
 
         if ($rootScope.session.isAuthenticated()){
+            //$rootScope.session.reloadData();
             Idle.watch();
         }
 
-        $rootScope.requests401 = [];
+        //$rootScope.requests401 = [];
         $rootScope.routeChange = {
             to: '',
             from: ''
@@ -178,7 +175,6 @@ myApp.run(['$rootScope', 'appSocket', 'storageService', '$state', '$http', 'dial
         });
 
         $rootScope.$on('Keepalive', function(){
-            console.log('hago keep alive');
             $rootScope.session.keepAlive(() => {}, (error) => {
                 console.log(error);
             })
@@ -188,21 +184,21 @@ myApp.run(['$rootScope', 'appSocket', 'storageService', '$state', '$http', 'dial
             dialogsService.notify('Error de acceso', 'Su usario no se encuentra autorizado para realizar esa operación.')
         });
 
-        $rootScope.$on(AUTH_EVENTS.notAuthenticated, function(){
+        /*$rootScope.$on(AUTH_EVENTS.notAuthenticated, function(){
             if ($rootScope.routeChange.from != 'login'){
                 var loginDialog = dialogsService.login();
                 loginDialog.result.then(function(result){
                     /*if (result.statusText != 'OK'){
                         dialogsService.error('Error', result.data);
                         $state.transitionTo('login');
-                    }*/
+                    }
                 }, function(){
                     $state.transitionTo('login');
                 });
             } else {
                 dialogsService.notify('No autorizado', 'Se requiere un inicio de sesión antes de poder continuar.')
             }
-        });
+        });*/
 
         $rootScope.$on(AUTH_EVENTS.loginSucces, function() {
             Title.restore();
@@ -211,7 +207,7 @@ myApp.run(['$rootScope', 'appSocket', 'storageService', '$state', '$http', 'dial
             //$rootScope.session.setData(user);
             //$rootScope.session.setToken(token);
 
-            if ($rootScope.requests401.length > 0){
+            /*if ($rootScope.requests401.length > 0){
                 var i, requests = $rootScope.requests401;
                 for (i = 0; i < requests.length; i++) {
                     retry(requests[i]);
@@ -224,14 +220,14 @@ myApp.run(['$rootScope', 'appSocket', 'storageService', '$state', '$http', 'dial
                     from: ''
                 };
                 $state.transitionTo(next);
-            }
+            }*/
 
 
-            function retry(req) {
+            /*function retry(req) {
                 $http(req.config).then(function(response) {
                     req.deferred.resolve(response);
                 });
-            }
+            }*/
         });
 
         $rootScope.socket = appSocket;
