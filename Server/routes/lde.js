@@ -13,6 +13,52 @@ module.exports = (socket, log) => {
     var Lde = require('../lib/lde.js');
     Lde = new Lde();
 
+    let validateFree = (req, res, next) => {
+        var result;
+
+        req.checkBody(
+            {
+                TERMINAL: {
+                    notEmpty: {errorMessage: "La Terminal es requerida." }
+                },
+                BUQUE: {
+                    notEmpty: {errorMessage: "El buque es requerido." }
+                },
+                VIAJE: {
+                    notEmpty: {errorMessage: "El Viaje es requerido." }
+                },
+                LUGAR_DEV: {
+                    notEmpty: {errorMessage: "El Lugar de Devolución es requerido." }
+                },
+                FECHA_DEV: {
+                    notEmpty: {errorMessage: "La Fecha de Devolución es requerida." },
+                    isDate: {
+                        errorMessage: "La Fecha de Devolución debe ser válida" }}
+            });
+
+        var errors = req.validationErrors();
+        if (errors) {
+            result = Error.ERROR("AGP-0013").data(errors);
+            res.status(result.http_status).send(result);
+        } else {
+            next();
+        }
+    };
+
+    /** GET */
+    let getFrees = (req, res) => {
+        var param = {
+            user: req.user
+        };
+        Lde.getLdes(param)
+            .then(data => {
+                res.status(200).send(data);
+            })
+            .catch(err => {
+                res.status(err.http_status).send(err);
+            });
+    };
+
     /** GET */
     let getFreeDebt = (req, res) => {
         if (req.url.indexOf('/lugar') >= 0) {
@@ -38,7 +84,11 @@ module.exports = (socket, log) => {
                     });
             }
         } else {
-            Lde.checkLde(req.params)
+            let param = {
+                contenedor: req.params.contenedor,
+                user: req.user
+            };
+            Lde.checkLde(param)
                 .then(data => {
                     res.status(200).send(data);
                 })
@@ -161,9 +211,14 @@ module.exports = (socket, log) => {
         var cuit = require("../include/cuit.js");
         var timestamp = moment().toDate();
         var lde2insert;
-        var result;
+        var param, result;
 
-        Lde.checkLde({contenedor: lde.CONTENEDOR})
+        param = {
+            contenedor: lde.CONTENEDOR,
+            user: req.user
+        }
+
+        Lde.checkLde(param)
             .then(data => {
                 data = data.data;
                 result = Error.ERROR("AGP-0005").data({
@@ -184,10 +239,12 @@ module.exports = (socket, log) => {
                 let dateReturn = moment(lde.FECHA_DEV, "YYYY-MM-DD").toDate();
 
                 if (checkCuit === false) {
-                    result = Error.ERROR("AGP-0004").data({CUIT: lde.CUIT});
+                    result = Error.ERROR("AGP-0004").data({CUIT: lde.CUIT || ""});
+                    log.logger.error("Insert LDE - CUIT %j", JSON.stringify(result));
                     res.status(result.http_status).send(result);
                 } else if (dateReturn < toDay) {
-                    result = Error.ERROR("AGP-0006").data({FECHA_DEV: lde.FECHA_DEV});
+                    result = Error.ERROR("AGP-0006").data({FECHA_DEV: lde.FECHA_DEV || ""});
+                    log.logger.error("Insert LDE - FECHA DEVOLUCION %j", JSON.stringify(result));
                     res.status(result.http_status).send(result);
                 } else {
                     lde2insert = {
@@ -249,6 +306,7 @@ module.exports = (socket, log) => {
     let changePlace = (req, res) => {
         var user = req.user;
         var moment = require("moment");
+        var result;
 
         var param = {
             contenedor: req.body.CONTENEDOR,
@@ -260,10 +318,8 @@ module.exports = (socket, log) => {
         };
 
         if (user.data.group !== 'AGE') {
-            res.status(401).send({
-                status: "ERROR",
-                message: "No tiene permisos para realizar esta operación"
-            });
+            result = Error.ERROR("AGP-0008");
+            res.status(result.http_status).send(result);
         } else {
             Lde.changePlace(param)
                 .then(data => {
@@ -275,11 +331,12 @@ module.exports = (socket, log) => {
         }
     };
 
+    router.get("/", getFrees);
     router.get("/:contenedor", getFreeDebt);
     router.put("/disable", contentCheck.isApplicationJson, disableFreeDebt);
     router.put("/enable", contentCheck.isApplicationJson, enableFreeDebt);
     router.put("/invoice", contentCheck.isApplicationJson, invoiceFreeDebt);
-    router.post("/", contentCheck.isApplicationJson, addFreeDebt);
+    router.post("/", contentCheck.isApplicationJson, validateFree, addFreeDebt);
     router.put("/lugar", contentCheck.isApplicationJson, changePlace);
     router.put("/forward", contentCheck.isApplicationJson, forwardLde);
 

@@ -11,6 +11,7 @@ var http = require("https");
 var fs = require("fs");
 var path = require("path");
 var express = require("express");
+var expressValidator = require("express-validator");
 var compress = require('compression');
 var methodOverride = require('method-override'),
     bodyParser = require('body-parser');
@@ -28,6 +29,17 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 //app.use(multer());
 app.use(methodOverride());
+app.use(expressValidator({
+    customValidators: {
+        isArray: function(value) {
+            return Array.isArray(value);
+        },
+        gte: function(param, num) {
+            return param >= num;
+        }
+    }
+}));
+
 app.all('/*', (req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", 'X-Requested-With, Content-Type, token');
@@ -59,6 +71,7 @@ socket = socket(server, {
         'polling'
     ]
 });
+
 
 server.listen(port, () => {
     log.logger.info("#%s Nodejs %s Running on %s://localhost:%s", process.pid, process.version, 'http', port);

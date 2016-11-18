@@ -11,6 +11,7 @@ var Account = new Schema({
     password: { type: String},
     group: {type: String},
     full_name: {type: String, required: true},
+    company: {type: String},
     date_created: {type: Date, default: Date.now},
     status: {type: Boolean},
     lastLogin: {type: Date}
