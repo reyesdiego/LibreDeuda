@@ -9,7 +9,7 @@ myApp.service('configService', [function(){
         serverUrl: 'https://10.10.0.223:8086', //Servidor Diego
         //serverUrl: 'https://localhost:8086', //Local contra base en pc de diego
         statusContainers: {'0': {
-            name: 'Liberado',
+            name: 'Habilitado',
             className: 'status-free'
         }, '3': {
             name: 'Facturado',
