@@ -6,6 +6,7 @@
 module.exports = () => {
     "use strict";
 
+    var Error = require('../include/error.js');
     var express = require("express"),
         router = express.Router();
 
@@ -14,17 +15,20 @@ module.exports = () => {
             token = require("../include/token.js");
         var account = require("../lib/account.js");
         account = new account();
+        var errToken;
 
         if (incomingToken === undefined) {
-            res.status(401).send({status: 'ERROR', message: "Debe proveer un Token"});
+            errToken = Error.ERROR("AGP-0009").data();
+            res.status(errToken.http_status).send(errToken);
         } else {
             token.verifyToken(incomingToken, (err, payload) => {
                 if (err) {
-                    res.status(401).send({status: 'ERROR', message: "Token Invalido", data: err});
+                    errToken = Error.ERROR("AGP-0009").data(err);
+                    res.status(errToken.http_status).send(errToken);
                 } else {
                     account.getAccount(payload.USUARIO, payload.CLAVE, (err, data) => {
                         if (err) {
-                            res.status(401).send(err);
+                            res.status(err.http_status).send(err);
                         } else {
                             res.status(200).send(data);
                         }
@@ -37,26 +41,32 @@ module.exports = () => {
 
     var login = (req, res) => {
         var token = require("../include/token.js");
-        var account = require("../lib/account.js");
-        account = new account();
         var payload = req.body;
         var response;
+        var result;
+
+        var account = require("../lib/account.js");
+        account = new account();
+
+        payload.TYPE = payload.TYPE || "";
 
         if (payload.USUARIO === undefined || payload.USUARIO === '') {
-            res.status(401).send({
-                status: "ERROR",
-                message: "Debe proveer un usuario"
-            });
+            result = Error.ERROR("AGP-0012").data();
+            res.status(result.http_status).send(result);
         } else {
             account = account.getAccount(payload.USUARIO, payload.CLAVE, (err, data) => {
                 if (err) {
-                    res.status(401).send(err);
+                    res.status(err.http_status).send(err);
                 } else {
                     token.createToken(payload, (token) => {
                         response = {
                             status: "OK",
                             data: token
                         };
+                        if (payload.TYPE.toLowerCase() === 'full') {
+                            response = data;
+                            response.data.token = token;
+                        }
                         res.status(200).send(response);
                     });
                 }

@@ -38,11 +38,11 @@ class ldeMongoDb {
             var match = {CONTAINER: contenedor};
             var toDay = moment(moment().format("YYYY-MM-DD")).toDate();
 
-            if (params.ID_CLIENTE !== undefined) {
+            if (params.id_cliente !== undefined) {
                 match.ID_CLIENT = params.id_cliente;
             }
-            if (params.ID !== undefined) {
-                match._id = params.ID;
+            if (params.id !== undefined) {
+                match._id = params.id;
             }
             var param = [
                 {$match: match
@@ -61,6 +61,7 @@ class ldeMongoDb {
                     BL: {'$first': '$BL'},
                     ID_CLIENT: {'$first': '$ID_CLIENT'},
                     STATUS: {'$last': '$STATUS'},
+                    STATUS_FIRST: {'$first': '$STATUS'},
                     RETURN_TO: {'$last': '$RETURN_TO'},
                     CLIENT: {'$last': '$CLIENT'},
                     EXPIRATION: {'$first': '$EXPIRATION'}
@@ -80,6 +81,7 @@ class ldeMongoDb {
                     LUGAR_DEV: '$RETURN_TO.PLACE',
                     FECHA_DEV: '$RETURN_TO.DATE_TO',
                     STATUS: '$STATUS.STATUS',
+                    USER: '$STATUS_FIRST.AUD_USER',
                     VENCE: '$EXPIRATION'
                 }}
             ];
@@ -90,18 +92,24 @@ class ldeMongoDb {
                         result = Error.ERROR("MONGO-ERROR").data(err.message);
                         reject(result);
                     } else {
+                        /** Libre deuda inexistente para este contenedor. */
+                        result = Error.ERROR("AGP-0001").data({CONTENEDOR: contenedor});
                         if (data.length === 0) {
-                            /** Libre deuda inexistente para este contenedor. */
-                            result = Error.ERROR("AGP-0001").data({CONTENEDOR: contenedor});
                             reject(result);
                         } else {
+                            let user = params.user.data;
                             let lde = data[0];
-                            result = {
-                                status: "OK",
-                                message: "El Libre Deuda es Válido",
-                                data: lde
-                            };
-                            resolve(result);
+
+                            if (user.group === 'AGE' && user.email !== lde.USER) {
+                                reject(result);
+                            } else {
+                                result = {
+                                    status: "OK",
+                                    message: "El Libre Deuda es Válido",
+                                    data: lde
+                                };
+                                resolve(result);
+                            }
                         }
                     }
                 });
@@ -113,12 +121,15 @@ class ldeMongoDb {
             var result;
             this.checkLde(params)
                 .then(data => {
-                    if (data.status === 'OK') {
-                        let ID = data.data.ID;
-                        this.model.findOne({_id: ID})
-                            .exec((err, lde) => {
-                                if (err) {
-                                    result = Error.ERROR("MONGO-ERROR").data(err.message);
+                    let ID = data.data.ID;
+                    this.model.findOne({_id: ID})
+                        .exec((err, lde) => {
+                            if (err) {
+                                result = Error.ERROR("MONGO-ERROR").data(err.message);
+                                reject(result);
+                            } else {
+                                if (lde.STATUS[0].AUD_USER !== params.user.USUARIO) {
+                                    result = Error.ERROR("AGP-0008").data();
                                     reject(result);
                                 } else {
                                     var aud_date = new Date();
@@ -146,8 +157,8 @@ class ldeMongoDb {
                                         }
                                     });
                                 }
-                            });
-                    }
+                            }
+                        });
                 })
                 .catch(err => {
                     reject(err);
@@ -165,7 +176,7 @@ class ldeMongoDb {
             .then(data => {
 
                         lde = data.data[0];
-                        var lastStatus = lde.STATUS[lde.STATUS.length-1];
+                        var lastStatus = lde.STATUS;
                         if (lastStatus.STATUS !== 9) {
                             result = Error.ERROR("AGP-0001").data({CONTENEDOR: lde.CONTENEDOR});
                             reject(result);
@@ -175,29 +186,34 @@ class ldeMongoDb {
                                     result = Error.ERROR("MONGO-ERROR").data(err.message);
                                     reject(result);
                                 } else {
-                                    let aud_date = new Date();
-                                    let status = {
-                                        STATUS: 0,
-                                        AUD_TIME: aud_date,
-                                        AUD_USER: params.user.USUARIO
-                                    };
-                                    lde.STATUS.push(status);
-                                    lde.save((err, dataSaved) => {
-                                        if (err) {
-                                            result = Error.ERROR("MONGO-ERROR").data(err.message);
-                                            reject(result);
-                                        } else {
-                                            result = {
-                                                status: "OK",
-                                                message: "El Libre Deuda ha sido Habilitado correctamente.",
-                                                data: {
-                                                    ID: dataSaved._id,
-                                                    STATUS: status
-                                                }
-                                            };
-                                            resolve(result);
-                                        }
-                                    });
+                                    if (lde.STATUS[0].AUD_USER !== params.user.USUARIO) {
+                                        result = Error.ERROR("AGP-0008").data();
+                                        reject(result);
+                                    } else {
+                                        let aud_date = new Date();
+                                        let status = {
+                                            STATUS: 0,
+                                            AUD_TIME: aud_date,
+                                            AUD_USER: params.user.USUARIO
+                                        };
+                                        lde.STATUS.push(status);
+                                        lde.save((err, dataSaved) => {
+                                            if (err) {
+                                                result = Error.ERROR("MONGO-ERROR").data(err.message);
+                                                reject(result);
+                                            } else {
+                                                result = {
+                                                    status: "OK",
+                                                    message: "El Libre Deuda ha sido Habilitado correctamente.",
+                                                    data: {
+                                                        ID: dataSaved._id,
+                                                        STATUS: status
+                                                    }
+                                                };
+                                                resolve(result);
+                                            }
+                                        });
+                                    }
                                 }
                             });
                         }
@@ -414,47 +430,138 @@ class ldeMongoDb {
         });
     }
 
+    getLdes (params) {
+        return new Promise((resolve, reject) => {
+            var result;
+            var param, match;
+
+            if (params.user.data.group === 'AGE') {
+                match = {
+                    'STATUS.STATUS': {$in: [0, 9]},
+                    'STATUS.AUD_USER': params.user.USUARIO
+                };
+            } else if (params.user.data.group === 'TER') {
+                match = {
+                    'STATUS.STATUS': {$in: [0]},
+                    TERMINAL: params.user.data.company
+                };
+            }
+            param = [
+                {$unwind: '$STATUS'},
+                {$unwind: '$RETURN_TO'},
+                {$unwind: '$CLIENT'},
+                {$sort: {'STATUS.AUD_TIME': 1}},
+                {$group: {
+                    _id: {id: '$_id'},
+                    TERMINAL: {'$first': '$TERMINAL'},
+                    SHIP: {'$first': '$SHIP'},
+                    TRIP: {'$first': '$TRIP'},
+                    CONTAINER: {'$first': '$CONTAINER'},
+                    BL: {'$first': '$BL'},
+                    ID_CLIENT: {'$first': '$ID_CLIENT'},
+                    STATUS: {'$last': '$STATUS'},
+                    RETURN_TO: {'$last': '$RETURN_TO'},
+                    CLIENT: {'$last': '$CLIENT'},
+                    EXPIRATION: {'$first': '$EXPIRATION'}
+                }},
+                {$match: match},
+                {$project: {
+                    //ID: '$_id.id',
+                    TERMINAL: true,
+                    SHIP: true,
+                    TRIP: true,
+                    CONTAINER: true,
+                    BL: true,
+                    CUIT: '$CLIENT.CUIT',
+                    ID_CLIENT: true,
+                    LUGAR_DEV: '$RETURN_TO.PLACE',
+                    FECHA_DEV: '$RETURN_TO.DATE_TO',
+                    STATUS: '$STATUS.STATUS',
+                    USER: '$STATUS_FIRST.AUD_USER',
+                    VENCE: '$EXPIRATION'
+                }}
+            ];
+            this.model.aggregate(param)
+                .exec((err, data) => {
+                    if (err) {
+                        result = Error.ERROR("MONGO-ERROR").data(err.message);
+                        reject(result);
+                    } else {
+
+                        result = {
+                            status: "OK",
+                            data: data.map(lde => ({
+                                ID: lde._id,
+                                ID_CLIENT: lde.ID_CLIENT,
+                                CUIT: lde.CUIT,
+                                CONTENEDOR: lde.CONTAINER,
+                                TERMINAL: lde.TERMINAL,
+                                BUQUE: lde.SHIP,
+                                VIAJE: lde.TRIP,
+                                BL: lde.BL,
+                                LUGAR_DEV: lde.LUGAR_DEV,
+                                FECHA_DEV: lde.FECHA_DEV,
+                                STATUS: lde.STATUS,
+                                USER: lde.USER,
+                                VENCE: lde.VENCE
+                            }))
+                        };
+                        resolve(result);
+                    }
+                });
+        });
+    }
+
     changePlace (params) {
         return new Promise((resolve, reject) => {
             var result;
             this.getLde(params)
             .then(data => {
-                    data = data.data.filter(item => (item.STATUS.STATUS === 3 || item.STATUS.STATUS === 0));
-                    let lde = data[0];
-                    this.model.find({_id: lde.ID.id}, (err, data) => {
-                        if (err) {
-                            result = Error.ERROR("MONGO-ERROR").data(err.message);
-                            reject(result);
-                        } else {
-                            let lde = data[0];
-                            /** Si no recibe lugar o fecha de devolucion se utiliza la ultima que tenia*/
-                            let lastReturn = lde.RETURN_TO[lde.RETURN_TO.length-1];
-
-                            /**La fecha de devolucion no puede ser menor a la fecha original*/
-                            if (lde.RETURN_TO[0].DATE_TO < params.fecha_dev) {
-                                reject({
-                                    status: "ERROR",
-                                    message: "La nueva fecha de devolución debe ser menos a la original."
-                                });
-                            } else {
-                                let newReturn_To = {
-                                    PLACE: (params.lugar_dev !== undefined) ? params.lugar_dev : lastReturn.PLACE,
-                                    DATE_TO: (params.fecha_dev !== undefined) ? params.fecha_dev : lastReturn.DATE_TO,
-                                    AUD_TIME: new Date(),
-                                    AUD_USER: params.user.USUARIO
-                                };
-                                lde.RETURN_TO.push(newReturn_To);
-                                lde.save((err, data) => {
-                                    if (err) {
-                                        result = Error.ERROR("MONGO-ERROR").data(err.message);
-                                        reject(result);
-                                    } else {
-                                        resolve(data);
-                                    }
-                                });
-                            }
-                        }
+                    /** Libre deuda inexistente para este contenedor. */
+                    result = Error.ERROR("AGP-0001").data({
+                        CONTENEDOR: params.contenedor,
+                        ID_CLIENT: params.ID_CLIENTE
                     });
+                    if (data.data.length === 0) {
+                        reject(result);
+                    } else {
+                        data = data.data.filter(item => (item.STATUS.STATUS === 3 || item.STATUS.STATUS === 0));
+                        let lde = data[0];
+                        this.model.find({_id: lde.ID.id}, (err, data) => {
+                            if (err) {
+                                result = Error.ERROR("MONGO-ERROR").data(err.message);
+                                reject(result);
+                            } else {
+                                let lde = data[0];
+                                /** Si no recibe lugar o fecha de devolucion se utiliza la ultima que tenia*/
+                                let lastReturn = lde.RETURN_TO[lde.RETURN_TO.length-1];
+
+                                /**La fecha de devolucion no puede ser menor a la fecha original*/
+                                if (lde.RETURN_TO[0].DATE_TO < params.fecha_dev) {
+                                    reject({
+                                        status: "ERROR",
+                                        message: "La nueva fecha de devolución debe ser menos a la original."
+                                    });
+                                } else {
+                                    let newReturn_To = {
+                                        PLACE: (params.lugar_dev !== undefined) ? params.lugar_dev : lastReturn.PLACE,
+                                        DATE_TO: (params.fecha_dev !== undefined) ? params.fecha_dev : lastReturn.DATE_TO,
+                                        AUD_TIME: new Date(),
+                                        AUD_USER: params.user.USUARIO
+                                    };
+                                    lde.RETURN_TO.push(newReturn_To);
+                                    lde.save((err, data) => {
+                                        if (err) {
+                                            result = Error.ERROR("MONGO-ERROR").data(err.message);
+                                            reject(result);
+                                        } else {
+                                            resolve(data);
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    }
                 })
             .catch(err => {
                     reject(err);
@@ -482,6 +589,20 @@ class lde {
         return this.clase.getLde(params);
     }
 
+    getLdes (params) {
+        return this.clase.getLdes(params);
+    }
+
+    /**
+     * Obtiene un JSON del Libre Deuda Electrónico verificando que éste se encuentre activo.
+     *
+     * @param {Object} params - Objeto Filtro.
+     * @param {String} params.contenedor - Contenedor a verificar
+     * @param {String} params.id - Id del sistema AGP - Optional
+     * @param {String} params.id_cliente - Id del sistema del cliente - Optional
+     * @param {String} params.user - Usuario que realiza la consulta
+     * @api public
+     */
     checkLde (params) {
         return this.clase.checkLde(params);
     }

@@ -2,7 +2,7 @@
  * Created by diego on 28/04/16.
  */
 
-module.exports = function (app, socket, log) {
+module.exports = function (app, socket, log, redis) {
     "use strict";
     var Error = require('../include/error.js');
 
@@ -43,7 +43,7 @@ module.exports = function (app, socket, log) {
     var error = require("./error.js")();
     app.use('/errors', verifyToken, error);
 
-    var lde = require("./lde.js")(socket, log);
+    var lde = require("./lde.js")(socket, log, redis);
     app.use('/lde', verifyToken, lde);
 
     app.get('/pm2test', (req, res) => {

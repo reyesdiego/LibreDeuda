@@ -6,7 +6,7 @@
 
 var errors = [
     {code: `MONGO-ERROR`, message: `Error en base de datos`, http_status: 500},
-    {code: `AGP-0001`, message: `Libre deuda inexistente para este contenedor.`, http_status: 409},
+    {code: `AGP-0001`, message: `Libre deuda no existe para este contenedor.`, http_status: 409},
     {code: `AGP-0002`, message: `Libre deuda vencido para este contenedor.`, http_status: 409},
     {code: `AGP-0003`, message: `Libre deuda anulado para este contenedor.`, http_status: 409},
     {code: `AGP-0004`, message: `CUIT inválido.`, http_status: 400},
@@ -16,7 +16,9 @@ var errors = [
     {code: `AGP-0008`, message: `No tiene privilegios para realizar esta petición.`, http_status: 401},
     {code: `AGP-0009`, message: `Token inválido`, http_status: 401},
     {code: `AGP-0010`, message: `El usuario no existe`, http_status: 401},
-    {code: `AGP-0011`, message: `La clave es incorrecta`, http_status: 401}
+    {code: `AGP-0011`, message: `La clave es incorrecta`, http_status: 401},
+    {code: `AGP-0012`, message: `Debe proveer un Usuario`, http_status: 403},
+    {code: `AGP-0013`, message: `Lo parámetros de entrada son incorrectos`, http_status: 403}
 ];
 //module.exports.errors = errors;
 
