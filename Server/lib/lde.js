@@ -433,19 +433,29 @@ class ldeMongoDb {
     getLdes (params) {
         return new Promise((resolve, reject) => {
             var result;
-            var param, match;
+            var param,
+                match = {};
 
             if (params.user.data.group === 'AGE') {
                 match = {
-                    'STATUS.STATUS': {$in: [0, 9]},
+                    $or: [ {'STATUS.STATUS': 0}, {'STATUS.STATUS': 9}],
                     'STATUS.AUD_USER': params.user.USUARIO
+                };
+            } if (params.user.data.group === 'ADM') {
+                match = {
+                    $or: [ {'STATUS.STATUS': 0}, {'STATUS.STATUS': 9}]
                 };
             } else if (params.user.data.group === 'TER') {
                 match = {
-                    'STATUS.STATUS': {$in: [0]},
+                    'STATUS.STATUS': 0,
                     TERMINAL: params.user.data.company
                 };
+            } else if (params.user.data.group === 'FOR') {
+                match = {
+                    'STATUS.STATUS': 0
+                };
             }
+
             param = [
                 {$unwind: '$STATUS'},
                 {$unwind: '$RETURN_TO'},
