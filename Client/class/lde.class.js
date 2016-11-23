@@ -21,6 +21,7 @@ myApp.factory('Lde', ['$http', '$q', 'configService', function($http, $q, config
 				this.CUIT = '';
 				this.VENCE = 0;
 				this.ID_CLIENTE = '';
+				this.EMAIL = '';
 			}
 		}
 

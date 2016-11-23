@@ -78,6 +78,15 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label for="mail" class="col-lg-2 control-label"><span class="glyphicon"></span> E-Mail cliente</label>
+                        <div class="input-group col-lg-9">
+                            <input type="text" class="form-control" ng-model="newContainer.EMAIL" id="mail" placeholder="" ng-required="false" disallow-spaces>
+                        <span class="input-group-btn">
+                            <button type="button" class="btn btn-default" ng-click="eraseField('EMAIL')"><i class="glyphicon glyphicon-remove"></i></button>
+                        </span>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label class="col-lg-offset-2"><input type="checkbox" class="checkbox-inline" ng-model="newContainer.VENCE" id="vence"> Este libre deuda vence</label>
                     </div>
                     <!--<div class="form-group">
