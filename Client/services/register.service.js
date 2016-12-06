@@ -4,7 +4,7 @@
 myApp.service('Register', ['configService', '$http', '$q', function(configService, $http, $q){
 
 	this.data = {
-		group: 'TER',
+		group: 'AGE',
 		company: '',
 		cuit: '',
 		emailContact: '',
@@ -23,11 +23,11 @@ myApp.service('Register', ['configService', '$http', '$q', function(configServic
 		console.log(this.data);
 		$http.post(inserturl, this.data).then((response) => {
 			console.log(response);
-			deferred.resolve();
+			deferred.resolve(response.data);
 		}, (response) => {
 			console.log(response);
-			//deferred.reject();
-			deferred.resolve(this.data); //solo para probar
+			deferred.reject(response.data);
+			//deferred.resolve(this.data); //solo para probar
 		});
 		return deferred.promise;
 	}
