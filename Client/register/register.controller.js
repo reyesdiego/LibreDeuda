@@ -5,23 +5,23 @@ myApp.controller('registerCtrl', ['$scope', 'configService', 'Register', 'dialog
 
 	$scope.user = Register;
 
-	$scope.terminales = {
+	/*$scope.terminales = {
 		BACTSSA: false,
 		TERMINAL4: false,
 		TRP: false
-	};
+	};*/
 
 	$scope.confirmPassword = '';
 	$scope.validator = validatorService;
 
-	$scope.getTerminals = function(){
+	/*$scope.getTerminals = function(){
 		let terminalsArray = [];
 		for (let terminal in $scope.terminales){
 			let value = $scope.terminales[terminal];
 			if (value) terminalsArray.push(value);
 		}
 		$scope.user.data.terminals = terminalsArray;
-	};
+	};*/
 
 	$scope.send = function(){
 		if (!$scope.validator.validateCuit($scope.user.data.cuit)){
