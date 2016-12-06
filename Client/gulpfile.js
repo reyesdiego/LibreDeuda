@@ -21,7 +21,19 @@ gulp.task('minify', function(){
         .pipe(minify({ noSource: true }).on('error', function(e) {
                 console.log(e);
             }))
-        .pipe(gulp.dest('build/'))
+        .pipe(gulp.dest('build/webClient'))
+});
+
+gulp.task('minify-accessControl', function(){
+    gulp.src(['AccessControl/app.js', 'AccessControl/login/*.js', 'AccessControl/users/*.js', 'AccessControl/services/**/*.js'])
+        .pipe(concat('app.js'))
+        .pipe(babel({
+            presets: ['es2015']
+        }))
+        .pipe(minify({ noSource: true }).on('error', function(e) {
+            console.log(e);
+        }))
+        .pipe(gulp.dest('build/accessControl'))
 });
 
 gulp.task('minify-css', function() {
@@ -31,7 +43,7 @@ gulp.task('minify-css', function() {
         // Minify the stylesheet
         .pipe(cleanCss({ debug: true }))
         // Write the minified file in the css directory
-        .pipe(gulp.dest('build/css/'));
+        .pipe(gulp.dest('build/webClient/css/')).pipe(gulp.dest('build/accessControl/css/'));
     // place code for your default task here
 });
 
@@ -55,7 +67,21 @@ gulp.task('html-replace', function() {
             'app': 'app-min.js',
             'socket': 'lib/socket.io.min.js'
         }))
-        .pipe(gulp.dest('build/'));
+        .pipe(gulp.dest('build/webClient'));
+    gulp.src('AccessControl/index.html')
+        .pipe(htmlreplace({
+            'css': {
+                src: ['css/styles.min.css', 'css/bootstrap-cosmo.min.css']
+            },
+            'bower': {
+                src: ['lib/angular/angular.min.js',
+                    'lib/angular-bootstrap/ui-bootstrap-tpls.min.js',
+                    'lib/angular-ui-router/angular-ui-router.min.js'
+                ]
+            },
+            'app': 'app-min.js'
+        }))
+        .pipe(gulp.dest('build/accessControl'))
 });
 
 gulp.task('copy-files', function(){
@@ -72,16 +98,32 @@ gulp.task('copy-files', function(){
     for (var template in templates) {
         console.log(template);
         gulp.src(templates[template])
-          .pipe(gulp.dest("build/" + template))
+          .pipe(gulp.dest("build/webClient/" + template))
     }
 });
 
-var paths = {
-    bower: "bower_components/",
-    lib: "build/lib/"
-};
+gulp.task('copy-files-accessControl', function(){
+    var templates = {
+        "login": "AccessControl/login/login.view.html",
+        "users": "AccessControl/users/users.view.html",
+        "services/dialogs": "AccessControl/services/dialogs/*.html",
+        "images": "images/*",
+        "fonts": "fonts/*",
+        "css": "css/bootstrap-cosmo.min.css"
+    };
+    for (var template in templates) {
+        console.log(template);
+        gulp.src(templates[template])
+            .pipe(gulp.dest("build/accessControl/" + template))
+    }
+});
 
 gulp.task("copy-bower-dependencies", function () {
+    var paths = {
+        bower: "bower_components/",
+        lib: "build/webClient/lib/"
+    };
+
     var bower = {
         "angular": "angular/*.min*",
         "angular-animate": 'angular-animate/*.min*',
@@ -100,4 +142,23 @@ gulp.task("copy-bower-dependencies", function () {
     }
 });
 
-gulp.task('default', ['minify-css', 'html-replace', 'copy-bower-dependencies', 'copy-files', 'minify']);
+gulp.task("copy-bower-dependencies-accessControl", function () {
+    var paths = {
+        bower: "bower_components/",
+        lib: "build/accessControl/lib/"
+    };
+
+    var bower = {
+        "angular": "angular/*.min*",
+        "angular-bootstrap": 'angular-bootstrap/{*-tpls.min*,uib/**}',
+        "angular-ui-router": 'angular-ui-router/release/*.min*'
+    };
+
+    for (var destinationDir in bower) {
+        console.log(destinationDir);
+        gulp.src(paths.bower + bower[destinationDir])
+            .pipe(gulp.dest(paths.lib + destinationDir));
+    }
+});
+
+gulp.task('default', ['minify-css', 'html-replace', 'copy-bower-dependencies', 'copy-bower-dependencies-accessControl', 'copy-files', 'copy-files-accessControl', 'minify', 'minify-accessControl']);
