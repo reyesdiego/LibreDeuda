@@ -4,22 +4,23 @@
 myApp.service('Register', ['configService', '$http', '$q', function(configService, $http, $q){
 
 	this.data = {
-		entidad: 'terminal',
-		razon: '',
+		group: 'TER',
+		company: '',
 		cuit: '',
-		contacto: '',
-		telefono: '',
-		terminales: [],
-		nombre: '',
-		apellido: '',
-		cargo: '',
+		emailContact: '',
+		telephone: '',
+		terminals: [],
+		firstName: '',
+		lastName: '',
+		position: '',
 		email: '',
-		clave: ''
+		password: ''
 	};
 
 	this.register = function(){
 		let deferred = $q.defer();
 		let inserturl = `${configService.serverUrl}/register`;
+		console.log(this.data);
 		$http.post(inserturl, this.data).then((response) => {
 			console.log(response);
 			deferred.resolve();

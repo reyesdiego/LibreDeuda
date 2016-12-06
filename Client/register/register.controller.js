@@ -6,9 +6,9 @@ myApp.controller('registerCtrl', ['$scope', 'configService', 'Register', 'dialog
 	$scope.user = Register;
 
 	$scope.terminales = {
-		bactssa: false,
-		terminal4: false,
-		trp: false
+		BACTSSA: false,
+		TERMINAL4: false,
+		TRP: false
 	};
 
 	$scope.confirmPassword = '';
@@ -20,21 +20,23 @@ myApp.controller('registerCtrl', ['$scope', 'configService', 'Register', 'dialog
 			let value = $scope.terminales[terminal];
 			if (value) terminalsArray.push(value);
 		}
-		$scope.user.data.terminales = terminalsArray;
+		$scope.user.data.terminals = terminalsArray;
 	};
 
 	$scope.send = function(){
-		if ($scope.user.data.clave === $scope.confirmPassword){
+		if (!$scope.validator.validateCuit($scope.user.data.cuit)){
+			dialogsService.notify('Registro', 'El CUIT ingresado no es válido.');
+		} else if ($scope.user.data.password != $scope.confirmPassword){
+			dialogsService.notify('Registro', 'Las contraseñas ingresadas no coinciden.');
+			$scope.user.clave = '';
+			$scope.confirmPassword = '';
+		} else {
 			console.log($scope.user);
 			$scope.user.register().then((data) => {
 				console.log(data);
 			}, (error) => {
 				console.log(error);
 			})
-		} else {
-			dialogsService.notify('Registro', 'Las contraseñas ingresadas no coinciden.');
-			$scope.user.clave = '';
-			$scope.confirmPassword = '';
 		}
 
 	}
