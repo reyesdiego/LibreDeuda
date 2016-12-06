@@ -58,4 +58,9 @@ myApp.service('validatorService', [function(){
 
 	};
 
+	this.validateEmail = function(email){
+		var re = /^(([^<>()[\]{}'^?\\.,!|//#%*-+=&;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
+		return re.test(email);
+	}
+
 }]);

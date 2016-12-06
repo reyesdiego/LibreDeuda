@@ -12,7 +12,7 @@ myApp.controller('registerCtrl', ['$scope', 'configService', 'Register', 'dialog
 	};
 
 	$scope.confirmPassword = '';
-	$scope.validCuit = false;
+	$scope.validator = validatorService;
 
 	$scope.getTerminals = function(){
 		let terminalsArray = [];
@@ -21,11 +21,6 @@ myApp.controller('registerCtrl', ['$scope', 'configService', 'Register', 'dialog
 			if (value) terminalsArray.push(value);
 		}
 		$scope.user.data.terminales = terminalsArray;
-	};
-
-	$scope.validateCuit = function(){
-		$scope.validCuit = validatorService.validateCuit($scope.user.data.cuit);
-		console.log($scope.validCuit);
 	};
 
 	$scope.send = function(){
