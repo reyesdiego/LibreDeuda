@@ -10,8 +10,8 @@ myApp.service('Register', ['configService', '$http', '$q', function(configServic
 		emailContact: '',
 		telephone: '',
 		terminals: [],
-		firstName: '',
-		lastName: '',
+		firstname: '',
+		lastname: '',
 		position: '',
 		email: '',
 		password: ''
