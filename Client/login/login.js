@@ -16,6 +16,8 @@ myApp.controller('loginCtrl', ['$rootScope', '$scope', '$state', 'storageService
                 } else {
                     dialogsService.error('Error', result.data.message);
                 }
+            }, error => {
+                dialogsService.error('Error', `Error de inicio de sesión. ${error.data.message}`);
             });
         }
 
