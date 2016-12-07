@@ -25,7 +25,7 @@ gulp.task('minify', function(){
 });
 
 gulp.task('minify-accessControl', function(){
-    gulp.src(['AccessControl/app.js', 'AccessControl/login/*.js', 'AccessControl/users/*.js', 'AccessControl/services/**/*.js'])
+    gulp.src(['AccessControl/app.js', 'AccessControl/class/*.js', 'AccessControl/login/*.js', 'AccessControl/users/*.js', 'AccessControl/services/**/*.js'])
         .pipe(concat('app.js'))
         .pipe(babel({
             presets: ['es2015']
