@@ -19,6 +19,10 @@ myApp.controller('loginCtrl', ['$rootScope', '$scope', '$state', 'storageService
             }, error => {
                 dialogsService.error('Error', `Error de inicio de sesión. ${error.data.message}`);
             });
+        };
+
+        if ($scope.user.isAuthenticated()){
+            $state.transitionTo('lde');
         }
 
     }]);
