@@ -50,7 +50,7 @@ myApp.controller('dialogsCtrl', ['$scope', '$uibModalInstance', 'title', 'messag
         message: message
     };
 
-    console.log($scope.modalData);
+    //console.log($scope.modalData);
 
     $scope.ok = function () {
         $uibModalInstance.close();

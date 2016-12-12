@@ -31,12 +31,12 @@ myApp.controller('registerCtrl', ['$scope', 'configService', 'Register', 'dialog
 			$scope.user.data.password = '';
 			$scope.confirmPassword = '';
 		} else {
-			console.log($scope.user);
+			//console.log($scope.user);
 			$scope.user.register().then((data) => {
-				console.log(data);
+				//console.log(data);
 				dialogsService.notify('Registro', `Se ha enviado un mail a la cuenta de correo ${$scope.user.data.email}, ingrese para validar su usuario.`);
 			}, (error) => {
-				console.log(error);
+				//console.log(error);
 				dialogsService.error('Registro', 'Se produjo un error al intentar crear el nuevo usuario.');
 			})
 		}
