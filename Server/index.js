@@ -40,6 +40,11 @@ app.use(expressValidator({
     }
 }));
 
+app.set('views', path.join(__dirname, '.', '/public'));
+app.set('view engine', 'jade');
+/** For Jade Views*/
+app.locals.moment = require('moment');
+
 app.all('/*', (req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", 'X-Requested-With, Content-Type, token');

@@ -9,11 +9,14 @@ var jwt = require("jsonwebtoken");
 var secret = require("../config/secret.js");
 var config = require("../config/config.js");
 
-let createToken = (payload, callback) => {
-    jwt.sign(payload, secret, {expiresIn: config.token_timeout}, (token) => {
-        callback(token);
+let createToken = (payload, options = {expiresIn: config.token_timeout}) => {
+    return new Promise((resolve, reject) => {
+        jwt.sign(payload, secret, {expiresIn: options.expiresIn}, (token) => {
+            resolve(token);
+        });
     });
-}
+};
+
 module.exports.createToken = createToken;
 
 /**
@@ -30,5 +33,6 @@ let verifyToken = (token, callback) => {
             callback(undefined, decoded);
         }
     });
-}
+};
+
 module.exports.verifyToken = verifyToken;

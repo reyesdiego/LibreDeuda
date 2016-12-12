@@ -20,6 +20,8 @@
     "body-parser": "^1.15.0",
     "compression": "^1.6.1",
     "express": "^4.13.4",
+    "express-validator": "^3.0.0",
+    "jade": "^1.11.0",
     "jsonwebtoken": "^5.7.0",
     "linq": "^3.0.5",
     "method-override": "^2.3.5",

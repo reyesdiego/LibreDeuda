@@ -6,34 +6,91 @@
 
 class Account {
     constructor () {
-
+        this.model = require("../models/account");
+        this.Error = require('../include/error.js');
     }
 
-    getAccount (user, password, callback) {
-        var Account = require("../models/account");
-        var Error = require('../include/error.js');
-        var result;
+    static get STATUS() {
+        return {
+            DISABLED: 9,
+            ENABLED: 2,
+            NEW: 0,
+            PENDING: 1
+        };
+    }
+    static set STATUS(value) {
+        throw ({status: "ERROR", http_status: 500, message: "La propiedad STATUS es de Solo Lectura"});
+    }
 
-        Account.findOne({email: user})
-        .lean()
-        .exec((err, dataAccount) => {
-            if (err) {
-                result = Error.ERROR("MONGO-ERROR").data(err);
-                callback(result);
-            } else {
-                if (!dataAccount) {
-                    result = Error.ERROR("AGP-0010").data({USUARIO: user});
-                    callback(result);
+    register (user) {
+        return new Promise((resolve, reject) => {
+            user.status = 0;
+            var newUser = new this.model(user);
+            newUser.save((err, data) => {
+                if (err) {
+                    reject(this.Error.ERROR("MONGO-ERROR").data(err));
                 } else {
-                    if (dataAccount.password !== password) {
-                        result = Error.ERROR("AGP-0011").data({USUARIO: user, CLAVE: password});
-                        callback(result);
-                    } else {
-                        callback(undefined, {status: "OK", data: dataAccount });
-                    }
+                    resolve({
+                        status: 'OK',
+                        data: data
+                    });
                 }
-            }
+            });
+
         });
+    }
+
+    setStatus (id, status) {
+        return new Promise((resolve, reject) => {
+            this.model.findOne({_id: id})
+            .exec((err, account) => {
+                if (err) {
+                    reject(this.Error.ERROR("MONGO-ERROR").data(err));
+                } else {
+                    account.status = status;
+                    account.dateUpdated = new Date();
+                    account.save((err, data) => {
+                        if (err) {
+                            reject(this.Error.ERROR("MONGO-ERROR").data(err));
+                        } else {
+                            resolve({
+                                status: 'OK',
+                                data: data
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    }
+
+    getAccount (user, password) {
+        return new Promise((resolve, reject) => {
+            this.model.findOne({email: user})
+                .lean()
+                .exec((err, dataAccount) => {
+                    if (err) {
+                        reject(this.Error.ERROR("MONGO-ERROR").data(err));
+                    } else {
+                        if (!dataAccount) {
+                            reject(this.Error.ERROR("AGP-0010").data({USUARIO: user}));
+                        } else {
+                            if (dataAccount.password !== password) {
+                                reject(this.Error.ERROR("AGP-0011").data({USUARIO: user, CLAVE: password}));
+                            } else {
+                                resolve({status: "OK", data: dataAccount });
+                            }
+                        }
+                    }
+                });
+        });
+    }
+
+    /**
+     * @return {Object}
+     * */
+    toString () {
+        return "Account object";
     }
 }
 

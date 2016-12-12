@@ -34,7 +34,7 @@ module.exports = function (app, socket, log, redis) {
         });
     };
 
-    var account = require("./account.js")();
+    var account = require("./account.js")(log);
     app.use(account);
 
     var ctvp = require("./ctvp.js")(socket);
