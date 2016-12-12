@@ -184,11 +184,11 @@ myApp.run(['$rootScope', 'appSocket', 'storageService', '$state', '$http', 'dial
             dialogsService.notify('Error de acceso', 'Su usario no se encuentra autorizado para realizar esa operación.')
         });
 
-        /*$rootScope.$on(AUTH_EVENTS.notAuthenticated, function(){
-            if ($rootScope.routeChange.from != 'login'){
+        $rootScope.$on(AUTH_EVENTS.notAuthenticated, function(){
+            /*if ($rootScope.routeChange.from != 'login'){
                 var loginDialog = dialogsService.login();
                 loginDialog.result.then(function(result){
-                    /*if (result.statusText != 'OK'){
+                    if (result.statusText != 'OK'){
                         dialogsService.error('Error', result.data);
                         $state.transitionTo('login');
                     }
@@ -197,8 +197,9 @@ myApp.run(['$rootScope', 'appSocket', 'storageService', '$state', '$http', 'dial
                 });
             } else {
                 dialogsService.notify('No autorizado', 'Se requiere un inicio de sesión antes de poder continuar.')
-            }
-        });*/
+            }*/
+            $state.transitionTo('login');
+        });
 
         $rootScope.$on(AUTH_EVENTS.loginSucces, function() {
             Title.restore();
@@ -243,21 +244,22 @@ myApp.run(['$rootScope', 'appSocket', 'storageService', '$state', '$http', 'dial
 
             if (angular.isDefined(toState.data)){ //state requires logged user
                 var authorizedRoles = toState.data.authorizedRoles;
-                if ($rootScope.session.isAuthenticated()){
-                    if (!$rootScope.session.isAuthorized(authorizedRoles)){
+                if (authorizedRoles){
+                    if ($rootScope.session.isAuthenticated()){
+                        if (!$rootScope.session.isAuthorized(authorizedRoles)){
+                            event.preventDefault();
+                            $rootScope.$broadcast(AUTH_EVENTS.notAuthorized);
+                        }
+                    } else {
                         event.preventDefault();
-                        $rootScope.$broadcast(AUTH_EVENTS.notAuthorized);
+                        // user is not logged in
+                        $rootScope.routeChange ={
+                            to: toState.name,
+                            from: fromState.name
+                        };
+                        $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
                     }
-                } else {
-                    event.preventDefault();
-                    // user is not logged in
-                    $rootScope.routeChange ={
-                        to: toState.name,
-                        from: fromState.name
-                    };
-                    $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
                 }
-
             }
 
         })
