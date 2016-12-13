@@ -55,7 +55,7 @@
 </head>
 <body class="container-fluid" ng-class="loginScreen ? 'image-background' : ''">
 
-<nav class="navbar navbar-default navbar-fixed-top">
+<nav class="navbar navbar-default navbar-fixed-top" ng-init="isCollapsed = true">
     <div class="container-fluid">
         <div class="navbar-header" uib-dropdown>
             <button type="button" class="navbar-toggle collapsed" data-target="#user" aria-expanded="false" ng-click="isCollapsed = !isCollapsed">
