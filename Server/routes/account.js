@@ -134,7 +134,13 @@ module.exports = (log) => {
                             status: "ERROR",
                             message: "El usuario no se encuentra deshabilitado para operar"
                         });
+                    } else {
+                        res.status(403).send({
+                            status: "ERROR",
+                            message: "El estado del usuario es incorrecto para operar"
+                        });
                     }
+
                 })
             .catch(err => {
                     res.status(err.http_status).send(err);
