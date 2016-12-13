@@ -69,9 +69,16 @@
 
         <div class="collapse navbar-collapse" id="register" aria-expanded="false" uib-collapse="isCollapsed" ng-if="!session.isAuthenticated()">
             <ul class="nav navbar-nav navbar-right">
-                <li class="navbar-btn"  ui-sref="register">
-                    <a href><span class="glyphicon glyphicon-user"></span> Solicitar usuario</a>
+                <li class="dropdown open" uib-dropdown>
+                    <a href="#" class="dropdown-toggle" uib-dropdown-toggle data-toggle="dropdown" role="button" aria-expanded="true"><span uib-dropdown-toggle class="glyphicon glyphicon-user"></span> Solicitar Usuario</a>
+                    <ul class="dropdown-menu" role="menu" uib-dropdown-menu>
+                        <li ui-sref="register"><a href><span class="glyphicon glyphicon-edit"></span> Formulario de registro</a></li>
+                        <li ui-sref="help"><a href><span class="glyphicon glyphicon-question-sign"></span> Ayuda</a></li>
+                    </ul>
                 </li>
+                <!--<li class="navbar-btn"  ui-sref="register">
+                    <a href><span class="glyphicon glyphicon-user"></span> Solicitar usuario</a>
+                </li>-->
             </ul>
         </div>
 
