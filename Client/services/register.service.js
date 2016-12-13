@@ -39,8 +39,16 @@ myApp.service('Register', ['configService', '$http', '$q', function(configServic
 			this.data.group = data;
 		}
 
+		get group(){
+			return this.data.group;
+		}
+
 		set company(data){
 			this.data.company = data;
+		}
+
+		get company(){
+			return this.data.company;
 		}
 
 		set cuit(data){
@@ -55,20 +63,40 @@ myApp.service('Register', ['configService', '$http', '$q', function(configServic
 			this.data.emailContact = data;
 		}
 
+		get emailContact(){
+			return this.data.emailContact;
+		}
+
 		set telephone(data){
 			this.data.telephone = data;
+		}
+
+		get telephone(){
+			return this.data.telephone;
 		}
 
 		set firstName(data){
 			this.data.firstname = data;
 		}
 
+		get firstName(){
+			return this.data.firstname;
+		}
+
 		set lastName(data){
 			this.data.lastname = data;
 		}
 
+		get lastName(){
+			return this.data.lastname;
+		}
+
 		set position(data){
 			this.data.position = data;
+		}
+
+		get position(){
+			return this.data.position;
 		}
 
 		set email(data){
