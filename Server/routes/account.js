@@ -73,13 +73,13 @@ module.exports = (log) => {
                     errToken = Error.ERROR("AGP-0009").data(err);
                     res.status(errToken.http_status).send(errToken);
                 } else {
-                    account.getAccount(payload.USUARIO, payload.CLAVE, (err, data) => {
-                        if (err) {
-                            res.status(err.http_status).send(err);
-                        } else {
+                    account.getAccount(payload.USUARIO, payload.CLAVE)
+                    .then(data => {
                             res.status(200).send(data);
-                        }
-                    });
+                        })
+                    .catch(err => {
+                            res.status(err.http_status).send(err);
+                        });
                 }
             });
         }
@@ -117,27 +117,30 @@ module.exports = (log) => {
                                 res.status(200).send(response);
                             })
                         .catch(err => {
-                                console.log(err);
+                                res.status(403).send({
+                                    status: "ERROR",
+                                    message: "Hubo un error en el inicio de sesión (token)"
+                                });
                             });
                     } else if (user.status === Account.STATUS.NEW) {
                         res.status(403).send({
                             status: "ERROR",
-                            message: "El usuario no se encuentra habilitado para operar"
+                            message: `El usuario no se encuentra habilitado para operar. Revice su correo electrónico (${user.email})en donde encontrará los pasos para validar el usuario creado.`
                         });
                     } else if (user.status === Account.STATUS.PENDING) {
                         res.status(403).send({
                             status: "ERROR",
-                            message: "El usuario no se encuentra habilitado para operar. Usted a recibido un correo en donde encontrará los pasos para validar el usuario creado"
+                            message: "El usuario no se encuentra habilitado para operar. Consultar con el Administrador del Sistema."
                         });
                     } else if (user.status === Account.STATUS.DISABLED) {
                         res.status(403).send({
                             status: "ERROR",
-                            message: "El usuario no se encuentra deshabilitado para operar"
+                            message: "El usuario se encuentra deshabilitado para operar."
                         });
                     } else {
                         res.status(403).send({
                             status: "ERROR",
-                            message: "El estado del usuario es incorrecto para operar"
+                            message: "El estado del usuario es incorrecto para operar."
                         });
                     }
 

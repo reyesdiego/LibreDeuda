@@ -19,17 +19,20 @@ module.exports = function (app, socket, log, redis) {
                 result = Error.ERROR("AGP-0009").data(err);
                 res.status(result.http_status).send(result);
             } else {
-                account.getAccount(payload.USUARIO, payload.CLAVE, (err, data) => {
-                    req.user = payload;
-                    if (err) {
-                        res.status(err.http_status).send(err);
-                    } else {
-                        if (data.status === 'OK') {
-                            req.user.data = data.data;
+                account.getAccount(payload.USUARIO, payload.CLAVE)
+                .then(data => {
+                        req.user = payload;
+                        if (err) {
+                        } else {
+                            if (data.status === 'OK') {
+                                req.user.data = data.data;
+                            }
+                            next();
                         }
-                        next();
-                    }
-                });
+                    })
+                .catch(err => {
+                        res.status(err.http_status).send(err);
+                    });
             }
         });
     };
