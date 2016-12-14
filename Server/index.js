@@ -7,7 +7,8 @@ var config = require("./config/config.js");
 var log4n = require('./include/log4node.js'),
     log = new log4n.log(config.log);
 
-var http = require("https");
+//var http = require("https");
+var http = require("http");
 var fs = require("fs");
 var path = require("path");
 var express = require("express");
@@ -61,11 +62,13 @@ app.all('/*', (req, res, next) => {
     }
 });
 
-var options = {
-    key: fs.readFileSync(path.join(__dirname, '', "/key.pem")),
-    cert: fs.readFileSync(path.join(__dirname, '', "/cert.pem"))
-};
-server = http.createServer(options, app);
+//var options = {
+//    key: fs.readFileSync(path.join(__dirname, '', "/key.pem")),
+//    cert: fs.readFileSync(path.join(__dirname, '', "/cert.pem"))
+//};
+//server = http.createServer(options, app);
+
+server = http.createServer(app);
 
 app.disable('x-powered-by');
 
