@@ -13,7 +13,7 @@ var babel = require('gulp-babel');
 
 
 gulp.task('minify', function(){
-    gulp.src(['app.js', 'class/*.js', 'directives/*', 'filters/*', 'login/*.js', 'lde/**/*.js', 'register/*.js', 'services/**/*.js'])
+    gulp.src(['app.js', 'class/*.js', 'directives/*', 'filters/*', 'login/*.js', 'lde/**/*.js', 'register/*.js', 'services/**/*.js', '!services/config.development.js'])
         .pipe(concat('app.js'))
         .pipe(babel({
             presets: ['es2015']

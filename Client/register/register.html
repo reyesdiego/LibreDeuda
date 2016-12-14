@@ -13,11 +13,14 @@
                         <div class="form-group col-lg-12">
                             <label for="inputEntity" class="col-lg-3 control-label"> Entidad</label>
                             <div class="col-lg-8">
-                                <select id="inputEntity" class="form-control" ng-model="user.data.group" ng-required="true" tabindex="1">
+                                <select id="inputEntity" class="form-control" ng-model="user.group" ng-required="true" tabindex="1">
                                     <option value="AGE">Agencia marítima</option>
                                     <option value="FOR">Forwarder</option>
                                     <option value="TER">Terminal</option>
                                 </select>
+                            </div>
+                            <div class="col-lg-1">
+                                <button type="button" ui-sref="help" class="btn"><span class="glyphicon glyphicon-question-sign"></span> Ayuda</button>
                             </div>
                         </div>
 
@@ -25,32 +28,47 @@
                             <legend>Usuario del sistema</legend>
                             <div class="col-lg-12 form-group">
                                 <label for="inputRazon" class="control-label"> Razón social</label>
-                                <div>
-                                    <input type="text" class="form-control" ng-model="user.data.company" id="inputRazon" placeholder="Ingresar razón social" ng-required="true" tabindex="2">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" ng-model="user.company" id="inputRazon" placeholder="Ingresar razón social" ng-required="true" tabindex="2">
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn" ng-click="user.company = ''"><i class="glyphicon glyphicon-remove"></i></button>
+                                    </span>
                                 </div>
                             </div>
                             <div class="col-lg-12 form-group">
                                 <label for="inputCuit" class="control-label"> CUIT</label>
-                                <div>
-                                    <input type="text" class="form-control" ng-class="user.data.cuit != '' && !validator.validateCuit(user.data.cuit) ? 'bad-input' : ''" ng-model="user.data.cuit" id="inputCuit" placeholder="Ingresar CUIT" ng-required="true" only-digits disallow-spaces tabindex="3">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" ng-class="user.cuit != '' && !validator.validateCuit(user.cuit) ? 'bad-input' : ''" ng-model="user.cuit" id="inputCuit" placeholder="Ingresar CUIT" ng-required="true" only-digits disallow-spaces tabindex="3">
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn" ng-click="user.cuit = ''"><i class="glyphicon glyphicon-remove"></i></button>
+                                    </span>
                                 </div>
                             </div>
                             <div class="col-lg-12 form-group">
                                 <label for="inputEmail" class="control-label"> E-Mail</label>
-                                <div>
-                                    <input type="email" class="form-control" ng-class="user.data.email != '' && !validator.validateEmail(user.data.email) ? 'bad-input' : ''" ng-model="user.data.email" id="inputEmail" placeholder="Ingresar correo electrónico" ng-required="true" tabindex="4">
+                                <div class="input-group">
+                                    <input type="email" class="form-control" ng-class="user.email != '' && !validator.validateEmail(user.email) ? 'bad-input' : ''" ng-model="user.email" id="inputEmail" placeholder="Ingresar correo electrónico" ng-required="true" tabindex="4">
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn" ng-click="user.email = ''"><i class="glyphicon glyphicon-remove"></i></button>
+                                    </span>
                                 </div>
                             </div>
                             <div class="col-lg-12 form-group">
                                 <label for="inputPassword" class="control-label"> Contraseña</label>
-                                <div>
-                                    <input type="password" class="form-control" ng-model="user.data.password" id="inputPassword" placeholder="Ingresar contraseña" ng-required="true" tabindex="5">
+                                <div class="input-group">
+                                    <input type="password" class="form-control" ng-model="user.password" id="inputPassword" placeholder="Ingresar contraseña" ng-required="true" tabindex="5">
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn" ng-click="user.password = ''"><i class="glyphicon glyphicon-remove"></i></button>
+                                    </span>
                                 </div>
                             </div>
                             <div class="col-lg-12 form-group">
                                 <label for="inputConfirmPassword" class="control-label"> Confirme contraseña</label>
-                                <div>
+                                <div class="input-group">
                                     <input type="password" class="form-control" ng-model="confirmPassword" id="inputConfirmPassword" placeholder="Confirmar contraseña" ng-required="true" onpaste="return false" tabindex="6">
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn" ng-click="confirmPassword = ''"><i class="glyphicon glyphicon-remove"></i></button>
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -58,35 +76,50 @@
                             <legend>Contacto</legend>
                             <div class="col-lg-12 form-group">
                                 <label for="inputName" class="control-label"> Nombre</label>
-                                <div>
-                                    <input type="text" class="form-control" ng-model="user.data.firstname" id="inputName" placeholder="Ingresar nombre" ng-required="true" tabindex="7">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" ng-model="user.firstName" id="inputName" placeholder="Ingresar nombre" ng-required="true" tabindex="7">
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn" ng-click="user.firstName = ''"><i class="glyphicon glyphicon-remove"></i></button>
+                                    </span>
                                 </div>
                             </div>
                             <div class="col-lg-12 form-group">
                                 <label for="inputSurname" class="control-label"> Apellido</label>
-                                <div>
-                                    <input type="text" class="form-control" ng-model="user.data.lastname" id="inputSurname" placeholder="Ingresar apellido" ng-required="true" tabindex="8">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" ng-model="user.lastName" id="inputSurname" placeholder="Ingresar apellido" ng-required="true" tabindex="8">
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn" ng-click="user.lastName = ''"><i class="glyphicon glyphicon-remove"></i></button>
+                                    </span>
                                 </div>
                             </div>
                             <div class="col-lg-12 form-group">
                                 <label for="inputCharge" class="control-label"> Cargo</label>
-                                <div>
-                                    <input type="text" class="form-control" ng-model="user.data.position" id="inputCharge" placeholder="Ingresar cargo" ng-required="true" tabindex="9">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" ng-model="user.position" id="inputCharge" placeholder="Ingresar cargo" ng-required="true" tabindex="9">
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn" ng-click="user.position = ''"><i class="glyphicon glyphicon-remove"></i></button>
+                                    </span>
                                 </div>
                             </div>
                             <div class="col-lg-12 form-group">
                                 <label for="inputContacto" class="control-label"> E-Mail</label>
-                                <div>
-                                    <input type="email" class="form-control" ng-class="user.data.emailContact != '' && !validator.validateEmail(user.data.emailContact) ? 'bad-input' : ''" ng-model="user.data.emailContact" id="inputContacto" placeholder="Ingresar correo electrónico" ng-required="true" tabindex="10">
+                                <div class="input-group">
+                                    <input type="email" class="form-control" ng-class="user.emailContact != '' && !validator.validateEmail(user.emailContact) ? 'bad-input' : ''" ng-model="user.emailContact" id="inputContacto" placeholder="Ingresar correo electrónico" ng-required="true" tabindex="10">
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn" ng-click="user.emailContact = ''"><i class="glyphicon glyphicon-remove"></i></button>
+                                    </span>
                                 </div>
                             </div>
                             <div class="col-lg-12 form-group">
                                 <label for="inputTelefono" class="control-label"> Teléfono</label>
-                                <div>
-                                    <input type="text" class="form-control" ng-model="user.data.telephone" id="inputTelefono" placeholder="Ingresar teléfono" ng-required="true" only-digits tabindex="11">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" ng-model="user.telephone" id="inputTelefono" placeholder="Ingresar teléfono" ng-required="true" only-digits tabindex="11">
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn" ng-click="user.telephone = ''"><i class="glyphicon glyphicon-remove"></i></button>
+                                    </span>
                                 </div>
                             </div>
-                            <!--<div ng-hide="user.data.group == 'TER'">
+                            <!--<div ng-hide="user.group == 'TER'">
                                 <legend> Terminales con las que opera</legend>
                                 <div class="col-lg-4 form-group">
                                     <label for="bactssa" class="control-label"> <input type="checkbox" ng-model="terminales.BACTSSA" ng-true-value="'BACTSSA'" class="checkbox-inline" id="bactssa" ng-change="getTerminals()" tabindex="12"> BACTSSA</label>

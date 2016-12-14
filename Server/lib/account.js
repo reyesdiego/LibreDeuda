@@ -28,7 +28,16 @@ class Account {
             var newUser = new this.model(user);
             newUser.save((err, data) => {
                 if (err) {
-                    reject(this.Error.ERROR("MONGO-ERROR").data(err));
+                    if (err.code === 11000) {
+                        reject({
+                            status: "ERROR",
+                            code: err.code,
+                            message: `La cuenta ${user.email} yá existe.`,
+                            http_status: 500
+                        });
+                    } else {
+                        reject(this.Error.ERROR("MONGO-ERROR").data(err));
+                    }
                 } else {
                     resolve({
                         status: 'OK',
@@ -36,7 +45,6 @@ class Account {
                     });
                 }
             });
-
         });
     }
 

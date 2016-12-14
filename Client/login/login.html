@@ -1,8 +1,8 @@
 <div class="container col-lg-12">
-    <div class="row col-lg-6">
+    <div class="row col-md-6 col-sm-12">
         <img src="images/logoBlanco.png" class="logo-image">
     </div>
-    <div class="col-lg-4 vertical-center">
+    <div class="col-md-4 col-sm-12 vertical-center">
         <form class="form-horizontal" ng-submit="login()">
             <fieldset>
                 <div class="form-group">
@@ -20,12 +20,12 @@
                 <div class="form-group text-right col-lg-12">
                     <a href class="col-lg-offset-1 text-white">¿Olvidó su contraseña?</a>
                 </div>
-                <div class="form-group hidden-xs">
+                <div class="form-group">
                     <br>
-                    <div class="col-sm-4 text-center text-white">
+                    <div class="col-xs-5 text-center text-white">
                         <input type="checkbox" ng-model="user.data.keep">No cerrar sesión
                     </div>
-                    <div class="col-sm-8 text-right">
+                    <div class="col-xs-7 text-right">
                         <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-log-in"></span> Ingresar</button>
                         <button type="button" ui-sref="changepass" class="btn"><span class="glyphicon glyphicon-lock"></span> Cambiar contraseña</button>
                     </div>

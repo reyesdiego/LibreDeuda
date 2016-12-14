@@ -1,6 +1,7 @@
 .idea/
 Client/node_modules/
 Client/bower_components/
+Client/services/config.production.js
 Server/node_modules/
 Server/config/secret.js
 Client/build
