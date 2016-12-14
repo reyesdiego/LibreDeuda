@@ -1,6 +1,7 @@
 {
     "token_timeout": "1 day",
     "container_checking": false,
+    "url": "http://10.10.0.223:8086",
     "log": {
         "path": "log/",
         "filename": "nohup.out",
@@ -8,12 +9,23 @@
         "toFile": false
     },
     "mongo": {
-        "url": "mongodb://localhost:27017/free"
+        "url": "mongodb://10.10.0.223:27017/free"
     },
     "mongo_url_log": "mongodb://localhost:27017/logging",
     "mongo_opts_log": {
         "user": "admin",
         "pass": "Pt trend 54",
         "auth": {"authdb": "admin"}
+    },
+    "email": {
+        "user":    "",
+        "password": "",
+        "host":    "10.10.0.176",
+        "port": "25",
+        "domain": "",
+        "from": "Administración General de Puertos <noreply@puertobuenosaires.gob.ar>",
+        "ssl":     false,
+        "status": true,
+        "throughBcc": true
     }
 }
