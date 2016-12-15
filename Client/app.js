@@ -45,6 +45,20 @@ myApp.config(['$urlRouterProvider', '$stateProvider', 'USER_ROLES', function($ur
         data: {
             authorizedRoles: [USER_ROLES.agent]
         }
+    }).state('preGate', {
+        url: '/preGate',
+        templateUrl: 'pregate/search/pregate.search.html',
+        controller: 'preGateCtrl',
+        data: {
+            authorizedRoles: [USER_ROLES.terminal, USER_ROLES.agent]
+        }
+    }).state('preGate.new', {
+        url: '/new',
+        templateUrl: 'pregate/new/pregate.new.html',
+        controller: 'newPreGateCtrl',
+        data: {
+            authorizedRoles: [USER_ROLES.agent]
+        }
     }).state('register', {
         url: '/register',
         templateUrl: 'register/register.html',

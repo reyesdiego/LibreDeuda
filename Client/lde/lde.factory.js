@@ -4,8 +4,9 @@
 
 myApp.factory('ldeFactory', ['$http', 'configService', '$q', function($http, configService, $q){
 
-    var factory = {
-        getAllLde: function(){
+    class ldeFactory {
+
+        getAllLde(){
             const deferred = $q.defer();
             const insertUrl = `${configService.serverUrl}/lde`;
             $http.get(insertUrl).then(response => {
@@ -16,9 +17,9 @@ myApp.factory('ldeFactory', ['$http', 'configService', '$q', function($http, con
                 deferred.reject(response.data);
             });
             return deferred.promise;
-        },
-        //Obtener todos los LDE's - Deprecado
-        getLde: function(container){
+        }
+
+        getLde(container){
             let deferred = $q.defer();
             const insertUrl = `${configService.serverUrl}/lde/${container}`;
             $http.get(insertUrl).then((response) => {
@@ -34,9 +35,9 @@ myApp.factory('ldeFactory', ['$http', 'configService', '$q', function($http, con
                 //callback(response);
             });
             return deferred.promise;
-        },
+        }
         //Consulta de lugares de devolución - Opcionalmente se puede pasar un ID para obtener un lugar específico
-        getReturnPlaces: function(callback){
+        getReturnPlaces(callback){
             var insertUrl = `${configService.serverUrl}/lde/lugar`;
             $http.get(insertUrl).then(function(response){
                 callback(response.data)
@@ -44,8 +45,9 @@ myApp.factory('ldeFactory', ['$http', 'configService', '$q', function($http, con
                 callback(response.data)
             })
         }
-    };
 
-    return factory;
+    }
+
+    return new ldeFactory();
 
 }]);
