@@ -6,4 +6,12 @@ myApp.controller('newPreGateCtrl', ['$scope', 'PreGate', function($scope, PreGat
 
 	$scope.newPreGate = new PreGate();
 
+	$scope.savePreGate = function(){
+		$scope.newPreGate.save().then(data => {
+
+		}, error => {
+
+		});
+	}
+
 }]);
