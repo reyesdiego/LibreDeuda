@@ -29,6 +29,6 @@ myApp.controller('registerCtrl', ['$scope', 'Register', 'dialogsService', 'valid
 					}
 				});
 			}
-	}
+	};
 
 }]);
