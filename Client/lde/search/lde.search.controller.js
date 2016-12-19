@@ -1,8 +1,8 @@
 /**
  * Created by kolesnikov-a on 18/04/2016.
  */
-myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService', 'dialogsService', '$q', '$location', '$state', '$uibModal', 'Lde',
-    function($scope, ldeFactory, $timeout, configService, dialogsService, $q, $location, $state, $uibModal, Lde){
+myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'dialogsService', '$q', '$location', '$state', '$uibModal', 'Lde', 'containersService',
+    function($scope, ldeFactory, $timeout, dialogsService, $q, $location, $state, $uibModal, Lde, containersService){
 
         //$scope.search = 'ZCSU2576607';
         $scope.search = '';
@@ -12,8 +12,8 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService'
             message: `Aguarde mientras se cargan los datos.`
         };
 
-        $scope.statesContainers = configService.statusContainersAsArray();
-        $scope.terminals = configService.terminalsArray;
+        $scope.statesContainers = containersService.statusContainersAsArray();
+        $scope.terminals = containersService.terminalsArray;
         $scope.returnPlaces = [];
 
         $scope.dataContainers = [];
@@ -138,22 +138,22 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'configService'
 
     }]);
 
-myApp.filter('containerStatus', ['configService', function(configService){
+myApp.filter('containerStatus', ['containersService', function(containersService){
 
     return function(status){
         if (angular.isDefined(status)){
-            return configService.statusContainers[status] ? configService.statusContainers[status].name : 'Sin definir';
+            return containersService.statusContainers[status] ? containersService.statusContainers[status].name : 'Sin definir';
         } else {
             return 'Sin definir';
         }
     }
 }]);
 
-myApp.filter('containerClass', ['configService', function(configService){
+myApp.filter('containerClass', ['containersService', function(containersService){
 
     return function (status){
         if (angular.isDefined(status)){
-            return configService.statusContainers[status] ? configService.statusContainers[status].className : 'status-canceled';
+            return containersService.statusContainers[status] ? containersService.statusContainers[status].className : 'status-canceled';
         } else {
             return 'status-canceled'
         }

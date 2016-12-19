@@ -1,12 +1,12 @@
 /**
  * Created by kolesnikov-a on 28/10/2016.
  */
-myApp.controller('newLdeCtrl', ['$scope', 'Lde', 'dialogsService', 'ldeFactory', 'configService', 'validatorService',
-	function($scope, Lde, dialogsService, ldeFactory, configService, validatorService){
+myApp.controller('newLdeCtrl', ['$scope', 'Lde', 'dialogsService', 'ldeFactory', 'validatorService', 'containersService',
+	function($scope, Lde, dialogsService, ldeFactory, validatorService, containersService){
 
 		$scope.newContainer = new Lde();
-		$scope.statesContainers = configService.statusContainersAsArray();
-		$scope.terminals = configService.terminalsArray;
+		$scope.statesContainers = containersService.statusContainersAsArray();
+		$scope.terminals = containersService.terminalsArray;
 		$scope.returnPlaces = [];
 
 		$scope.validCuit = false;
