@@ -17,7 +17,6 @@ myApp.controller('newLdeCtrl', ['$scope', 'Lde', 'dialogsService', 'ldeFactory',
 
 		$scope.validateCuit = function(){
 			$scope.validCuit = validatorService.validateCuit($scope.newContainer.CUIT);
-			console.log($scope.validCuit);
 		};
 
 		$scope.saveLde = function(){

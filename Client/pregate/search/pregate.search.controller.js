@@ -17,15 +17,21 @@ myApp.controller('preGateCtrl', ['$scope', 'preGateFactory', 'dialogsService', f
 		preGateFactory.getPreGates().then(data => {
 			$scope.preGates = data;
 		}, error => {
-			dialogsService.error('Pre-Gates', `Se ha producido un error al cargar los datos de pre-gates. ${error.message}`);
+			let message = `Se ha producido un error al cargar los datos de pre-gates. ${error.message}`;
+			dialogsService.error('Pre-Gates', message);
+			$scope.panelPreGate = {
+				type: 'panel-danger',
+				message: message
+			};
 		});
 	};
 
 	$scope.disablePreGate = function(preGate){
 		preGate.disable().then(data => {
-
+			console.log(data);
+			$scope.getPreGatesData();
 		}, error => {
-
+			dialogsService.error('Pre-Gates', `Se ha producido un error al tratar de procesar la operación. ${error.message}`);
 		});
 	};
 
