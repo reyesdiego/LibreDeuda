@@ -22,7 +22,7 @@ myApp.controller('loginCtrl', ['$rootScope', '$scope', '$state', 'storageService
             });
         };
 
-        if ($scope.user.isAuthenticated()){
+        if ($scope.user.isAuthenticated){
             $state.transitionTo('lde');
         }
 
