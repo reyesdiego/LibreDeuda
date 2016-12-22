@@ -44,9 +44,9 @@
                 <td>{{ preGate.FECHA | date: 'dd/MM/yyyy' }}</td>
                 <td class="{{ preGate.LASTSTATUS | containerClass }}">{{ preGate.LASTSTATUS | containerStatus }}</td>
                 <td ng-if="session.data.group != 'ADMIN'">
-                    <!--<button type="button"  ng-if="session.data.group == 'AGE' && lde.STATUS != 3" class="btn btn-success btn-sm" ng-click="update($event, 'enable', lde)" uib-tooltip="Habilitar" ng-disabled="lde.STATUS == 0"><span class="glyphicon glyphicon-ok"></span></button>
-                    <button type="button"  ng-if="session.data.group == 'TER' && lde.STATUS != 3" class="btn btn-primary btn-sm" ng-click="updateWithModal($event, 'invoice', lde)" uib-tooltip="Entregar"><span class="glyphicon glyphicon-edit"></span></button>
-                    <button type="button"  ng-if="session.data.group == 'AGE' && lde.STATUS != 3" class="btn btn-danger btn-sm" ng-click="update($event, 'disable', lde)" uib-tooltip="Anular" ng-disabled="lde.STATUS == 9"><span class="glyphicon glyphicon-remove"></span></button>
+                    <!--<button type="button"  ng-if="session.data.group == 'AGE' && lde.STATUS != 3" class="btn btn-success btn-sm" ng-click="update($event, 'enable', lde)" uib-tooltip="Habilitar" ng-disabled="lde.STATUS == 0"><span class="glyphicon glyphicon-ok"></span></button>-->
+                    <button type="button"  ng-if="session.data.group == 'TER' && preGate.LASTSTATUS != 3" class="btn btn-primary btn-sm" ng-click="update($event, 'deliver', preGate)" uib-tooltip="Entregar"><span class="glyphicon glyphicon-edit"></span></button>
+                    <!--<button type="button"  ng-if="session.data.group == 'AGE' && lde.STATUS != 3" class="btn btn-danger btn-sm" ng-click="update($event, 'disable', lde)" uib-tooltip="Anular" ng-disabled="lde.STATUS == 9"><span class="glyphicon glyphicon-remove"></span></button>
                     <button type="button"  ng-if="session.data.group == 'AGE' && lde.STATUS != 3" class="btn btn-info btn-sm" ng-click="updateWithModal($event, 'place', lde)" uib-tooltip="Cambiar lugar"><span class="glyphicon glyphicon-backward"></span></button>
                     <button type="button"  ng-if="session.data.group == 'FOR' && lde.STATUS != 3" class="btn btn-info btn-sm" ng-click="updateWithModal($event, 'forward', lde)" uib-tooltip="Cambiar CUIT"><span class="glyphicon glyphicon-forward"></span></button>-->
                 </td>

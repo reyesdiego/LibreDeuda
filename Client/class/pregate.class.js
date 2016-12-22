@@ -47,6 +47,23 @@ myApp.factory('PreGate', ['$http', '$q', 'configService', function($http, $q, co
 			return deferred.promise;
 		}
 
+		deliver(){
+			const deferred = $q.defer();
+			const inserturl = `${configService.serverUrl}/ctvp/invoice`;
+			$http.put(inserturl, this).then(response => {
+				if (response.data.status == 'OK'){
+					const preGateData = response.data.data;
+					this.LASTSTATUS = preGateData.STATUS[preGateData.STATUS.length - 1].STATUS;
+					deferred.resolve(response.data);
+				} else {
+					deferred.reject(response.data);
+				}
+			}, response => {
+				deferred.reject(response.data);
+			});
+			return deferred.promise;
+		}
+
 	}
 
 	return PreGate;

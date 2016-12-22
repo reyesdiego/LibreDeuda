@@ -33,7 +33,25 @@ myApp.controller('preGateCtrl', ['$scope', 'preGateFactory', 'dialogsService', f
 		});
 	};
 
-	$scope.disablePreGate = function(preGate){
+	$scope.update = function(event, operation, pregate){
+		event.stopPropagation();
+		let promise = null;
+		switch (operation){
+			case 'disable':
+				promise = pregate.disable();
+				break;
+			case 'deliver':
+				promise = pregate.deliver();
+				break;
+		}
+		promise.then(data => {
+			console.log(data);
+		}, error => {
+			console.log(error);
+		});
+	};
+
+	function disablePreGate(preGate){
 		preGate.disable().then(data => {
 			console.log(data);
 			$scope.getPreGatesData();
@@ -43,5 +61,7 @@ myApp.controller('preGateCtrl', ['$scope', 'preGateFactory', 'dialogsService', f
 	};
 
 	$scope.getPreGatesData();
+
+	$scope.$on('updateData', $scope.getPreGatesData);
 
 }]);

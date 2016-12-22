@@ -22,6 +22,8 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'dialogsService
             $scope.returnPlaces = data.data
         });
 
+
+
         /*$scope.$on('socket:container', function(ev, data){
             //data.ANIMATE = true;
             //console.log(data);
@@ -138,6 +140,8 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'dialogsService
         };
 
         $scope.getLdeData();
+
+        $scope.$on('updateData', $scope.getLdeData);
 
     }]);
 
