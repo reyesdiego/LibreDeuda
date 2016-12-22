@@ -56,10 +56,17 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'dialogsService
             $scope.dataContainers = [];
             ldeFactory.getAllLde().then(data => {
                 //console.log(data);
-                for (let lde of data.data){
-                    lde = new Lde(lde);
+                if (data.data.length > 0){
+                    for (let lde of data.data){
+                        lde = new Lde(lde);
 
-                    $scope.dataContainers.push(lde);
+                        $scope.dataContainers.push(lde);
+                    }
+                } else {
+                    $scope.panelLde = {
+                        type: 'panel-info',
+                        message: 'No se encontraron datos'
+                    }
                 }
             }, error => {
                 //console.log(error);
