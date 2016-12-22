@@ -8,7 +8,7 @@ myApp.factory('preGateFactory', ['$http', '$q', 'configService', 'PreGate', func
 
 		getPreGates(){
 			const deferred = $q.defer();
-			const inserturl = `${configService.serverUrl}/rutaParaTraerPreGates`;
+			const inserturl = `${configService.serverUrl}/ctvp`;
 			$http.get(inserturl).then(response => {
 				if (response.data.status == 'OK'){
 					let preGates = [];

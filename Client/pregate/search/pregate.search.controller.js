@@ -42,5 +42,6 @@ myApp.controller('preGateCtrl', ['$scope', 'preGateFactory', 'dialogsService', f
 		});
 	};
 
+	$scope.getPreGatesData();
 
 }]);

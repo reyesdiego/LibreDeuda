@@ -13,6 +13,7 @@ myApp.factory('PreGate', ['$http', '$q', 'configService', function($http, $q, co
 
 			if (preGateData){
 				angular.extend(this, preGateData);
+				this.LASTSTATUS = this.STATUS[this.STATUS.length - 1].STATUS;
 			}
 		}
 

@@ -33,6 +33,7 @@
                 <th>Contenedor</th>
                 <th>Certificado</th>
                 <th>Fecha de asociación</th>
+                <th>Estado</th>
                 <th ng-if="session.data.group != 'ADMIN'">Modificar Libre Deuda</th>
             </tr>
             </thead>
@@ -41,6 +42,7 @@
                 <td>{{ preGate.CONTENEDOR }}</td>
                 <td>{{ preGate.CERTIFICADO }}</td>
                 <td>{{ preGate.FECHA | date: 'dd/MM/yyyy' }}</td>
+                <td class="{{ preGate.LASTSTATUS | containerClass }}">{{ preGate.LASTSTATUS | containerStatus }}</td>
                 <td ng-if="session.data.group != 'ADMIN'">
                     <!--<button type="button"  ng-if="session.data.group == 'AGE' && lde.STATUS != 3" class="btn btn-success btn-sm" ng-click="update($event, 'enable', lde)" uib-tooltip="Habilitar" ng-disabled="lde.STATUS == 0"><span class="glyphicon glyphicon-ok"></span></button>
                     <button type="button"  ng-if="session.data.group == 'TER' && lde.STATUS != 3" class="btn btn-primary btn-sm" ng-click="updateWithModal($event, 'invoice', lde)" uib-tooltip="Entregar"><span class="glyphicon glyphicon-edit"></span></button>

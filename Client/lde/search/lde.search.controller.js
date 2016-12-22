@@ -22,7 +22,7 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'dialogsService
             $scope.returnPlaces = data.data
         });
 
-        $scope.$on('socket:container', function(ev, data){
+        /*$scope.$on('socket:container', function(ev, data){
             //data.ANIMATE = true;
             //console.log(data);
             let ldeData = {
@@ -38,7 +38,7 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'dialogsService
             };
             $scope.dataContainers.unshift(new Lde(ldeData));
             //$scope.reAnimate($scope.dataContainers[0]);
-        });
+        });*/
 
         $scope.$on('socket:status', function(ev, data){
 
@@ -56,12 +56,8 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'dialogsService
             $scope.dataContainers = [];
             ldeFactory.getAllLde().then(data => {
                 //console.log(data);
-                if (data.data.length > 0){
-                    for (let lde of data.data){
-                        lde = new Lde(lde);
-
-                        $scope.dataContainers.push(lde);
-                    }
+                if (data.length > 0){
+                    $scope.dataContainers = data;
                 } else {
                     $scope.panelLde = {
                         type: 'panel-info',

@@ -18,6 +18,12 @@ myApp.service('Register', ['configService', '$http', '$q', function(configServic
 				email: '',
 				password: ''
 			};
+
+			this.terminals = [
+				{ description: 'APM Terminals', param: 'TERMINAL4', cuit: '30696158920'},
+				{ description: 'B.A.C.T.S.S.A.', param: 'BACTSSA', cuit: '30678167238'},
+				{ description: 'Terminales Río de la Plata', param: 'TRP', cuit: '30678191805'}
+			]
 		}
 
 		register(){
@@ -33,6 +39,18 @@ myApp.service('Register', ['configService', '$http', '$q', function(configServic
 				//deferred.resolve(this.data); //solo para probar
 			});
 			return deferred.promise;
+		}
+
+		setCUIT(){
+			for (let terminal of this.terminals){
+				if (terminal.param == this.company)
+					this.cuit = terminal.cuit;
+			}
+		}
+
+		unsetCompany(){
+			this.company = '';
+			this.cuit = '';
 		}
 
 		set group(data){

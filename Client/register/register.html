@@ -13,7 +13,7 @@
                         <div class="form-group col-lg-12">
                             <label for="inputEntity" class="col-lg-3 control-label"> Entidad</label>
                             <div class="col-lg-8">
-                                <select id="inputEntity" class="form-control" ng-model="user.group" ng-required="true" tabindex="1">
+                                <select id="inputEntity" class="form-control" ng-model="user.group" ng-required="true" tabindex="1" ng-change="user.unsetCompany()">
                                     <option value="AGE">Agencia marítima</option>
                                     <option value="FOR">Forwarder</option>
                                     <option value="TER">Terminal</option>
@@ -26,7 +26,7 @@
 
                         <div class="col-lg-6">
                             <legend>Usuario del sistema</legend>
-                            <div class="col-lg-12 form-group">
+                            <div class="col-lg-12 form-group" ng-hide="user.group == 'TER'">
                                 <label for="inputRazon" class="control-label"> Razón social</label>
                                 <div class="input-group">
                                     <input type="text" class="form-control" ng-model="user.company" id="inputRazon" placeholder="Ingresar razón social" ng-required="true" tabindex="2">
@@ -35,10 +35,22 @@
                                     </span>
                                 </div>
                             </div>
+                            <div class="col-lg-12 form-group" ng-show="user.group == 'TER'">
+                                <label for="inputTerminal" class="control-label"> Razón social</label>
+                                <div class="input-group">
+                                    <select type="text" class="form-control" ng-model="user.company" id="inputTerminal" placeholder="Ingresar razón social"
+                                            ng-change="user.setCUIT()"
+                                            ng-options="terminal.param as terminal.description for terminal in user.terminals" ng-required="true" tabindex="2">
+                                    </select>
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn" ng-click="user.company = ''"><i class="glyphicon glyphicon-remove"></i></button>
+                                    </span>
+                                </div>
+                            </div>
                             <div class="col-lg-12 form-group">
                                 <label for="inputCuit" class="control-label"> CUIT</label>
                                 <div class="input-group">
-                                    <input type="text" class="form-control" ng-class="user.cuit != '' && !validator.validateCuit(user.cuit) ? 'bad-input' : ''" ng-model="user.cuit" id="inputCuit" placeholder="Ingresar CUIT" ng-required="true" only-digits disallow-spaces tabindex="3">
+                                    <input type="text" class="form-control" ng-class="user.cuit != '' && !validator.validateCuit(user.cuit) ? 'bad-input' : ''" ng-model="user.cuit" id="inputCuit" placeholder="Ingresar CUIT" ng-required="true" ng-disabled="user.group == 'TER'" only-digits disallow-spaces tabindex="3">
                                     <span class="input-group-btn">
                                         <button type="button" class="btn" ng-click="user.cuit = ''"><i class="glyphicon glyphicon-remove"></i></button>
                                     </span>

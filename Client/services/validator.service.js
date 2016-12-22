@@ -4,6 +4,7 @@
 myApp.service('validatorService', [function(){
 
 	this.validateCuit = function(cuit){
+		console.log(cuit);
 		var result = false;
 		var feed = '5432765432';
 		var sum  = 0;
@@ -33,6 +34,7 @@ myApp.service('validatorService', [function(){
 		} catch (err) {
 			result = false;
 		}
+		console.log(result);
 		return result;
 	};
 

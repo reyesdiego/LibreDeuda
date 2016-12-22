@@ -2,16 +2,24 @@
  * Created by kolesnikov-a on 18/04/2016.
  */
 
-myApp.factory('ldeFactory', ['$http', 'configService', '$q', function($http, configService, $q){
+myApp.factory('ldeFactory', ['$http', 'configService', '$q', 'Lde', function($http, configService, $q, Lde){
 
     class ldeFactory {
+
+        retrieveLdes(ldesData){
+            let ldeArray = [];
+            for (let lde of ldesData){
+                ldeArray.push(new Lde(lde));
+            }
+            return ldeArray;
+        }
 
         getAllLde(){
             const deferred = $q.defer();
             const insertUrl = `${configService.serverUrl}/lde`;
             $http.get(insertUrl).then(response => {
                 console.log(response);
-                deferred.resolve(response.data);
+                deferred.resolve(this.retrieveLdes(response.data.data));
             }, response => {
                 console.log(response);
                 deferred.reject(response.data);
