@@ -61,7 +61,6 @@ myApp.service('Session', ['$rootScope', 'storageService', '$http', 'configServic
             } else {
                 user = storageService.getSessionObject('user');
             }
-            //console.log(user);
             angular.extend(this.data, user);
             this.data.keep = keep;
         }

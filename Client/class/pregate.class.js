@@ -9,7 +9,7 @@ myApp.factory('PreGate', ['$http', '$q', 'configService', function($http, $q, co
 		constructor(preGateData){
 			this.CONTENEDOR = '';
 			this.CERTIFICADO = '';
-			this.FECHA = '';
+			this.FECHA = new Date();
 
 			if (preGateData){
 				angular.extend(this, preGateData);
