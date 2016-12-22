@@ -33,6 +33,6 @@ let cuit = (cuit) => {
         result = false;
     }
     return result;
-}
+};
 
 module.exports = cuit;
