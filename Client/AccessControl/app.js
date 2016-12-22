@@ -32,7 +32,7 @@ myApp.config(['$provide', '$httpProvider', function($provide, $httpProvider){
 				// optional method
 				'request': function(config) {
 					// do something on success
-					config.headers['Token'] = $rootScope.session.getToken();
+					config.headers['Token'] = $rootScope.session.token;
 					config.headers['Content-Type'] = 'application/json';
 					//TODO verificar tiempos de respuestas para diferentes llamadas...
 					//config.timeout = 2000;

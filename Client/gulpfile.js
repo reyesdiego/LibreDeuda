@@ -13,7 +13,7 @@ var babel = require('gulp-babel');
 
 
 gulp.task('minify', function(){
-    gulp.src(['app.js', 'class/*.js', 'directives/*', 'filters/*', 'login/*.js', 'lde/**/*.js', 'register/*.js', 'services/**/*.js', '!services/config.development.js'])
+    gulp.src(['app.js', 'class/*.js', 'directives/*', 'filters/*', 'login/*.js', 'lde/**/*.js', 'pregate/**/*.js', 'register/*.js', 'services/**/*.js', '!services/config.development.js'])
         .pipe(concat('app.js'))
         .pipe(babel({
             presets: ['es2015']
@@ -87,8 +87,9 @@ gulp.task('html-replace', function() {
 gulp.task('copy-files', function(){
     var templates = {
         "login": "login/login.html",
-        "register": "register/register.html",
+        "register": "register/*.html",
         "lde": "lde/**/*.html",
+        "pregate": "pregate/**/*.html",
         "services/dialogs": "services/dialogs/*.html",
         "lib": "lib/*",
         "images": "images/*",

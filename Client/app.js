@@ -80,7 +80,7 @@ myApp.config(['$provide', '$httpProvider', function($provide, $httpProvider){
                 // optional method
                 'request': function(config) {
                     // do something on success
-                    config.headers['Token'] = $rootScope.session.getToken();
+                    config.headers['Token'] = $rootScope.session.token;
                     config.headers['Content-Type'] = 'application/json';
                     //TODO verificar tiempos de respuestas para diferentes llamadas...
                     //config.timeout = 2000;
@@ -157,7 +157,7 @@ myApp.run(['$rootScope', 'appSocket', 'storageService', '$state', '$http', 'dial
 
         $rootScope.session = Session;
 
-        if ($rootScope.session.isAuthenticated()){
+        if ($rootScope.session.isAuthenticated){
             //$rootScope.session.reloadData();
             Idle.watch();
         }
@@ -262,7 +262,7 @@ myApp.run(['$rootScope', 'appSocket', 'storageService', '$state', '$http', 'dial
             if (angular.isDefined(toState.data)){ //state requires logged user
                 var authorizedRoles = toState.data.authorizedRoles;
                 if (authorizedRoles){
-                    if ($rootScope.session.isAuthenticated()){
+                    if ($rootScope.session.isAuthenticated){
                         if (!$rootScope.session.isAuthorized(authorizedRoles)){
                             event.preventDefault();
                             $rootScope.$broadcast(AUTH_EVENTS.notAuthorized);

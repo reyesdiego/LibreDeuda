@@ -1,12 +1,12 @@
 /**
  * Created by kolesnikov-a on 28/10/2016.
  */
-myApp.controller('newLdeCtrl', ['$scope', 'Lde', 'dialogsService', 'ldeFactory', 'configService', 'validatorService',
-	function($scope, Lde, dialogsService, ldeFactory, configService, validatorService){
+myApp.controller('newLdeCtrl', ['$scope', 'Lde', 'dialogsService', 'ldeFactory', 'validatorService', 'containersService',
+	function($scope, Lde, dialogsService, ldeFactory, validatorService, containersService){
 
 		$scope.newContainer = new Lde();
-		$scope.statesContainers = configService.statusContainersAsArray();
-		$scope.terminals = configService.terminalsArray;
+		$scope.statesContainers = containersService.statusContainersAsArray();
+		$scope.terminals = containersService.terminalsArray;
 		$scope.returnPlaces = [];
 
 		$scope.validCuit = false;
@@ -17,17 +17,16 @@ myApp.controller('newLdeCtrl', ['$scope', 'Lde', 'dialogsService', 'ldeFactory',
 
 		$scope.validateCuit = function(){
 			$scope.validCuit = validatorService.validateCuit($scope.newContainer.CUIT);
-			console.log($scope.validCuit);
 		};
 
 		$scope.saveLde = function(){
 			$scope.newContainer.save().then((data) => {
 				console.log(data);
-				dialogsService.notify('Nuevo contenedor', `Los datos se han guardado correctamente.\n${data.message || ''}`);
+				dialogsService.notify('Nuevo LDE', `Los datos se han guardado correctamente.\n${data.message || ''}`);
 				$scope.newContainer = new Lde();
 			}, (error) => {
 				console.log(error);
-				dialogsService.error('Contenedor', error.message);
+				dialogsService.error('Error', error.message);
 			});
 		};
 

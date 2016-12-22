@@ -44,6 +44,7 @@
     <script src="directives/onlyDigits.directive.js"></script>
     <!-- SERVICES -->
     <script src="services/config.development.js"></script>
+    <script src="services/containers.service.js"></script>
     <script src="services/socket.js"></script>
     <script src="services/dialogs/dialogs.js"></script>
     <script src="services/storage.js"></script>
@@ -72,7 +73,7 @@
             <a href class="navbar-brand"><img src="images/logo-libredeuda-chico.PNG" height="30"></a>
         </div>
 
-        <div class="collapse navbar-collapse" id="register" aria-expanded="false" uib-collapse="isCollapsed" ng-if="!session.isAuthenticated()">
+        <div class="collapse navbar-collapse" id="register" aria-expanded="false" uib-collapse="isCollapsed" ng-if="!session.isAuthenticated">
             <ul class="nav navbar-nav navbar-right">
                 <li class="dropdown open" uib-dropdown>
                     <a href="#" class="dropdown-toggle" uib-dropdown-toggle data-toggle="dropdown" role="button" aria-expanded="true"><span uib-dropdown-toggle class="glyphicon glyphicon-user"></span> Solicitar Usuario</a>
@@ -87,7 +88,7 @@
             </ul>
         </div>
 
-        <div class="collapse navbar-collapse" id="user" aria-expanded="false" uib-collapse="isCollapsed" ng-if="session.isAuthenticated()">
+        <div class="collapse navbar-collapse" id="user" aria-expanded="false" uib-collapse="isCollapsed" ng-if="session.isAuthenticated">
             <ul class="nav navbar-nav navbar-right">
                 <li class="nav navbar-nav"  ui-sref="lde">
                     <a href><span class="glyphicon"></span> Libre Deuda</a>
@@ -96,7 +97,7 @@
                     <a href><span class="glyphicon"></span> Pre - Gate</a>
                 </li>
                 <li class="dropdown open" uib-dropdown>
-                    <a href="#" class="dropdown-toggle"  uib-dropdown-toggle data-toggle="dropdown" role="button" aria-expanded="true"><span uib-dropdown-toggle class="glyphicon glyphicon-user"></span> {{ session.getFullName() }} <span class="caret"></span></a>
+                    <a href="#" class="dropdown-toggle"  uib-dropdown-toggle data-toggle="dropdown" role="button" aria-expanded="true"><span uib-dropdown-toggle class="glyphicon glyphicon-user"></span> {{ session.fullName }} <span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu" uib-dropdown-menu>
                         <li ng-click="logOut()"><a href ><span class="glyphicon glyphicon-log-out"></span> Salir</a></li>
                     </ul>

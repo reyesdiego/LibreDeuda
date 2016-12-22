@@ -19,7 +19,7 @@ myApp.factory('Lde', ['$http', '$q', 'configService', function($http, $q, config
 				this.FECHA_DEV = new Date();
 				this.LUGAR_DEV = '';
 				this.CUIT = '';
-				this.VENCE = 0;
+				this.VENCE = '0';
 				this.ID_CLIENTE = '';
 				this.EMAIL_CLIENTE = '';
 			}
