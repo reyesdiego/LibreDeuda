@@ -3,6 +3,7 @@
  */
 
 'use strict';
+var Error = require('../include/error.js');
 
 class ctvpMongoDb {
     constructor (model) {
@@ -73,6 +74,21 @@ class ctvpMongoDb {
         });
     }
 
+    get (params) {
+        return new Promise((resolve, reject) => {
+            this.model.find()
+                .exec((err, data) => {
+                    if (err) {
+                        reject(Error.ERROR("MONGO-ERROR").data(err.message));
+                    } else {
+                        resolve({
+                            status: "OK",
+                            data: data});
+                    }
+                });
+        });
+    }
+
     invoice (params) {
         return new Promise((resolve, reject) => {
             var moment = require('moment');
@@ -124,6 +140,9 @@ class ctvp {
         return this.clase.add(params);
     }
 
+    get (params) {
+        return this.clase.get(params);
+    }
     check (params) {
         return this.clase.check(params);
     }

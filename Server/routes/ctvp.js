@@ -47,6 +47,18 @@ module.exports = (socket) => {
             });
     };
 
+    let getCtvps = (req, res) => {
+        var params = {contenedor: req.params.contenedor};
+
+        Ctvp.check(params)
+            .then(data => {
+                res.status(200).send(data);
+            })
+            .catch(err => {
+                res.status(500).send(err);
+            });
+    };
+
     let invoice = (req, res) => {
 
         var ctvp = req.body;
@@ -67,6 +79,7 @@ module.exports = (socket) => {
     };
 
     router.post("/", add);
+    router.get("/", getCtvps);
     router.get("/:contenedor", getCtvp);
     router.put("/invoice", invoice);
 
