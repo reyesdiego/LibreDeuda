@@ -6,12 +6,24 @@ myApp.controller('preGateCtrl', ['$scope', 'preGateFactory', 'dialogsService', f
 
 	$scope.search = '';
 
+	$scope.containerPreGate = null;
+	$scope.searchContainer = '';
+
 	$scope.panelPreGate = {
 		type: 'panel-info',
 		message: `Aguarde mientras se cargan los datos.`
 	};
 
 	$scope.preGates = [];
+
+	$scope.searchPreGate = function(){
+		$scope.containerPreGate = null;
+		preGateFactory.getPreGate($scope.searchContainer).then(data => {
+			$scope.containerPreGate = data;
+		}).catch(error => {
+			dialogsService.error('Pre-Gates', error.message);
+		})
+	};
 
 	$scope.getPreGatesData = function(){
 		preGateFactory.getPreGates().then(data => {
@@ -48,15 +60,6 @@ myApp.controller('preGateCtrl', ['$scope', 'preGateFactory', 'dialogsService', f
 			console.log(data);
 		}).catch(error => {
 			console.log(error);
-		});
-	};
-
-	function disablePreGate(preGate){
-		preGate.disable().then(data => {
-			console.log(data);
-			$scope.getPreGatesData();
-		}).catch(error => {
-			dialogsService.error('Pre-Gates', `Se ha producido un error al tratar de procesar la operación. ${error.message}`);
 		});
 	};
 

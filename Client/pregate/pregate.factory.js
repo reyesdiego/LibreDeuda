@@ -23,8 +23,21 @@ myApp.factory('preGateFactory', ['$http', '$q', 'configService', 'PreGate', func
 			}).catch(response => {
 				deferred.reject(response.data);
 			});
+			return deferred.promise;
+		}
 
-
+		getPreGate(container){
+			const deferred = $q.defer();
+			const inserturl = `${configService.serverUrl}/ctvp/${container}`;
+			$http.get(inserturl).then(response => {
+				if (response.data.status == 'OK'){
+					deferred.resolve(new PreGate(response.data.data))
+				} else {
+					deferred.reject(response.data);
+				}
+			}).catch(response => {
+				deferred.reject(response.data);
+			});
 			return deferred.promise;
 		}
 
