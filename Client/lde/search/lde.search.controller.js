@@ -172,9 +172,13 @@ myApp.filter('containerClass', ['containersService', function(containersService)
 myApp.filter('lugarDevolucion', [function(){
 
     return function(idPlace, places){
+        let result = idPlace;
         for (let lugar of places){
-            if (idPlace == lugar._id) return lugar.NOMBRE
+            if (idPlace == lugar._id) {
+                result = lugar.NOMBRE
+            }
         }
+        return result;
     }
 
 }]);
