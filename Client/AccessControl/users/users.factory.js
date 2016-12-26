@@ -3,18 +3,18 @@
  */
 myApp.factory('usersFactory', ['User', '$http', '$q', 'APP_CONFIG', function(User, $http, $q, APP_CONFIG){
 
-	var factory = {
+	class usersFactory {
 
-		retrieveUsers: function(usersData){
+		retrieveUsers(usersData){
 			let usersArray = [];
 			for (let user of usersData){
 				user = new User(user);
 				usersArray.push(user);
 			}
 			return usersArray;
-		},
+		}
 
-		getUsers: function(){
+		getUsers(){
 			const deferred = $q.defer();
 			const url = `${APP_CONFIG.SERVER_URL}/rutaQueTraigaTodosLosUsuarios`;
 			$http.get(url).then(response => {
@@ -26,8 +26,8 @@ myApp.factory('usersFactory', ['User', '$http', '$q', 'APP_CONFIG', function(Use
 
 		}
 
-	};
+	}
 
-	return factory;
+	return new usersFactory();
 
 }]);

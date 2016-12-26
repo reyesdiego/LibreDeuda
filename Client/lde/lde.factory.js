@@ -31,9 +31,8 @@ myApp.factory('ldeFactory', ['$http', 'configService', '$q', 'Lde', function($ht
             let deferred = $q.defer();
             const insertUrl = `${configService.serverUrl}/lde/${container}`;
             $http.get(insertUrl).then((response) => {
-                console.log(response);
                 if (response.statusText == 'OK'){
-                    deferred.resolve(response.data.data);
+                    deferred.resolve(new Lde(response.data.data));
                 } else {
                     deferred.reject(response.data);
                 }

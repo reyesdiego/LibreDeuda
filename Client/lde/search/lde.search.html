@@ -4,6 +4,71 @@
         <h1>Listado de Libre Deudas</h1>
     </div>
 
+    <div class="col-lg-12">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h5>Buscar por contenedor</h5>
+            </div>
+            <div class="panel-body">
+                <form class="form-horizontal" ng-submit="searchLde()">
+                        <fieldset>
+                            <div class="form-group col-lg-4">
+                                <div class="input-group col-lg-11">
+                                    <input type="text" class="form-control" ng-model="searchContainer" placeholder="Ingrese contenedor" ng-required="true" tabindex="1">
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-default" ng-click="searchContainer = ''" tabindex="0"><i class="glyphicon glyphicon-remove"></i></button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="form-group col-lg-4">
+                                <div class="input-group">
+                                    <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-zoom-in"></span> Buscar</button>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </form>
+                    <div class="col-lg-12" ng-hide="containerLde == null">
+                        <table class="table top-gap">
+                            <thead>
+                            <tr>
+                                <th>Terminal</th>
+                                <th>Buque</th>
+                                <th>Viaje</th>
+                                <th>Contenedor</th>
+                                <th>Conocimiento</th>
+                                <th>Fecha devolución</th>
+                                <th>Lugar devolución</th>
+                                <th>CUIT</th>
+                                <th>Estado</th>
+                                <th ng-if="session.data.group != 'ADMIN'">Modificar Libre Deuda</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>{{ containerLde.TERMINAL }}</td>
+                                <td>{{ containerLde.BUQUE }}</td>
+                                <td>{{ containerLde.VIAJE }}</td>
+                                <td>{{ containerLde.CONTENEDOR }}</td>
+                                <td>{{ containerLde.BL }}</td>
+                                <td>{{ containerLde.FECHA_DEV | date: 'dd/MM/yyyy' }}</td>
+                                <td>{{ containerLde.LUGAR_DEV | lugarDevolucion: returnPlaces }}</td>
+                                <td>{{ containerLde.CUIT }}</td>
+                                <td class="{{ containerLde.STATUS | containerClass }}" >{{ containerLde.STATUS | containerStatus }}</td>
+                                <td ng-if="session.data.group != 'ADMIN'">
+                                    <button type="button"  ng-if="session.data.group == 'AGE' && containerLde.STATUS != 3" class="btn btn-success btn-sm" ng-click="update($event, 'enable', containerLde)" uib-tooltip="Habilitar" ng-disabled="lde.STATUS == 0"><span class="glyphicon glyphicon-ok"></span></button>
+                                    <button type="button"  ng-if="session.data.group == 'TER' && containerLde.STATUS != 3" class="btn btn-primary btn-sm" ng-click="updateWithModal($event, 'invoice', containerLde)" uib-tooltip="Entregar"><span class="glyphicon glyphicon-edit"></span></button>
+                                    <button type="button"  ng-if="session.data.group == 'AGE' && containerLde.STATUS != 3" class="btn btn-danger btn-sm" ng-click="update($event, 'disable', containerLde)" uib-tooltip="Anular" ng-disabled="lde.STATUS == 9"><span class="glyphicon glyphicon-remove"></span></button>
+                                    <button type="button"  ng-if="session.data.group == 'AGE' && containerLde.STATUS != 3" class="btn btn-info btn-sm" ng-click="updateWithModal($event, 'place', containerLde)" uib-tooltip="Cambiar lugar"><span class="glyphicon glyphicon-backward"></span></button>
+                                    <button type="button"  ng-if="session.data.group == 'FOR' && containerLde.STATUS != 3" class="btn btn-info btn-sm" ng-click="updateWithModal($event, 'forward', containerLde)" uib-tooltip="Cambiar CUIT"><span class="glyphicon glyphicon-forward"></span></button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row hidden-print">
         <div class="col-lg-12">
             <div class="input-group top-gap">

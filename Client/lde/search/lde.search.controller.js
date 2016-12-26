@@ -7,6 +7,9 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'dialogsService
         //$scope.search = 'ZCSU2576607';
         $scope.search = '';
 
+        $scope.containerLde = null;
+        $scope.searchContainer = '';
+
         $scope.panelLde = {
             type: 'panel-info',
             message: `Aguarde mientras se cargan los datos.`
@@ -23,7 +26,14 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'dialogsService
         });
 
 
-
+        $scope.searchLde = function(){
+            $scope.containerLde = null;
+            ldeFactory.getLde($scope.searchContainer).then(data => {
+                $scope.containerLde = data;
+            }).catch(error => {
+                dialogsService.error('Libre deuda', error.message);
+            })
+        };
         /*$scope.$on('socket:container', function(ev, data){
             //data.ANIMATE = true;
             //console.log(data);

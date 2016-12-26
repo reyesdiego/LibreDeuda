@@ -9,7 +9,10 @@ myApp.factory('Lde', ['$http', '$q', 'configService', function($http, $q, config
 		constructor(ldeData){
 			this.ID = {};
 			if (ldeData){
-				angular.extend(this, ldeData)
+				angular.extend(this, ldeData);
+				if (this.CONTAINER) this.CONTENEDOR = this.CONTAINER;
+				if (this.SHIP) this.BUQUE = this.SHIP;
+				if (this.TRIP) this.VIAJE = this.TRIP;
 			} else {
 				this.TERMINAL = '';
 				this.BUQUE = '';
