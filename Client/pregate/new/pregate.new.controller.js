@@ -11,7 +11,7 @@ myApp.controller('newPreGateCtrl', ['$scope', 'PreGate', 'dialogsService', funct
 			dialogsService.notify('Nuevo pre-gate', `Los datos se han guardado correctamente.\n${data.message || ''}`);
 			$scope.$emit('updateData');
 			$scope.newPreGate = new PreGate();
-		}, error => {
+		}).catch(error => {
 			dialogsService.error('Error', error.message);
 		});
 	};

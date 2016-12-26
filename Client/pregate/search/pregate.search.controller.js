@@ -23,7 +23,7 @@ myApp.controller('preGateCtrl', ['$scope', 'preGateFactory', 'dialogsService', f
 					message: 'No se encontraron datos.'
 				}
 			}
-		}, error => {
+		}).catch(error => {
 			let message = `Se ha producido un error al cargar los datos de pre-gates. ${error.message}`;
 			dialogsService.error('Pre-Gates', message);
 			$scope.panelPreGate = {
@@ -46,7 +46,7 @@ myApp.controller('preGateCtrl', ['$scope', 'preGateFactory', 'dialogsService', f
 		}
 		promise.then(data => {
 			console.log(data);
-		}, error => {
+		}).catch(error => {
 			console.log(error);
 		});
 	};
@@ -55,7 +55,7 @@ myApp.controller('preGateCtrl', ['$scope', 'preGateFactory', 'dialogsService', f
 		preGate.disable().then(data => {
 			console.log(data);
 			$scope.getPreGatesData();
-		}, error => {
+		}).catch(error => {
 			dialogsService.error('Pre-Gates', `Se ha producido un error al tratar de procesar la operación. ${error.message}`);
 		});
 	};

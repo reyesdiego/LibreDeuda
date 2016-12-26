@@ -66,7 +66,7 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'dialogsService
                         message: 'No se encontraron datos'
                     }
                 }
-            }, error => {
+            }).catch(error => {
                 //console.log(error);
                 let message = `Se ha producido un error al cargar los datos. ${error.message}`;
                 dialogsService.error('Libre Deuda', message);
@@ -112,7 +112,7 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'dialogsService
                 }
                 promise.then((data) => {
                     //console.log(data);
-                }, (error) => {
+                }).catch((error) => {
                     //console.log(error);
                     dialogsService.error('LDE', error.message);
                 })
@@ -132,7 +132,7 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'dialogsService
                 dialogsService.notify('Libre deuda', data.message);
                 //console.log('todo ok');
                 //console.log(data);
-            }, (error) => {
+            }).catch((error) => {
                 //console.log('todo mal');
                 //console.log(error);
                 dialogsService.error('LDE', error.message);

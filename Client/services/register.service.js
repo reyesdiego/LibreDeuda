@@ -33,7 +33,7 @@ myApp.service('Register', ['configService', '$http', '$q', function(configServic
 			$http.post(inserturl, this.data).then((response) => {
 				//console.log(response);
 				deferred.resolve(response.data);
-			}, (response) => {
+			}).catch((response) => {
 				//console.log(response);
 				deferred.reject(response.data);
 				//deferred.resolve(this.data); //solo para probar

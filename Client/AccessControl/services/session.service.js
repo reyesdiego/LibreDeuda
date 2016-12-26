@@ -27,28 +27,10 @@ myApp.service('Session', ['$rootScope', 'storageService', '$http', 'APP_CONFIG',
             $http.post(inserturl, this.data).then((response) => {
                 $rootScope.$broadcast(AUTH_EVENTS.loginSucces);
                 //console.log(response.data.data);
-                this.setData(response.data.data);
-                this.setToken(response.data.data.token);
+                this.userData = response.data.data;
+                this.token = response.data.data.token;
                 deferred.resolve(response);
-            }, (response) => {
-                deferred.reject(response);
-            });
-            return deferred.promise;
-        }
-
-        keepAlive(){
-            const deferred = $q.defer();
-            const inserturl = `${configService.serverUrl}/login`;
-
-            let param = {
-                USUARIO: this.data.USUARIO,
-                CLAVE: this.data.CLAVE
-            };
-
-            $http.post(inserturl, param).then((response) => {
-                this.token = response.data.data;
-                deferred.resolve();
-            }, (response) => {
+            }).catch((response) => {
                 deferred.reject(response);
             });
             return deferred.promise;

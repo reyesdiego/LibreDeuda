@@ -30,7 +30,7 @@ myApp.service('Session', ['$rootScope', 'storageService', '$http', 'configServic
                 this.userData = response.data.data;
                 this.token = response.data.data.token;
                 deferred.resolve(response);
-            }, (response) => {
+            }).catch((response) => {
                 deferred.reject(response);
             });
             return deferred.promise;
@@ -48,7 +48,7 @@ myApp.service('Session', ['$rootScope', 'storageService', '$http', 'configServic
             $http.post(inserturl, param).then((response) => {
                 this.token = response.data.data;
                 deferred.resolve();
-            }, (response) => {
+            }).catch((response) => {
                 deferred.reject(response);
             });
             return deferred.promise;

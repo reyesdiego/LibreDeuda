@@ -26,7 +26,7 @@ myApp.factory('PreGate', ['$http', '$q', 'configService', function($http, $q, co
 				} else {
 					deferred.reject(response.data);
 				}
-			}, response => {
+			}).catch(response => {
 				deferred.reject(response.data);
 			});
 			return deferred.promise;
@@ -41,7 +41,7 @@ myApp.factory('PreGate', ['$http', '$q', 'configService', function($http, $q, co
 				} else {
 					deferred.reject(response.data);
 				}
-			}, response => {
+			}).catch(response => {
 				deferred.reject(response.data);
 			});
 			return deferred.promise;
@@ -58,7 +58,7 @@ myApp.factory('PreGate', ['$http', '$q', 'configService', function($http, $q, co
 				} else {
 					deferred.reject(response.data);
 				}
-			}, response => {
+			}).catch(response => {
 				deferred.reject(response.data);
 			});
 			return deferred.promise;

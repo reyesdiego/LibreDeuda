@@ -29,13 +29,13 @@ myApp.factory('Lde', ['$http', '$q', 'configService', function($http, $q, config
 			const deferred = $q.defer();
 			const insertUrl = `${configService.serverUrl}/lde`;
 
-			$http.post(insertUrl, this).then(function(response){
+			$http.post(insertUrl, this).then((response) => {
 				if (response.statusText == 'OK'){
 					deferred.resolve(response.data);
 				} else {
 					deferred.reject(response.data);
 				}
-			}, function(response){
+			}).catch((response) => {
 				deferred.reject(response.data);
 			});
 
@@ -60,7 +60,7 @@ myApp.factory('Lde', ['$http', '$q', 'configService', function($http, $q, config
 				} else {
 					deferred.reject(response.data);
 				}
-			}, (response) => {
+			}).catch((response) => {
 				console.log(response);
 				deferred.reject(response.data);
 			});
@@ -80,7 +80,7 @@ myApp.factory('Lde', ['$http', '$q', 'configService', function($http, $q, config
 				console.log(response);
 				this.STATUS = response.data.data.STATUS.STATUS;
 				deferred.resolve(response.data);
-			}, (response) => {
+			}).catch((response) => {
 				console.log(response);
 				deferred.reject(response.data);
 			});
@@ -99,7 +99,7 @@ myApp.factory('Lde', ['$http', '$q', 'configService', function($http, $q, config
 			$http.put(insertUrl, params).then((response) => {
 				console.log(response);
 				deferred.resolve(response.data);
-			}, (response) => {
+			}).catch((response) => {
 				console.log(response);
 				deferred.reject(response.data);
 			});
@@ -118,7 +118,7 @@ myApp.factory('Lde', ['$http', '$q', 'configService', function($http, $q, config
 			$http.put(insertUrl, params).then((response) => {
 				console.log(response);
 				deferred.resolve(response.data);
-			}, (response) => {
+			}).catch((response) => {
 				console.log(response);
 				deferred.reject(response.data);
 			});
@@ -137,7 +137,7 @@ myApp.factory('Lde', ['$http', '$q', 'configService', function($http, $q, config
 				console.log(response);
 				this.STATUS = response.data.data.STATUS.STATUS;
 				deferred.resolve(response.data);
-			}, (response) => {
+			}).catch((response) => {
 				console.log(response);
 				deferred.reject(response.data);
 			});

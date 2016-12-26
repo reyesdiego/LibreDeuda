@@ -19,7 +19,7 @@ myApp.factory('usersFactory', ['User', '$http', '$q', 'APP_CONFIG', function(Use
 			const url = `${APP_CONFIG.SERVER_URL}/rutaQueTraigaTodosLosUsuarios`;
 			$http.get(url).then(response => {
 				deferred.resolve(this.retrieveUsers(response.data.data));
-			}, response => {
+			}).catch(response => {
 				deferred.reject(response.data);
 			});
 			return deferred.promise;

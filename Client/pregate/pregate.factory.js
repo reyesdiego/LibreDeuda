@@ -20,7 +20,7 @@ myApp.factory('preGateFactory', ['$http', '$q', 'configService', 'PreGate', func
 				} else {
 					deferred.reject(response.data);
 				}
-			}, response => {
+			}).catch(response => {
 				deferred.reject(response.data);
 			});
 

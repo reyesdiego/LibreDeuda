@@ -16,8 +16,8 @@ myApp.controller('loginCtrl', ['$rootScope', '$scope', '$state', 'storageService
                 } else {
                     dialogsService.error('Error', result.data.message);
                 }
-            }, error => {
-                var message = (error.data.message !== '') ? error.data.message : 'Error de inicio de sesión.';
+            }).catch(error => {
+                let message = (error.data.message !== '') ? error.data.message : 'Error de inicio de sesión.';
                 dialogsService.error('Error', message);
             });
         };

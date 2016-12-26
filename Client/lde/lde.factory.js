@@ -20,7 +20,7 @@ myApp.factory('ldeFactory', ['$http', 'configService', '$q', 'Lde', function($ht
             $http.get(insertUrl).then(response => {
                 console.log(response);
                 deferred.resolve(this.retrieveLdes(response.data.data));
-            }, response => {
+            }).catch(response => {
                 console.log(response);
                 deferred.reject(response.data);
             });
@@ -37,7 +37,7 @@ myApp.factory('ldeFactory', ['$http', 'configService', '$q', 'Lde', function($ht
                 } else {
                     deferred.reject(response.data);
                 }
-            }, (response) => {
+            }).catch((response) => {
                 console.log(response);
                 deferred.reject(response.data);
                 //callback(response);
@@ -46,10 +46,10 @@ myApp.factory('ldeFactory', ['$http', 'configService', '$q', 'Lde', function($ht
         }
         //Consulta de lugares de devolución - Opcionalmente se puede pasar un ID para obtener un lugar específico
         getReturnPlaces(callback){
-            var insertUrl = `${configService.serverUrl}/lde/lugar`;
-            $http.get(insertUrl).then(function(response){
+            const insertUrl = `${configService.serverUrl}/lde/lugar`;
+            $http.get(insertUrl).then((response) => {
                 callback(response.data)
-            }, function(response){
+            }).catch((response) => {
                 callback(response.data)
             })
         }

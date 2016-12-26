@@ -8,8 +8,8 @@ myApp.controller('usersCtrl', ['$scope', 'usersFactory', function($scope, usersF
 
 	usersFactory.getUsers().then(users => {
 		$scope.users = users;
-	}, error => {
-
+	}).catch(error => {
+		console.log(error);
 	});
 
 }]);
