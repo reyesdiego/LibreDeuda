@@ -40,7 +40,7 @@
                                 <th>Lugar devolución</th>
                                 <th>CUIT</th>
                                 <th>Estado</th>
-                                <th ng-if="session.data.group != 'ADMIN'">Modificar Libre Deuda</th>
+                                <th ng-if="session.group != 'ADMIN'">Modificar Libre Deuda</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -55,11 +55,11 @@
                                 <td>{{ containerLde.CUIT }}</td>
                                 <td class="{{ containerLde.STATUS | containerClass }}" >{{ containerLde.STATUS | containerStatus }}</td>
                                 <td ng-if="session.data.group != 'ADMIN'">
-                                    <button type="button"  ng-if="session.data.group == 'AGE' && containerLde.STATUS != 3" class="btn btn-success btn-sm" ng-click="update($event, 'enable', containerLde)" uib-tooltip="Habilitar" ng-disabled="lde.STATUS == 0"><span class="glyphicon glyphicon-ok"></span></button>
-                                    <button type="button"  ng-if="session.data.group == 'TER' && containerLde.STATUS != 3" class="btn btn-primary btn-sm" ng-click="updateWithModal($event, 'invoice', containerLde)" uib-tooltip="Entregar"><span class="glyphicon glyphicon-edit"></span></button>
-                                    <button type="button"  ng-if="session.data.group == 'AGE' && containerLde.STATUS != 3" class="btn btn-danger btn-sm" ng-click="update($event, 'disable', containerLde)" uib-tooltip="Anular" ng-disabled="lde.STATUS == 9"><span class="glyphicon glyphicon-remove"></span></button>
-                                    <button type="button"  ng-if="session.data.group == 'AGE' && containerLde.STATUS != 3" class="btn btn-info btn-sm" ng-click="updateWithModal($event, 'place', containerLde)" uib-tooltip="Cambiar lugar"><span class="glyphicon glyphicon-backward"></span></button>
-                                    <button type="button"  ng-if="session.data.group == 'FOR' && containerLde.STATUS != 3" class="btn btn-info btn-sm" ng-click="updateWithModal($event, 'forward', containerLde)" uib-tooltip="Cambiar CUIT"><span class="glyphicon glyphicon-forward"></span></button>
+                                    <button type="button"  ng-if="session.group == 'AGE' && containerLde.STATUS != 3" class="btn btn-success btn-sm" ng-click="update($event, 'enable', containerLde)" uib-tooltip="Habilitar" ng-disabled="lde.STATUS == 0"><span class="glyphicon glyphicon-ok"></span></button>
+                                    <button type="button"  ng-if="session.group == 'TER' && containerLde.STATUS != 3" class="btn btn-primary btn-sm" ng-click="updateWithModal($event, 'invoice', containerLde)" uib-tooltip="Entregar"><span class="glyphicon glyphicon-edit"></span></button>
+                                    <button type="button"  ng-if="session.group == 'AGE' && containerLde.STATUS != 3" class="btn btn-danger btn-sm" ng-click="update($event, 'disable', containerLde)" uib-tooltip="Anular" ng-disabled="lde.STATUS == 9"><span class="glyphicon glyphicon-remove"></span></button>
+                                    <button type="button"  ng-if="session.group == 'AGE' && containerLde.STATUS != 3" class="btn btn-info btn-sm" ng-click="updateWithModal($event, 'place', containerLde)" uib-tooltip="Cambiar lugar"><span class="glyphicon glyphicon-backward"></span></button>
+                                    <button type="button"  ng-if="session.group == 'FOR' && containerLde.STATUS != 3" class="btn btn-info btn-sm" ng-click="updateWithModal($event, 'forward', containerLde)" uib-tooltip="Cambiar CUIT"><span class="glyphicon glyphicon-forward"></span></button>
                                 </td>
                             </tr>
                             </tbody>

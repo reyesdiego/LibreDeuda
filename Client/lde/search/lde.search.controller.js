@@ -1,11 +1,12 @@
 /**
  * Created by kolesnikov-a on 18/04/2016.
  */
-myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'dialogsService', '$q', '$location', '$state', '$uibModal', 'Lde', 'containersService',
-    function($scope, ldeFactory, $timeout, dialogsService, $q, $location, $state, $uibModal, Lde, containersService){
+myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'dialogsService', '$q', '$location', '$state', '$uibModal', 'Lde', 'containersService', 'Session',
+    function($scope, ldeFactory, $timeout, dialogsService, $q, $location, $state, $uibModal, Lde, containersService, Session){
 
         //$scope.search = 'ZCSU2576607';
         $scope.search = '';
+        $scope.session = Session;
 
         $scope.containerLde = null;
         $scope.searchContainer = '';
@@ -34,23 +35,27 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'dialogsService
                 dialogsService.error('Libre deuda', error.message);
             })
         };
-        /*$scope.$on('socket:container', function(ev, data){
+
+        $scope.$on('socket:container', function(ev, data){
             //data.ANIMATE = true;
             //console.log(data);
-            let ldeData = {
-                TERMINAL: data.TERMINAL,
-                BUQUE: data.SHIP,
-                VIAJE: data.TRIP,
-                CONTENEDOR: data.CONTAINER,
-                BL: data.BL,
-                FECHA_DEV: data.RETURN_TO[0].DATE_TO,
-                LUGAR_DEV: data.RETURN_TO[0].PLACE,
-                CUIT: data.CLIENT[0].CUIT,
-                STATUS: data.STATUS[0].STATUS
-            };
-            $scope.dataContainers.unshift(new Lde(ldeData));
+            if ($scope.session.group == 'TER' && $scope.session.terminal == data.TERMINAL){
+                let ldeData = {
+                    TERMINAL: data.TERMINAL,
+                    BUQUE: data.SHIP,
+                    VIAJE: data.TRIP,
+                    CONTENEDOR: data.CONTAINER,
+                    BL: data.BL,
+                    FECHA_DEV: data.RETURN_TO[0].DATE_TO,
+                    LUGAR_DEV: data.RETURN_TO[0].PLACE,
+                    CUIT: data.CLIENT[0].CUIT,
+                    STATUS: data.STATUS[0].STATUS
+                };
+
+                $scope.dataContainers.unshift(new Lde(ldeData));
+            }
             //$scope.reAnimate($scope.dataContainers[0]);
-        });*/
+        });
 
         $scope.$on('socket:status', function(ev, data){
 

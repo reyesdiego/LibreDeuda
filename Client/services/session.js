@@ -26,7 +26,6 @@ myApp.service('Session', ['$rootScope', 'storageService', '$http', 'configServic
 
             $http.post(inserturl, this.data).then((response) => {
                 $rootScope.$broadcast(AUTH_EVENTS.loginSucces);
-                //console.log(response.data.data);
                 this.userData = response.data.data;
                 this.token = response.data.data.token;
                 deferred.resolve(response);
@@ -88,11 +87,21 @@ myApp.service('Session', ['$rootScope', 'storageService', '$http', 'configServic
             this.data.lastname = userData.lastname;
             this.data.token = userData.token;
             this.data.group = userData.group;
+            this.data.terminal = userData.terminal;
+            this.data.user = userData.user;
             if (this.data.keep){
                 storageService.setObject('user', this.data);
             } else {
                 storageService.setSessionObject('user', this.data);
             }
+        }
+
+        get group(){
+            return this.data.group;
+        }
+
+        get terminal(){
+            return this.data.terminal;
         }
 
         get name(){
