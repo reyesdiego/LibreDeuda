@@ -38,11 +38,16 @@ class ldeMongoDb {
             var match = {CONTAINER: contenedor};
             var toDay = moment(moment().format("YYYY-MM-DD")).toDate();
 
+            var user = params.user.data;
+
             if (params.id_cliente !== undefined) {
                 match.ID_CLIENT = params.id_cliente;
             }
             if (params.id !== undefined) {
                 match._id = params.id;
+            }
+            if (user.group === 'TER') {
+                match.TERMINAL = user.terminal;
             }
             var param = [
                 {$match: match
@@ -97,7 +102,6 @@ class ldeMongoDb {
                         if (data.length === 0) {
                             reject(result);
                         } else {
-                            let user = params.user.data;
                             let lde = data[0];
 
                             if (user.group === 'AGE' && user.email !== lde.USER) {
@@ -224,76 +228,98 @@ class ldeMongoDb {
     forwardLde (params) {
         return new Promise((resolve, reject) => {
             var result;
-            this.checkLde(params)
-                .then(lde => {
-                    if (lde.data.length <= 0) {
-                        result = Error.ERROR("AGP-0001").data({CONTENEDOR: params.contenedor});
-                        reject(result);
-                    } else {
-                        lde = lde.data;
-                        var lastStatus = lde.STATUS;
-                        if (lastStatus !== 0 && lastStatus !== 3) {
-                            result = Error.ERROR("AGP-0001").data({CONTENEDOR: params.contenedor});
+
+            var user = params.user.data;
+
+            if (user.group !== 'FOR') {
+                result = Error.ERROR("AGP-0008").data({CONTENEDOR: params.contenedor});
+            } else {
+                this.checkLde(params)
+                    .then(lde => {
+                        if (lde.data.length <= 0) {
+                            result = Error.ERROR("AGP-0008").data({CONTENEDOR: params.contenedor});
                             reject(result);
                         } else {
-                            this.model.findOne({_id: lde.ID})
-                                .exec((err, lde) => {
-                                    if (err) {
-                                        result = Error.ERROR("MONGO-ERROR").data(err.message);
-                                        reject(result);
-                                    } else {
-                                        var aud_date = new Date();
-                                        let client = {
-                                            CUIT: params.cuit,
-                                            AUD_TIME: aud_date,
-                                            AUD_USER: params.user.USUARIO
-                                        };
-                                        lde.CLIENT.push(client);
+                            lde = lde.data;
+                            var lastStatus = lde.STATUS;
+                            if (lastStatus !== 0 && lastStatus !== 3) {
+                                result = Error.ERROR("AGP-0001").data({CONTENEDOR: params.contenedor});
+                                reject(result);
+                            } else {
+                                this.model.findOne({_id: lde.ID})
+                                    .exec((err, lde) => {
+                                        if (err) {
+                                            result = Error.ERROR("MONGO-ERROR").data(err.message);
+                                            reject(result);
+                                        } else {
+                                            var aud_date = new Date();
+                                            var clientFirst = lde.CLIENT[0];
+                                            if (clientFirst.CUIT === user.cuit) {
+                                                let client = {
+                                                    CUIT: params.cuit,
+                                                    AUD_TIME: aud_date,
+                                                    AUD_USER: params.user.USUARIO
+                                                };
+                                                lde.CLIENT.push(client);
 
-                                        let return_to = {};
+                                                let return_to = {};
 
-                                        if (params.fecha_dev) {
-                                            var placeFirst = lde.RETURN_TO[0];
-                                            var placeLast = lde.RETURN_TO[lde.RETURN_TO.length - 1];
-                                            if (placeFirst.DATE_TO > params.fecha_dev) {
-                                                return_to.DATE_TO = params.fecha_dev;
-                                                return_to.PLACE = placeLast.PLACE;
-                                                return_to.AUD_USER = params.user.USUARIO;
-                                                return_to.AUD_TIME = aud_date;
-                                                lde.RETURN_TO.push(return_to);
+                                                /** El forwarder puede cambiar la fecha de devolución solo con una fecha anterior
+                                                 * a la fecha original de devolución del AG Marítimo
+                                                 * */
+                                                if (params.fecha_dev) {
+                                                    var placeFirst = lde.RETURN_TO[0];
+                                                    var placeLast = lde.RETURN_TO[lde.RETURN_TO.length - 1];
+                                                    if (placeFirst.DATE_TO > params.fecha_dev) {
+                                                        return_to.DATE_TO = params.fecha_dev;
+                                                        return_to.PLACE = placeLast.PLACE;
+                                                        return_to.AUD_USER = params.user.USUARIO;
+                                                        return_to.AUD_TIME = aud_date;
+                                                        lde.RETURN_TO.push(return_to);
+                                                    } else {
+                                                        result = Error.ERROR("AGP-0007").data({FECHA_DEV: placeFirst.DATE_TO})
+                                                        return reject(result);
+                                                    }
+                                                }
+
+                                                lde.save((err, dataSaved) => {
+                                                    if (err) {
+                                                        result = Error.ERROR("MONGO-ERROR").data(err.message);
+                                                        reject(result);
+                                                    } else {
+                                                        let cuit = dataSaved.CLIENT[dataSaved.CLIENT.length - 1].CUIT;
+                                                        let returnTo = dataSaved.RETURN_TO[dataSaved.RETURN_TO.length - 1];
+                                                        let fecha_dev = returnTo.DATE_TO;
+                                                        let lugar_dev = returnTo.PLACE;
+                                                        result = {
+                                                            status: "OK",
+                                                            message: `El Libre Deuda ha sido Habilitado para el CUIT ${cuit}`,
+                                                            data: {
+                                                                ID: dataSaved._id,
+                                                                CUIT: cuit,
+                                                                FECHA_DEV: fecha_dev,
+                                                                LUGAR_DEV: lugar_dev
+                                                            }
+                                                        };
+                                                        resolve(result);
+                                                    }
+                                                });
                                             } else {
-                                                result = Error.ERROR("AGP-0007").data({FECHA_DEV: placeFirst.DATE_TO})
+                                                result = Error.ERROR("AGP-0014").data({
+                                                    email: user.email,
+                                                    cuit: user.cuit
+                                                })
                                                 return reject(result);
                                             }
                                         }
-
-                                        lde.save((err, dataSaved) => {
-                                            if (err) {
-                                                result = Error.ERROR("MONGO-ERROR").data(err.message);
-                                                reject(result);
-                                            } else {
-                                                let cuit = dataSaved.CLIENT[dataSaved.CLIENT.length - 1].CUIT;
-                                                let fecha_dev = dataSaved.RETURN_TO[dataSaved.RETURN_TO.length - 1].DATE_TO;
-                                                result = {
-                                                    status: "OK",
-                                                    message: `El Libre Deuda ha sido Habilitado para el CUIT ${cuit}`,
-                                                    data: {
-                                                        ID: dataSaved._id,
-                                                        CUIT: cuit,
-                                                        FECHA_DEV: fecha_dev
-                                                    }
-                                                };
-                                                resolve(result);
-                                            }
-                                        });
-                                    }
-                                });
+                                    });
+                            }
                         }
-                    }
-                })
-                .catch(err => {
-                    reject(err);
-                });
+                    })
+                    .catch(err => {
+                        reject(err);
+                    });
+            }
         });
     }
 
@@ -364,6 +390,7 @@ class ldeMongoDb {
             var result;
             var param, match;
             var contenedor = params.contenedor;
+            var mongoose = require('mongoose');
 
             match = {
                 CONTAINER: contenedor
@@ -372,7 +399,7 @@ class ldeMongoDb {
                 match.ID_CLIENT = params.id_cliente;
             }
             if (params.id !== undefined) {
-                match._id = params.id;
+                match._id = {id: mongoose.Types.ObjectId(params.id)};
             }
 
             param = [
@@ -436,24 +463,30 @@ class ldeMongoDb {
             var param,
                 match = {};
 
-            if (params.user.data.group === 'AGE') {
+            var user = params.user.data;
+
+            if (user.group === 'AGE') {
                 match = {
                     $or: [ {'STATUS.STATUS': 0}, {'STATUS.STATUS': 9}],
                     'STATUS.AUD_USER': params.user.USUARIO
                 };
-            } if (params.user.data.group === 'ADM') {
+            } if (user.group === 'ADM') {
                 match = {
                     $or: [ {'STATUS.STATUS': 0}, {'STATUS.STATUS': 9}]
                 };
-            } else if (params.user.data.group === 'TER') {
+            } else if (user.group === 'TER') {
                 match = {
                     'STATUS.STATUS': 0,
-                    TERMINAL: params.user.data.company
+                    TERMINAL: user.TERMINAL
                 };
-            } else if (params.user.data.group === 'FOR') {
+            } else if (user.group === 'FOR') {
                 match = {
                     'STATUS.STATUS': 0
                 };
+            }
+
+            if (user.group === 'TER') {
+                match.TERMINAL = user.TERMINAL;
             }
 
             param = [
@@ -525,14 +558,24 @@ class ldeMongoDb {
     changePlace (params) {
         return new Promise((resolve, reject) => {
             var result;
+            var user = params.user.data;
+
+            var param = {
+                CONTAINER: params.contenedor,
+                ID_CLIENTE: params.id_cliente,
+                _id: params.id,
+                LUGAR_DEV: params.lugar_dev,
+                FECHA_DEV: params.fecha_dev
+            };
+
             this.getLde(params)
             .then(data => {
                     /** Libre deuda inexistente para este contenedor. */
-                    result = Error.ERROR("AGP-0001").data({
-                        CONTENEDOR: params.contenedor,
-                        ID_CLIENT: params.ID_CLIENTE
-                    });
                     if (data.data.length === 0) {
+                        result = Error.ERROR("AGP-0001").data({
+                            CONTENEDOR: params.contenedor,
+                            ID_CLIENT: params.ID_CLIENTE
+                        });
                         reject(result);
                     } else {
                         data = data.data.filter(item => (item.STATUS.STATUS === 3 || item.STATUS.STATUS === 0));
@@ -545,30 +588,50 @@ class ldeMongoDb {
                                 let lde = data[0];
                                 /** Si no recibe lugar o fecha de devolucion se utiliza la ultima que tenia*/
                                 let lastReturn = lde.RETURN_TO[lde.RETURN_TO.length-1];
-
-                                /**La fecha de devolucion no puede ser menor a la fecha original*/
-                                if (lde.RETURN_TO[0].DATE_TO < params.fecha_dev) {
-                                    reject({
-                                        status: "ERROR",
-                                        message: "La nueva fecha de devolución debe ser menos a la original."
-                                    });
+                                if (user.group === 'FOR' && user.cuit === lde.CUIT) {
+                                    /**La fecha de devolucion no puede ser menor a la fecha original*/
+                                    if (lastReturn.DATE_TO < params.fecha_dev) {
+                                        reject({
+                                            status: "ERROR",
+                                            message: "La nueva fecha de devolución debe ser menor a la original."
+                                        });
+                                    } else {
+                                        let newReturn_To = {
+                                            PLACE: lastReturn.PLACE,
+                                            DATE_TO: (params.fecha_dev !== undefined) ? params.fecha_dev : lastReturn.DATE_TO,
+                                            AUD_TIME: new Date(),
+                                            AUD_USER: params.user.USUARIO
+                                        };
+                                        lde.RETURN_TO.push(newReturn_To);
+                                        lde.save((err, data) => {
+                                            if (err) {
+                                                result = Error.ERROR("MONGO-ERROR").data(err.message);
+                                                reject(result);
+                                            } else {
+                                                resolve(data);
+                                            }
+                                        });
+                                    }
                                 } else {
-                                    let newReturn_To = {
-                                        PLACE: (params.lugar_dev !== undefined) ? params.lugar_dev : lastReturn.PLACE,
-                                        DATE_TO: (params.fecha_dev !== undefined) ? params.fecha_dev : lastReturn.DATE_TO,
-                                        AUD_TIME: new Date(),
-                                        AUD_USER: params.user.USUARIO
-                                    };
-                                    lde.RETURN_TO.push(newReturn_To);
-                                    lde.save((err, data) => {
-                                        if (err) {
-                                            result = Error.ERROR("MONGO-ERROR").data(err.message);
-                                            reject(result);
-                                        } else {
-                                            resolve(data);
-                                        }
-                                    });
+                                    if (user.group === 'AGE') {
+                                        let newReturn_To = {
+                                            PLACE: (params.lugar_dev) ? params.lugar_dev : lastReturn.PLACE,
+                                            DATE_TO: (params.fecha_dev !== undefined) ? params.fecha_dev : lastReturn.DATE_TO,
+                                            AUD_TIME: new Date(),
+                                            AUD_USER: params.user.USUARIO
+                                        };
+                                        lde.RETURN_TO.push(newReturn_To);
+                                        lde.save((err, data) => {
+                                            if (err) {
+                                                result = Error.ERROR("MONGO-ERROR").data(err.message);
+                                                reject(result);
+                                            } else {
+                                                resolve(data);
+                                            }
+                                        });
+                                    }
                                 }
+
                             }
                         });
                     }
