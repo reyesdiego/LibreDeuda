@@ -1,0 +1,52 @@
+doctype html
+html(lang='es')
+    head
+        title Servicio Terminales Portuarias
+    body(style="font-family: 'Open Sans',sans-serif; font-size: 12px; background-color:white !important")
+        - var fecha = moment(inicio).format("DD-MM-YYYY")
+        - var horario = moment(inicio).format("HH:mm") + 'hs. a ' + moment(fin).format("HH:mm") + "hs.";
+        - var altal = moment(alta).format("DD-MM-YYYY HH:mm") + " hs.";
+        table
+            tr(style="background-color: white !important;")
+                td
+                    img(style="max-height:200px" src="http://terminales.puertobuenosaires.gob.ar/images/logoBlanco.png")
+                td
+                    h1(style="font-family: inherit; font-weight: 400; font-size: 30px; line-height: 1.1; background-color:white !important; color: #0099d7;") &nbsp;Libre Deuda Electrónico
+        p(style="text-align: left") Cambio de Lugar y/o Fecha de Devolución&nbsp;
+            b #{full_name}
+            | &nbsp;el día
+            b &nbsp;#{altal}
+        table(style="background-color: #ffffff; border-collapse: separate; border-spacing: 2px !important; border-color: gray !important; font-size: 16px; font-weight:bolder; color: #000000")
+            tr
+                td(style="padding: 4px; font-size: 70% !important; text-align:right; background-color:#C8C8C8") Terminal:
+                td(style="padding: 4px; font-size: 70% !important; border:1px solid #C8C8C8; background-color:#ffffff; text-align: left") #{terminal}
+            tr
+                td(style="padding: 4px; font-size: 70% !important; text-align:right; background-color:#C8C8C8") Fecha:
+                td(style="padding: 4px; font-size: 70% !important; border:1px solid #C8C8C8; background-color:#ffffff; text-align: left") #{fecha}
+            tr
+                td(style="padding: 4px; font-size: 70% !important; text-align:right; background-color:#C8C8C8") Contenedor:
+                td(style="padding: 4px; font-size: 70% !important; border:1px solid #C8C8C8; background-color:#ffffff; text-align: left") #{contenedor}
+            tr
+                td(style="padding: 4px; font-size: 70% !important; text-align:right; background-color:#C8C8C8") Buque:
+                td(style="padding: 4px; font-size: 70% !important; border:1px solid #C8C8C8; background-color:#ffffff; text-align: left") #{buque}
+            tr
+                td(style="padding: 4px; font-size: 70% !important; text-align:right; background-color:#C8C8C8") Viaje:
+                td(style="padding: 4px; font-size: 70% !important; border:1px solid #C8C8C8; background-color:#ffffff; text-align: left") #{viaje}
+            tr
+                td(style="padding: 4px; font-size: 70% !important; text-align:right; background-color:#C8C8C8") CUIT Cliente:
+                td(style="padding: 4px; font-size: 70% !important; border:1px solid #C8C8C8; background-color:#ffffff; text-align: left") #{cuit}
+            tr
+                td(style="padding: 4px; font-size: 70% !important; text-align:right; background-color:#C8C8C8") Fecha Devolución:
+                td(style="padding: 4px; font-size: 70% !important; border:1px solid #C8C8C8; background-color:#ffffff; text-align: left") #{fecha}
+            tr
+                td(style="padding: 4px; font-size: 70% !important; text-align:right; background-color:#C8C8C8") Nuevo Lugar:
+                td(style="padding: 4px; font-size: 70% !important; border:1px solid #C8C8C8; background-color:#ffffff; text-align: left") #{lugar}
+        if email != "" && email != null
+                tr
+                    td(style="padding: 4px; font-size: 70% !important; text-align:right; background-color:#C8C8C8") e-Mail:
+                    td(style="padding: 4px; font-size: 70% !important; border:1px solid #C8C8C8; background-color:#ffffff; text-align: left") #{email}
+        p
+            p(style="text-align: left") Administración General de Puertos pone en conocimiento que el Libre Deuda Electrónico ha sido generado correctamente. Este comprobante deberá ser presentado ante cualquier reclamo.
+            p Posteriormente podrá consultar, aportando datos de email y contenedor, éste y otros comprobantes haciendo click&nbsp;
+                a(href="http://pagoelectronico.puertobuenosaires.gob.ar") aquí
+                | , o vía telefónica con la Unidad de Control de Terminales en los siguientes números: 4313-6122 4313-6928
