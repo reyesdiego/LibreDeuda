@@ -18,7 +18,8 @@ var errors = [
     {code: `AGP-0010`, message: `El usuario no existe`, http_status: 401},
     {code: `AGP-0011`, message: `La clave es incorrecta`, http_status: 401},
     {code: `AGP-0012`, message: `Debe proveer un Usuario`, http_status: 403},
-    {code: `AGP-0013`, message: `Lo parámetros de entrada son incorrectos`, http_status: 403}
+    {code: `AGP-0013`, message: `Lo parámetros de entrada son incorrectos`, http_status: 403},
+    {code: `AGP-0014`, message: `No tiene privilegios para asignar un nuevo CUIT al Libre Deuda Electrónico`, http_status: 401}
 ];
 //module.exports.errors = errors;
 

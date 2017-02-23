@@ -17,6 +17,7 @@ var Account = new Schema({
     lastname: {type: String, required: true},
     firstname: {type: String, required: true},
     terminals: [{type: String}],
+    terminal: {type: String, enum: ['BACTSSA', 'TERMINAL4', 'TRP']},
     dateCreated: {type: Date, required: true, default: Date.now},
     dateUpdated: {type: Date, required: true, default: Date.now},
     status: {type: Number, required: true},

@@ -23,9 +23,9 @@ var freeDebt = new mongoose.Schema({
         AUD_TIME: {type: Date, required: true}
     }],
     CLIENT: [{
-        CUIT: {type: String},
+        CUIT: {type: String, required: true},
         COMPANY: {type: String},
-        EMAIL_CLIENT: {type: String},
+        EMAIL: {type: String},
         AUD_USER: {type: String, required: true},
         AUD_TIME: {type: Date, required: true}
     }],
