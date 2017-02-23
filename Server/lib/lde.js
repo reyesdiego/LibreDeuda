@@ -457,7 +457,7 @@ class ldeMongoDb {
         });
     }
 
-    getLdes (params) {
+    getLdes (params, options) {
         return new Promise((resolve, reject) => {
             var result;
             var param,
@@ -477,7 +477,7 @@ class ldeMongoDb {
             } else if (user.group === 'TER') {
                 match = {
                     'STATUS.STATUS': 0,
-                    TERMINAL: user.TERMINAL
+                    TERMINAL: user.terminal
                 };
             } else if (user.group === 'FOR') {
                 match = {
@@ -486,7 +486,7 @@ class ldeMongoDb {
             }
 
             if (user.group === 'TER') {
-                match.TERMINAL = user.TERMINAL;
+                match.TERMINAL = user.terminal;
             }
 
             param = [
@@ -508,6 +508,8 @@ class ldeMongoDb {
                     EXPIRATION: {'$first': '$EXPIRATION'}
                 }},
                 {$match: match},
+                {$skip: parseInt(options.skip)},
+                {$limit: parseInt(options.limit)},
                 {$project: {
                     //ID: '$_id.id',
                     TERMINAL: true,
@@ -591,10 +593,8 @@ class ldeMongoDb {
                                 if (user.group === 'FOR' && user.cuit === lde.CUIT) {
                                     /**La fecha de devolucion no puede ser menor a la fecha original*/
                                     if (lastReturn.DATE_TO < params.fecha_dev) {
-                                        reject({
-                                            status: "ERROR",
-                                            message: "La nueva fecha de devolución debe ser menor a la original."
-                                        });
+                                        result = Error.ERROR("AGP-0007");
+                                        reject(result);
                                     } else {
                                         let newReturn_To = {
                                             PLACE: lastReturn.PLACE,
@@ -608,7 +608,10 @@ class ldeMongoDb {
                                                 result = Error.ERROR("MONGO-ERROR").data(err.message);
                                                 reject(result);
                                             } else {
-                                                resolve(data);
+                                                resolve({
+                                                    status: "OK",
+                                                    data: data
+                                                });
                                             }
                                         });
                                     }
@@ -626,7 +629,10 @@ class ldeMongoDb {
                                                 result = Error.ERROR("MONGO-ERROR").data(err.message);
                                                 reject(result);
                                             } else {
-                                                resolve(data);
+                                                resolve({
+                                                    status: "OK",
+                                                    data: data
+                                                });
                                             }
                                         });
                                     }
@@ -662,8 +668,8 @@ class lde {
         return this.clase.getLde(params);
     }
 
-    getLdes (params) {
-        return this.clase.getLdes(params);
+    getLdes (params, options) {
+        return this.clase.getLdes(params, options);
     }
 
     /**
