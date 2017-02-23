@@ -21,6 +21,12 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'dialogsService
         $scope.returnPlaces = [];
 
         $scope.dataContainers = [];
+        $scope.pageContainers = [];
+
+        $scope.pagination = {
+            page: 1,
+            itemsPerPage: 10
+        };
 
         ldeFactory.getReturnPlaces((data) => {
             $scope.returnPlaces = data.data
