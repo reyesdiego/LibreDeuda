@@ -21,6 +21,7 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'dialogsService
         $scope.returnPlaces = [];
 
         $scope.dataContainers = [];
+        $scope.totalContainers = 0;
         $scope.pageContainers = [];
 
         $scope.pagination = {
@@ -76,11 +77,16 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'dialogsService
         });
 
         $scope.getLdeData = function(){
-            $scope.dataContainers = [];
-            ldeFactory.getAllLde().then(data => {
-                //console.log(data);
-                if (data.length > 0){
-                    $scope.dataContainers = data;
+            const page = {
+                skip: $scope.pagination.page * $scope.pagination.itemsPerPage - $scope.pagination.itemsPerPage,
+                limit: $scope.pagination.itemsPerPage
+            };
+            //$scope.dataContainers = [];
+            ldeFactory.getAllLde(page).then(data => {
+                console.log(data);
+                if (data.data.length > 0){
+                    $scope.dataContainers = data.data;
+                    $scope.totalContainers = data.totalCount;
                 } else {
                     $scope.panelLde = {
                         type: 'panel-info',
@@ -95,7 +101,8 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'dialogsService
                     type: 'panel-danger',
                     message: message
                 }
-            })
+            });
+            console.log($scope.pagination.page);
         };
 
         //Para facturar, cambiar lugar de devolución o CUIT, se requiere abrir un modal para agregar los demás datos

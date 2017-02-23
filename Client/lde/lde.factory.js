@@ -14,12 +14,13 @@ myApp.factory('ldeFactory', ['$http', 'configService', '$q', 'Lde', function($ht
             return ldeArray;
         }
 
-        getAllLde(){
+        getAllLde(page){
             const deferred = $q.defer();
-            const insertUrl = `${configService.serverUrl}/lde`;
+            const insertUrl = `${configService.serverUrl}/lde/${page.skip}/${page.limit}`;
             $http.get(insertUrl).then(response => {
                 console.log(response);
-                deferred.resolve(this.retrieveLdes(response.data.data));
+                response.data.data = this.retrieveLdes(response.data.data);
+                deferred.resolve(response.data);
             }).catch(response => {
                 console.log(response);
                 deferred.reject(response.data);
