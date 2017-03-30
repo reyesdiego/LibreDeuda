@@ -11,6 +11,11 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'dialogsService
         $scope.containerLde = null;
         $scope.searchContainer = '';
 
+        $scope.order = {
+        	field: '',
+			reverse: false
+		};
+
         $scope.panelLde = {
             type: 'panel-info',
             message: `Aguarde mientras se cargan los datos.`
@@ -76,13 +81,23 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'dialogsService
             });
         });
 
-        $scope.getLdeData = function(){
+        $scope.getLdeData = function(order){
+        	if (order){
+        		if ($scope.order.field == order) {
+        			$scope.order.reverse = !$scope.order.reverse;
+				} else {
+        			$scope.order = {
+        				field: order,
+						reverse: false
+					}
+				}
+			}
             const page = {
                 skip: $scope.pagination.page * $scope.pagination.itemsPerPage - $scope.pagination.itemsPerPage,
                 limit: $scope.pagination.itemsPerPage
             };
             //$scope.dataContainers = [];
-            ldeFactory.getAllLde(page).then(data => {
+            ldeFactory.getAllLde(page, $scope.order).then(data => {
                 if (data.data.length > 0){
                     $scope.dataContainers = data.data;
                     $scope.totalContainers = data.totalCount;

@@ -14,10 +14,18 @@ myApp.factory('ldeFactory', ['$http', 'configService', '$q', 'Lde', function($ht
             return ldeArray;
         }
 
-        getAllLde(page){
+        getAllLde(page, order){
             const deferred = $q.defer();
             const insertUrl = `${configService.serverUrl}/lde/${page.skip}/${page.limit}`;
-            $http.get(insertUrl).then(response => {
+
+			let params = '';
+            if (order && order.field != ''){
+                params = {};
+                params.order = {};
+                params.order[order.field] = (order.reverse ? -1 : 1);
+            }
+
+            $http.get(insertUrl, { params: params }).then(response => {
                 console.log(response);
                 response.data.data = this.retrieveLdes(response.data.data);
                 deferred.resolve(response.data);

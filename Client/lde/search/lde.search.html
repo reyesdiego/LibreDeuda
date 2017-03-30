@@ -95,15 +95,15 @@
         <table class="table top-gap">
             <thead>
             <tr>
-                <th>Terminal</th>
-                <th>Buque</th>
-                <th>Viaje</th>
-                <th>Contenedor</th>
-                <th>Conocimiento</th>
-                <th>Fecha devolución</th>
-                <th>Lugar devolución</th>
-                <th>CUIT</th>
-                <th>Estado</th>
+                <th ng-click="getLdeData('TERMINAL')" class="clickable">Terminal</th>
+                <th ng-click="getLdeData('BUQUE')" class="clickable">Buque</th>
+                <th ng-click="getLdeData('VIAJE')" class="clickable">Viaje</th>
+                <th ng-click="getLdeData('CONTENEDOR')" class="clickable">Contenedor</th>
+                <th ng-click="getLdeData('BL')" class="clickable">Conocimiento</th>
+                <th ng-click="getLdeData('FECHA_DEV')" class="clickable">Fecha devolución</th>
+                <th ng-click="getLdeData('LUGAR_DEV')" class="clickable">Lugar devolución</th>
+                <th ng-click="getLdeData('CUIT')" class="clickable">CUIT</th>
+                <th ng-click="getLdeData('STATUS')" class="clickable">Estado</th>
                 <th ng-if="session.data.group != 'ADMIN'">Modificar Libre Deuda</th>
             </tr>
             </thead>
@@ -118,7 +118,7 @@
                 <td>{{ lde.FECHA_DEV | date: 'dd/MM/yyyy' }}</td>
                 <td>{{ lde.LUGAR_DEV | lugarDevolucion: returnPlaces }}</td>
                 <td>{{ lde.CUIT }}</td>
-                <td ng-if="!lde.isExpired" class="{{ lde.STATUS | containerClass }}" >{{ lde.STATUS | containerStatus }}</td>
+                <td ng-if="!lde.isExpired" class="{{ lde.STATUS | containerClass }}">{{ lde.STATUS | containerStatus }}</td>
                 <td ng-if="lde.isExpired" class="text-danger">EXPIRADO</td>
                 <td ng-if="session.data.group != 'ADMIN'">
                     <button type="button"  ng-if="session.data.group == 'AGE' && lde.STATUS != 3 && !lde.isExpired" class="btn btn-success btn-sm" ng-click="update($event, 'enable', lde)" uib-tooltip="Habilitar" ng-disabled="lde.STATUS == 0"><span class="glyphicon glyphicon-ok"></span></button>
@@ -126,6 +126,7 @@
                     <button type="button"  ng-if="session.data.group == 'AGE' && lde.STATUS != 3 && !lde.isExpired" class="btn btn-danger btn-sm" ng-click="update($event, 'disable', lde)" uib-tooltip="Anular" ng-disabled="lde.STATUS == 9"><span class="glyphicon glyphicon-remove"></span></button>
                     <button type="button"  ng-if="session.data.group == 'AGE' && lde.STATUS != 3 && !lde.isExpired" class="btn btn-info btn-sm" ng-click="updateWithModal($event, 'place', lde)" uib-tooltip="Cambiar lugar"><span class="glyphicon glyphicon-backward"></span></button>
                     <button type="button"  ng-if="session.data.group == 'FOR' && lde.STATUS != 3 && !lde.isExpired" class="btn btn-info btn-sm" ng-click="updateWithModal($event, 'forward', lde)" uib-tooltip="Cambiar CUIT"><span class="glyphicon glyphicon-forward"></span></button>
+                    <!-- 20232505789 -->
                 </td>
             </tr>
             <!--<tr ng-repeat="detail in data.RETURN_TO" ng-init="data.SHOW = false" ng-show="data.SHOW" class="child-row">

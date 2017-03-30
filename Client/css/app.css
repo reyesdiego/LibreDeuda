@@ -93,6 +93,10 @@ html, body {
     background-color: #b5b5b5;
 }
 
+.clickable{
+    cursor: pointer;
+}
+
 .vertical-center {
 
     height: 60vh !important; /* You might also want to use

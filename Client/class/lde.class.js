@@ -103,6 +103,7 @@ myApp.factory('Lde', ['$http', '$q', 'configService', function($http, $q, config
 			$http.put(insertUrl, params).then((response) => {
 				//console.log(response);
 				deferred.resolve(response.data);
+				this.LUGAR_DEV = newPlace;
 			}).catch((response) => {
 				//console.log(response);
 				deferred.reject(response.data);
@@ -122,6 +123,8 @@ myApp.factory('Lde', ['$http', '$q', 'configService', function($http, $q, config
 			$http.put(insertUrl, params).then((response) => {
 				//console.log(response);
 				deferred.resolve(response.data);
+				this.CUIT = cuit;
+				this.FECHA_DEV = fechaDev || this.FECHA_DEV;
 			}).catch((response) => {
 				//console.log(response);
 				deferred.reject(response.data);
