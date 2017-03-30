@@ -485,10 +485,6 @@ class ldeMongoDb {
                 };
             }
 
-            if (user.group === 'TER') {
-                match.TERMINAL = user.terminal;
-            }
-
             param = [
                 {$unwind: '$STATUS'},
                 {$unwind: '$RETURN_TO'},
