@@ -218,7 +218,7 @@ module.exports = (socket, log) => {
         var lde2insert;
         var param, result;
         var user = req.user;
-        var mail = require('../include/emailjs.js');
+        var mail = require('local-emailjs');
         var config = require('../config/config.js');
 
         if (user.data.group !== 'AGE') {
@@ -254,10 +254,10 @@ module.exports = (socket, log) => {
                         result = Error.ERROR("AGP-0004").data({CUIT: lde.CUIT || ""});
                         log.logger.error("Insert LDE - CUIT %j", JSON.stringify(result));
                         res.status(result.http_status).send(result);
-                    } else if (dateReturn < toDay) {
-                        result = Error.ERROR("AGP-0006").data({FECHA_DEV: lde.FECHA_DEV || ""});
-                        log.logger.error("Insert LDE - FECHA DEVOLUCION %j", JSON.stringify(result));
-                        res.status(result.http_status).send(result);
+                    //} else if (dateReturn < toDay) {
+                    //    result = Error.ERROR("AGP-0006").data({FECHA_DEV: lde.FECHA_DEV || ""});
+                    //    log.logger.error("Insert LDE - FECHA DEVOLUCION %j", JSON.stringify(result));
+                    //    res.status(result.http_status).send(result);
                     } else {
                         lde2insert = {
                             TERMINAL: (lde.TERMINAL !== undefined) ? lde.TERMINAL.trim() : '',
@@ -315,7 +315,7 @@ module.exports = (socket, log) => {
                                             var emailConfig = config.email;
                                             emailConfig.throughBcc = false;
 
-                                            var mailer = new mail.mail(emailConfig);
+                                            var mailer = new mail(emailConfig);
                                             var subject = `Libre Deuda Electónico ${lde.CONTENEDOR}`;
                                             mailer.send(lde.EMAIL, subject, html, (err, emailData) => {
                                                 if (err) {
@@ -357,7 +357,7 @@ module.exports = (socket, log) => {
         var user = req.user;
         var moment = require("moment");
         var result;
-        var mail = require('../include/emailjs.js');
+        var mail = require('local-emailjs');
         var config = require('../config/config.js');
 
         var toDay = moment(moment().format("YYYY-MM-DD")).toDate();
@@ -417,7 +417,7 @@ module.exports = (socket, log) => {
                                 var emailConfig = config.email;
                                 emailConfig.throughBcc = false;
 
-                                var mailer = new mail.mail(emailConfig);
+                                var mailer = new mail(emailConfig);
                                 var subject = `Libre Deuda Electónico ${req.body.CONTENEDOR}`;
                                 mailer.send(req.body.EMAIL, subject, html, (err, emailData) => {
                                     if (err) {

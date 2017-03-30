@@ -485,10 +485,6 @@ class ldeMongoDb {
                 };
             }
 
-            if (user.group === 'TER') {
-                match.TERMINAL = user.terminal;
-            }
-
             param = [
                 {$unwind: '$STATUS'},
                 {$unwind: '$RETURN_TO'},
@@ -533,25 +529,48 @@ class ldeMongoDb {
                         reject(result);
                     } else {
 
-                        result = {
-                            status: "OK",
-                            data: data.map(lde => ({
-                                ID: lde._id,
-                                ID_CLIENT: lde.ID_CLIENT,
-                                CUIT: lde.CUIT,
-                                CONTENEDOR: lde.CONTAINER,
-                                TERMINAL: lde.TERMINAL,
-                                BUQUE: lde.SHIP,
-                                VIAJE: lde.TRIP,
-                                BL: lde.BL,
-                                LUGAR_DEV: lde.LUGAR_DEV,
-                                FECHA_DEV: lde.FECHA_DEV,
-                                STATUS: lde.STATUS,
-                                USER: lde.USER,
-                                VENCE: lde.VENCE
-                            }))
-                        };
-                        resolve(result);
+                        param = [
+                            {$unwind: '$STATUS'},
+                            {$unwind: '$RETURN_TO'},
+                            {$unwind: '$CLIENT'},
+                            {$sort: {'STATUS.AUD_TIME': 1}},
+                            {$group: {
+                                _id: {id: '$_id'},
+                                TERMINAL: {'$first': '$TERMINAL'},
+                                STATUS: {'$last': '$STATUS'}
+                            }},
+                            {$match: match},
+                            {$group: {_id: '$id._id', totalCount: {$sum: 1}}
+                            }
+                            ];
+                        this.model.aggregate(param)
+                        .exec((err, dataTotalCount) => {
+                                if (err) {
+                                    result = Error.ERROR("MONGO-ERROR").data(err.message);
+                                    reject(result);
+                                } else {
+                                    result = {
+                                        status: "OK",
+                                        totalCount: dataTotalCount[0].totalCount,
+                                        data: data.map(lde => ({
+                                            ID: lde._id,
+                                            ID_CLIENT: lde.ID_CLIENT,
+                                            CUIT: lde.CUIT,
+                                            CONTENEDOR: lde.CONTAINER,
+                                            TERMINAL: lde.TERMINAL,
+                                            BUQUE: lde.SHIP,
+                                            VIAJE: lde.TRIP,
+                                            BL: lde.BL,
+                                            LUGAR_DEV: lde.LUGAR_DEV,
+                                            FECHA_DEV: lde.FECHA_DEV,
+                                            STATUS: lde.STATUS,
+                                            USER: lde.USER,
+                                            VENCE: lde.VENCE
+                                        }))
+                                    };
+                                    resolve(result);
+                                }
+                            });
                     }
                 });
         });
