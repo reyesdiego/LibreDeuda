@@ -83,7 +83,6 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'dialogsService
             };
             //$scope.dataContainers = [];
             ldeFactory.getAllLde(page).then(data => {
-                console.log(data);
                 if (data.data.length > 0){
                     $scope.dataContainers = data.data;
                     $scope.totalContainers = data.totalCount;
@@ -102,7 +101,6 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'dialogsService
                     message: message
                 }
             });
-            console.log($scope.pagination.page);
         };
 
         //Para facturar, cambiar lugar de devolución o CUIT, se requiere abrir un modal para agregar los demás datos

@@ -154,16 +154,15 @@
             </tbody>
         </table>
 
-        <div class="col-lg-12 hidden-print hidden-xs" ng-show="totalContainers > pagination.itemsPerPage">
-        	<div class="text-center visible-sm"><uib-pagination boundary-links="true" ng-change="getLdeData()" total-items="totalContainers" items-per-page="pagination.itemsPerPage" ng-model="pagination.page" max-size="10" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></uib-pagination></div>
-        	<div class="text-center visible-md"><uib-pagination boundary-links="true" ng-change="getLdeData()" total-items="totalContainers" items-per-page="pagination.itemsPerPage" ng-model="pagination.page" max-size="15" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></uib-pagination></div>
-        	<div class="text-center visible-lg"><uib-pagination boundary-links="true" ng-change="getLdeData()" total-items="totalContainers" items-per-page="pagination.itemsPerPage" ng-model="pagination.page" max-size="19" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></uib-pagination></div>
-        </div>
-        <div class="col-lg-12 hidden-print visible-xs" ng-show="pageContainers.length > pagination.itemsPerPage">
-            <uib-pager total-items="pageContainers.length" ng-click="getLdeData()" ng-model="pagination.page" previous-text="<< Anterior" next-text="Siguiente >>"></uib-pager>
-        </div>
+    </div>
 
-
+    <div class="col-lg-12 hidden-print hidden-xs" ng-show="totalContainers > pagination.itemsPerPage">
+        <div class="text-center visible-sm"><uib-pagination boundary-links="true" ng-change="getLdeData()" total-items="totalContainers" items-per-page="pagination.itemsPerPage" ng-model="pagination.page" max-size="10" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></uib-pagination></div>
+        <div class="text-center visible-md"><uib-pagination boundary-links="true" ng-change="getLdeData()" total-items="totalContainers" items-per-page="pagination.itemsPerPage" ng-model="pagination.page" max-size="15" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></uib-pagination></div>
+        <div class="text-center visible-lg"><uib-pagination boundary-links="true" ng-change="getLdeData()" total-items="totalContainers" items-per-page="pagination.itemsPerPage" ng-model="pagination.page" max-size="19" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></uib-pagination></div>
+    </div>
+    <div class="col-lg-12 hidden-print visible-xs" ng-show="totalContainers > pagination.itemsPerPage">
+        <uib-pager total-items="totalContainers" ng-click="getLdeData()" ng-model="pagination.page" previous-text="<< Anterior" next-text="Siguiente >>"></uib-pager>
     </div>
 
     <div class="col-lg-12 right text-right">
