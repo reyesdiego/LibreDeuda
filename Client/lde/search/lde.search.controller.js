@@ -175,9 +175,9 @@ myApp.filter('containerStatus', ['containersService', function(containersService
 
     return function(status){
         if (angular.isDefined(status)){
-            return containersService.statusContainers[status] ? containersService.statusContainers[status].name : 'Sin definir';
+            return containersService.statusContainers[status] ? containersService.statusContainers[status].name : 'SIN DEFINIR';
         } else {
-            return 'Sin definir';
+            return 'SIN DEFINIR';
         }
     }
 }]);

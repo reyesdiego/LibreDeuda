@@ -7,6 +7,7 @@ myApp.factory('Lde', ['$http', '$q', 'configService', function($http, $q, config
 	class Lde {
 
 		constructor(ldeData){
+			//console.log(ldeData);
 			this.ID = {};
 			if (ldeData){
 				angular.extend(this, ldeData);
@@ -56,7 +57,7 @@ myApp.factory('Lde', ['$http', '$q', 'configService', function($http, $q, config
 			};
 
 			$http.put(insertUrl, params).then((response) => {
-				console.log(response);
+				//console.log(response);
 				if (response.data.status == 'OK'){
 					this.STATUS = response.data.data.STATUS.STATUS;
 					deferred.resolve(response.data);
@@ -64,7 +65,7 @@ myApp.factory('Lde', ['$http', '$q', 'configService', function($http, $q, config
 					deferred.reject(response.data);
 				}
 			}).catch((response) => {
-				console.log(response);
+				//console.log(response);
 				deferred.reject(response.data);
 			});
 			return deferred.promise;
@@ -80,11 +81,11 @@ myApp.factory('Lde', ['$http', '$q', 'configService', function($http, $q, config
 			};
 
 			$http.put(insertUrl, params).then((response) => {
-				console.log(response);
+				//console.log(response);
 				this.STATUS = response.data.data.STATUS.STATUS;
 				deferred.resolve(response.data);
 			}).catch((response) => {
-				console.log(response);
+				//console.log(response);
 				deferred.reject(response.data);
 			});
 			return deferred.promise;
@@ -100,10 +101,10 @@ myApp.factory('Lde', ['$http', '$q', 'configService', function($http, $q, config
 				ID: this.ID.id
 			};
 			$http.put(insertUrl, params).then((response) => {
-				console.log(response);
+				//console.log(response);
 				deferred.resolve(response.data);
 			}).catch((response) => {
-				console.log(response);
+				//console.log(response);
 				deferred.reject(response.data);
 			});
 			return deferred.promise;
@@ -119,10 +120,10 @@ myApp.factory('Lde', ['$http', '$q', 'configService', function($http, $q, config
 			};
 
 			$http.put(insertUrl, params).then((response) => {
-				console.log(response);
+				//console.log(response);
 				deferred.resolve(response.data);
 			}).catch((response) => {
-				console.log(response);
+				//console.log(response);
 				deferred.reject(response.data);
 			});
 			return deferred.promise;
@@ -137,14 +138,23 @@ myApp.factory('Lde', ['$http', '$q', 'configService', function($http, $q, config
 			};
 
 			$http.put(insertUrl, params).then((response) => {
-				console.log(response);
+				//console.log(response);
 				this.STATUS = response.data.data.STATUS.STATUS;
 				deferred.resolve(response.data);
 			}).catch((response) => {
-				console.log(response);
+				//console.log(response);
 				deferred.reject(response.data);
 			});
 			return deferred.promise;
+		}
+
+		get isExpired(){
+			if (this.VENCE == 1){
+				let fecha_dev = new Date(this.FECHA_DEV);
+				return fecha_dev < Date.now();
+			} else {
+				return false;
+			}
 		}
 
 	}

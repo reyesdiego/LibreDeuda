@@ -104,7 +104,7 @@ myApp.config(['$provide', '$httpProvider', function($provide, $httpProvider){
                 // optional method
                 'responseError': function(rejection) {
                     //TODO config custom messages for http Error status
-                    console.log(rejection);
+                    //console.log(rejection);
                     if (rejection.status == 404){ //Not found
                         rejection.data = {
                             status: 'ERROR',
@@ -112,7 +112,8 @@ myApp.config(['$provide', '$httpProvider', function($provide, $httpProvider){
                         }
                     }
 
-                    /*if (rejection.status == 401){ //Forbidden
+                    //console.log(rejection);
+                    if (rejection.status == 401){ //Forbidden
                         if (rejection.config.url != configService.serverUrl + '/login'){
                             if (rejection.data.message != 'No tiene privilegios para realizar esta petición.' && rejection.data.message != 'No tiene permisos para realizar esta operación'){
                                 $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
@@ -127,7 +128,7 @@ myApp.config(['$provide', '$httpProvider', function($provide, $httpProvider){
                             }
                             //$state.transitionTo('login');
                         }
-                    }*/
+                    }
 
                     if (rejection.status == -1) rejection.data = { message: 'No se ha podido establecer comunicación con el servidor.', status: 'ERROR' };
                     // do something on error
@@ -162,7 +163,7 @@ myApp.run(['$rootScope', 'appSocket', 'storageService', '$state', '$http', 'dial
             Idle.watch();
         }
 
-        //$rootScope.requests401 = [];
+        $rootScope.requests401 = [];
         $rootScope.routeChange = {
             to: '',
             from: ''
@@ -202,20 +203,22 @@ myApp.run(['$rootScope', 'appSocket', 'storageService', '$state', '$http', 'dial
         });
 
         $rootScope.$on(AUTH_EVENTS.notAuthenticated, function(){
-            /*if ($rootScope.routeChange.from != 'login'){
+            if ($rootScope.routeChange.from != 'login'){
                 var loginDialog = dialogsService.login();
                 loginDialog.result.then(function(result){
                     if (result.statusText != 'OK'){
                         dialogsService.error('Error', result.data);
                         $state.transitionTo('login');
+                    } else {
+						$rootScope.loginScreen = false;
                     }
                 }, function(){
                     $state.transitionTo('login');
                 });
             } else {
                 dialogsService.notify('No autorizado', 'Se requiere un inicio de sesión antes de poder continuar.')
-            }*/
-            $state.transitionTo('login');
+            }
+            //$state.transitionTo('login');
         });
 
         $rootScope.$on(AUTH_EVENTS.loginSucces, function() {
@@ -225,27 +228,27 @@ myApp.run(['$rootScope', 'appSocket', 'storageService', '$state', '$http', 'dial
             //$rootScope.session.setData(user);
             //$rootScope.session.setToken(token);
 
-            /*if ($rootScope.requests401.length > 0){
-                var i, requests = $rootScope.requests401;
+            if ($rootScope.requests401.length > 0){
+                let i, requests = $rootScope.requests401;
                 for (i = 0; i < requests.length; i++) {
                     retry(requests[i]);
                 }
                 $rootScope.requests401 = [];
             } else if ($rootScope.routeChange.to != '' ){
-                var next = $rootScope.routeChange.to;
+                const next = $rootScope.routeChange.to;
                 $rootScope.routeChange = {
                     to: '',
                     from: ''
                 };
                 $state.transitionTo(next);
-            }*/
+            }
 
 
-            /*function retry(req) {
+            function retry(req) {
                 $http(req.config).then(function(response) {
                     req.deferred.resolve(response);
                 });
-            }*/
+            }
         });
 
         $rootScope.socket = appSocket;
@@ -258,7 +261,6 @@ myApp.run(['$rootScope', 'appSocket', 'storageService', '$state', '$http', 'dial
         });
 
         $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){
-
             if (angular.isDefined(toState.data)){ //state requires logged user
                 var authorizedRoles = toState.data.authorizedRoles;
                 if (authorizedRoles){

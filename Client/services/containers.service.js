@@ -7,16 +7,16 @@ myApp.service('containersService', [function(){
 	class containersService {
 		constructor(){
 			this.statusContainers = {'0': {
-				name: 'Habilitado',
+				name: 'HABILITADO',
 				className: 'status-free'
 			}, '3': {
-				name: 'Facturado',
+				name: 'FACTURADO',
 				className: 'status-retired'
 			}, '5': {
-				name:'Retirado',
+				name:'RETIRADO',
 				className: 'status-retired'
 			}, '9': {
-				name:'Anulado',
+				name:'ANULADO',
 				className: 'status-canceled'
 			}};
 			this.terminalsArray = ['TRP', 'BACTSSA', 'TERMINAL4']

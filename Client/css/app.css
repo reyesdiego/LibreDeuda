@@ -89,6 +89,10 @@ html, body {
     background-size: cover;
 }
 
+.expired{
+    background-color: #b5b5b5;
+}
+
 .vertical-center {
 
     height: 60vh !important; /* You might also want to use

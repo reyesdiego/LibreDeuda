@@ -67,8 +67,8 @@ myApp.controller('loginDialogCtrl', ['$scope', '$uibModalInstance',  'Session', 
     $scope.user = Session;
 
     $scope.login = function(){
-        $scope.user.login().then(() => {
-            $uibModalInstance.close();
+        $scope.user.login().then((response) => {
+            $uibModalInstance.close(response);
         }, (error) => {
 
         });

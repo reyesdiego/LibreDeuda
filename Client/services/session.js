@@ -25,10 +25,10 @@ myApp.service('Session', ['$rootScope', 'storageService', '$http', 'configServic
             const inserturl = `${configService.serverUrl}/login`;
 
             $http.post(inserturl, this.data).then((response) => {
-                $rootScope.$broadcast(AUTH_EVENTS.loginSucces);
                 this.userData = response.data.data;
                 this.token = response.data.data.token;
                 deferred.resolve(response);
+				$rootScope.$broadcast(AUTH_EVENTS.loginSucces);
             }).catch((response) => {
                 deferred.reject(response);
             });
