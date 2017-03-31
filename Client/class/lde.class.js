@@ -91,15 +91,17 @@ myApp.factory('Lde', ['$http', '$q', 'configService', function($http, $q, config
 			return deferred.promise;
 		}
 
-		updatePlace(newPlace){
+		updatePlace(newPlace, fechaDev, email){
 			const deferred = $q.defer();
 			const insertUrl = `${configService.serverUrl}/lde/lugar`;
-			const params = {
+			let params = {
 				CONTENEDOR: this.CONTENEDOR,
 				LUGAR_DEV: newPlace,
 				ID_CLIENTE: this.ID_CLIENT,
 				ID: this.ID.id
 			};
+			if (fechaDev) params.FECHA_DEV = fechaDev;
+			if (email) params.EMAIL = email;
 			$http.put(insertUrl, params).then((response) => {
 				//console.log(response);
 				deferred.resolve(response.data);

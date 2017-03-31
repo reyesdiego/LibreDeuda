@@ -1,5 +1,5 @@
 //Controlador para modal de actualización, para cuando se requieren datos adicionales antes de actualizar
-myApp.controller('updateLdeCtrl', ['$scope', '$uibModalInstance', 'operation', 'ldeDate', 'places', 'validatorService', function($scope, $uibModalInstance, operation, ldeDate, places, validatorService){
+myApp.controller('updateLdeCtrl', ['$scope', '$uibModalInstance', 'operation', 'ldeDate', 'places', 'validatorService', 'Session', function($scope, $uibModalInstance, operation, ldeDate, places, validatorService, Session){
 
 	$scope.validCuit = false;
 
@@ -15,7 +15,8 @@ myApp.controller('updateLdeCtrl', ['$scope', '$uibModalInstance', 'operation', '
 		LUGAR_DEV: '',
 		FECHA_DEV: new Date(ldeDate),
 		CUIT: '',
-		ID_CLIENTE: ''
+		ID_CLIENTE: '',
+		EMAIL: ''
 	};
 
 	$scope.datePopUp = {
@@ -23,10 +24,11 @@ myApp.controller('updateLdeCtrl', ['$scope', '$uibModalInstance', 'operation', '
 		format: 'dd/MM/yyyy',
 		options: {
 			formatYear: 'yyyy',
-			startingDay: 1,
-			maxDate: new Date(ldeDate)
+			startingDay: 1
 		}
 	};
+
+	if (Session.group != 'AGE') $scope.datePopUp.options.maxDate = new Date(ldeDate);
 
 	$scope.openDate = function(){
 		$scope.datePopUp.opened = true;

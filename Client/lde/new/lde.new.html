@@ -62,12 +62,22 @@
                     <div class="form-group">
                         <label for="return" class="col-lg-2 control-label"><span class="glyphicon"></span> Lugar devolución</label>
                         <div class="input-group col-lg-9">
+                            <input type="text" class="form-control" ng-model="newContainer.LUGAR_DEV" id="return" placeholder="" ng-required="true" tabindex="7">
+                            <span class="input-group-btn">
+                            <button type="button" class="btn btn-default" ng-click="eraseField('LUGAR_DEV')" tabindex="0"><i class="glyphicon glyphicon-remove"></i></button>
+                        </span>
+                        </div>
+                    </div>
+                    <!-- TODO: POR AHORA NO ESTÁ IMPLEMENTADA UNA TABLA CON LOS LUGARES POSIBLES DE DEVOLUCIÓN, ASÍ QUE HASTA ENTONCES, ESE CAMPO SERÁ UN TEXTO LIBRE -->
+                    <!--<div class="form-group">
+                        <label for="return" class="col-lg-2 control-label"><span class="glyphicon"></span> Lugar devolución</label>
+                        <div class="input-group col-lg-9">
                             <input type="text" class="form-control" ng-model="newContainer.LUGAR_DEV" id="return" placeholder="" ng-required="true" uib-typeahead="place._id as place.NOMBRE for place in returnPlaces | filter:$viewValue | limitTo:8" typeahead-editable="false" typeahead-input-formatter="formatPlace($model)" tabindex="7">
                         <span class="input-group-btn">
                             <button type="button" class="btn btn-default" ng-click="eraseField('LUGAR_DEV')" tabindex="0"><i class="glyphicon glyphicon-remove"></i></button>
                         </span>
                         </div>
-                    </div>
+                    </div>-->
                     <div class="form-group">
                         <label for="cuit" class="col-lg-2 control-label"><span class="glyphicon"></span> CUIT</label>
                         <div class="input-group col-lg-9">

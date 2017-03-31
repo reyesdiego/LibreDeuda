@@ -145,7 +145,7 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'dialogsService
                         promise = lde.deliver(ldeData.EMAIL_CLIENTE);
                         break;
                     case 'place':
-                        promise = lde.updatePlace(ldeData.LUGAR_DEV);
+                        promise = lde.updatePlace(ldeData.LUGAR_DEV, ldeData.FECHA_DEV, ldeData.EMAIL);
                         break;
                     case 'forward':
                         promise = lde.forward(ldeData.CUIT, ldeData.FECHA_DEV);

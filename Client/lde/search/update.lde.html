@@ -26,7 +26,27 @@
                 <div class="form-group">
                     <div class="input-group col-lg-12">
                         <span class="input-group-addon glyphicon glyphicon-export"></span>
+                        <input type="text" class="form-control" ng-model="updateModel.LUGAR_DEV" id="return" placeholder="Ingresar lugar de devolución" ng-required="true">
+                    </div>
+                </div>
+                <!-- TODO: POR AHORA NO ESTÁ IMPLEMENTADA UNA TABLA CON LOS LUGARES POSIBLES DE DEVOLUCIÓN, ASÍ QUE HASTA ENTONCES, ESE CAMPO SERÁ UN TEXTO LIBRE -->
+                <!--<div class="form-group">
+                    <div class="input-group col-lg-12">
+                        <span class="input-group-addon glyphicon glyphicon-export"></span>
                         <input type="text" class="form-control" ng-model="updateModel.LUGAR_DEV" id="return" placeholder="Ingresar lugar de devolución" ng-required="true" uib-typeahead="place._id as place.NOMBRE for place in returnPlaces | filter:$viewValue | limitTo:8" typeahead-editable="false" typeahead-input-formatter="formatPlace($model)">
+                    </div>
+                </div>-->
+                <div class="form-group">
+                    <div class="input-group col-lg-12">
+                        <span class="input-group-addon glyphicon glyphicon-calendar" ng-click="openDate()"></span>
+                        <input type="text" class="form-control" ng-model="updateModel.FECHA_DEV" uib-datepicker-popup="{{datePopUp.format}}" is-open="datePopUp.opened" datepicker-options="datePopUp.options" close-text="Cerrar" current-text="Hoy" clear-text="Borrar">
+                    </div>
+                </div>
+                <h5>Si desea, puede escribir un mensaje que se enviará al cliente, para comunicarle por el cambio de lugarde devolución del contenedor:</h5>
+                <div class="form-group">
+                    <div class="input-group col-lg-12">
+                        <span class="input-group-addon glyphicon glyphicon-export"></span>
+                        <textarea class="form-control" ng-model="updateModel.EMAIL" id="email" placeholder="Ingresar mensaje para el cliente" style="resize: vertical"></textarea>
                     </div>
                 </div>
                 <div class="form-group hidden-xs">
