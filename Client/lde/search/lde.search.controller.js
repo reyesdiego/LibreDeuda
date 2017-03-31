@@ -133,6 +133,9 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'dialogsService
                     ldeDate: function(){
                         return lde.FECHA_DEV;
                     },
+                    ldePlace: function(){
+                        return lde.LUGAR_DEV;
+                    },
                     places: function(){
                         return $scope.returnPlaces;
                     }

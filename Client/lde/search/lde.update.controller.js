@@ -1,5 +1,5 @@
 //Controlador para modal de actualización, para cuando se requieren datos adicionales antes de actualizar
-myApp.controller('updateLdeCtrl', ['$scope', '$uibModalInstance', 'operation', 'ldeDate', 'places', 'validatorService', 'Session', function($scope, $uibModalInstance, operation, ldeDate, places, validatorService, Session){
+myApp.controller('updateLdeCtrl', ['$scope', '$uibModalInstance', 'operation', 'ldeDate', 'ldePlace', 'places', 'validatorService', 'Session', function($scope, $uibModalInstance, operation, ldeDate, ldePlace, places, validatorService, Session){
 
 	$scope.validCuit = false;
 
@@ -12,7 +12,7 @@ myApp.controller('updateLdeCtrl', ['$scope', '$uibModalInstance', 'operation', '
 	//y así puedo usar el mismo controlador para cualquiera de ellas
 	$scope.updateModel = {
 		EMAIL_CLIENTE: '',
-		LUGAR_DEV: '',
+		LUGAR_DEV: ldePlace,
 		FECHA_DEV: new Date(ldeDate),
 		CUIT: '',
 		ID_CLIENTE: '',
