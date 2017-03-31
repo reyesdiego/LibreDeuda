@@ -95,15 +95,51 @@
         <table class="table top-gap">
             <thead>
             <tr>
-                <th ng-click="getLdeData('TERMINAL')" class="clickable">Terminal</th>
-                <th ng-click="getLdeData('BUQUE')" class="clickable">Buque</th>
-                <th ng-click="getLdeData('VIAJE')" class="clickable">Viaje</th>
-                <th ng-click="getLdeData('CONTENEDOR')" class="clickable">Contenedor</th>
-                <th ng-click="getLdeData('BL')" class="clickable">Conocimiento</th>
-                <th ng-click="getLdeData('FECHA_DEV')" class="clickable">Fecha devolución</th>
-                <th ng-click="getLdeData('LUGAR_DEV')" class="clickable">Lugar devolución</th>
-                <th ng-click="getLdeData('CUIT')" class="clickable">CUIT</th>
-                <th ng-click="getLdeData('STATUS')" class="clickable">Estado</th>
+                <th ng-click="getLdeData('TERMINAL')" class="clickable">
+                    <i class="glyphicon glyphicon-sort-by-attributes" ng-show="order.field == 'TERMINAL' && !order.reverse"></i>
+                    <i class="glyphicon glyphicon-sort-by-attributes" ng-show="order.field == 'TERMINAL' && order.reverse"></i>
+                    Terminal
+                </th>
+                <th ng-click="getLdeData('BUQUE')" class="clickable">
+                    <i class="glyphicon glyphicon-sort-by-attributes" ng-show="order.field == 'BUQUE' && !order.reverse"></i>
+                    <i class="glyphicon glyphicon-sort-by-attributes-alt" ng-show="order.field == 'BUQUE' && order.reverse"></i>
+                    Buque
+                </th>
+                <th ng-click="getLdeData('VIAJE')" class="clickable">
+                    <i class="glyphicon glyphicon-sort-by-attributes" ng-show="order.field == 'VIAJE' && !order.reverse"></i>
+                    <i class="glyphicon glyphicon-sort-by-attributes-alt" ng-show="order.field == 'VIAJE' && order.reverse"></i>
+                    Viaje
+                </th>
+                <th ng-click="getLdeData('CONTENEDOR')" class="clickable">
+                    <i class="glyphicon glyphicon-sort-by-attributes" ng-show="order.field == 'CONTENEDOR' && !order.reverse"></i>
+                    <i class="glyphicon glyphicon-sort-by-attributes-alt" ng-show="order.field == 'CONTENEDOR' && order.reverse"></i>
+                    Contenedor
+                </th>
+                <th ng-click="getLdeData('BL')" class="clickable">
+                    <i class="glyphicon glyphicon-sort-by-attributes" ng-show="order.field == 'BL' && !order.reverse"></i>
+                    <i class="glyphicon glyphicon-sort-by-attributes-alt" ng-show="order.field == 'BL' && order.reverse"></i>
+                    Conocimiento
+                </th>
+                <th ng-click="getLdeData('FECHA_DEV')" class="clickable">
+                    <i class="glyphicon glyphicon-sort-by-attributes" ng-show="order.field == 'FECHA_DEV' && !order.reverse"></i>
+                    <i class="glyphicon glyphicon-sort-by-attributes-alt" ng-show="order.field == 'FECHA_DEV' && order.reverse"></i>
+                    Fecha devolución
+                </th>
+                <th ng-click="getLdeData('LUGAR_DEV')" class="clickable">
+                    <i class="glyphicon glyphicon-sort-by-attributes" ng-show="order.field == 'LUGAR_DEV' && !order.reverse"></i>
+                    <i class="glyphicon glyphicon-sort-by-attributes-alt" ng-show="order.field == 'LUGAR_DEV' && order.reverse"></i>
+                    Lugar devolución
+                </th>
+                <th ng-click="getLdeData('CUIT')" class="clickable">
+                    <i class="glyphicon glyphicon-sort-by-attributes" ng-show="order.field == 'CUIT' && !order.reverse"></i>
+                    <i class="glyphicon glyphicon-sort-by-attributes-alt" ng-show="order.field == 'CUIT' && order.reverse"></i>
+                    CUIT
+                </th>
+                <th ng-click="getLdeData('STATUS')" class="clickable">
+                    <i class="glyphicon glyphicon-sort-by-attributes" ng-show="order.field == 'STATUS' && !order.reverse"></i>
+                    <i class="glyphicon glyphicon-sort-by-attributes-alt" ng-show="order.field == 'STATUS' && order.reverse"></i>
+                    Estado
+                </th>
                 <th ng-if="session.data.group != 'ADMIN'">Modificar Libre Deuda</th>
             </tr>
             </thead>
