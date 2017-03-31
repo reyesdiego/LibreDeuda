@@ -185,7 +185,7 @@ class ldeMongoDb {
                             result = Error.ERROR("AGP-0001").data({CONTENEDOR: lde.CONTENEDOR});
                             reject(result);
                         } else {
-                            this.model.findOne({_id: lde.ID.id}, (err, lde) => {
+                            this.model.findOne({_id: lde.ID}, (err, lde) => {
                                 if (err) {
                                     result = Error.ERROR("MONGO-ERROR").data(err.message);
                                     reject(result);
@@ -270,14 +270,14 @@ class ldeMongoDb {
                                                 if (params.fecha_dev) {
                                                     var placeFirst = lde.RETURN_TO[0];
                                                     var placeLast = lde.RETURN_TO[lde.RETURN_TO.length - 1];
-                                                    if (placeFirst.DATE_TO > params.fecha_dev) {
+                                                    if (placeFirst.DATE_TO >= params.fecha_dev) {
                                                         return_to.DATE_TO = params.fecha_dev;
                                                         return_to.PLACE = placeLast.PLACE;
                                                         return_to.AUD_USER = params.user.USUARIO;
                                                         return_to.AUD_TIME = aud_date;
                                                         lde.RETURN_TO.push(return_to);
                                                     } else {
-                                                        result = Error.ERROR("AGP-0007").data({FECHA_DEV: placeFirst.DATE_TO})
+                                                        result = Error.ERROR("AGP-0007").data({FECHA_DEV: placeFirst.DATE_TO});
                                                         return reject(result);
                                                     }
                                                 }
@@ -308,7 +308,7 @@ class ldeMongoDb {
                                                 result = Error.ERROR("AGP-0014").data({
                                                     email: user.email,
                                                     cuit: user.cuit
-                                                })
+                                                });
                                                 return reject(result);
                                             }
                                         }
@@ -393,7 +393,7 @@ class ldeMongoDb {
             var mongoose = require('mongoose');
 
             match = {
-                CONTAINER: contenedor
+                CONTENEDOR: contenedor
             };
             if (params.id_cliente !== undefined) {
                 match.ID_CLIENT = params.id_cliente;
@@ -403,29 +403,20 @@ class ldeMongoDb {
             }
 
             param = [
-                {$unwind: '$STATUS'},
-                {$sort: {'STATUS.AUD_TIME': 1}},
-                {$group: {
-                    _id: {id: '$_id'},
-                    TERMINAL: {'$first': '$TERMINAL'},
-                    SHIP: {'$first': '$SHIP'},
-                    TRIP: {'$first': '$TRIP'},
-                    CONTAINER: {'$first': '$CONTAINER'},
-                    BL: {'$first': '$BL'},
-                    ID_CLIENT: {'$first': '$ID_CLIENT'},
-                    STATUS: {'$last': '$STATUS'}
-                }},
-                {$match: match},
                 {$project: {
-                    //ID: '$_id.id',
+                    ID: '$_id',
                     TERMINAL: true,
-                    SHIP: true,
-                    TRIP: true,
-                    CONTAINER: true,
+                    BUQUE: '$SHIP',
+                    VIAJE: '$TRIP',
                     BL: true,
+                    VENCE: '$EXPIRATION',
+                    CONTENEDOR: '$CONTAINER',
                     ID_CLIENT: true,
-                    STATUS: true
-                }}
+                    CLIENT: true,
+                    STATUS: {$arrayElemAt: ['$STATUS', -1]},
+                    RETURN_TO: {$arrayElemAt: ['$RETURN_TO', -1]}
+                }},
+                {$match: match}
             ];
             this.model.aggregate(param)
                 .exec((err, data) => {
@@ -433,23 +424,9 @@ class ldeMongoDb {
                         result = Error.ERROR("MONGO-ERROR").data(err.message);
                         reject(result);
                     } else {
-
                         result = {
                             status: "OK",
-                            data: data.map(lde => ({
-                                ID: lde._id,
-                                ID_CLIENT: lde.ID_CLIENT,
-                                CUIT: lde.CUIT,
-                                CONTENEDOR: lde.CONTAINER,
-                                TERMINAL: lde.TERMINAL,
-                                BUQUE: lde.SHIP,
-                                VIAJE: lde.TRIP,
-                                BL: lde.BL,
-                                VENCE: lde.EXPIRATION,
-                                STATUS: lde.STATUS,
-                                CLIENT: lde.CLIENT,
-                                RETURN_TO: lde.RETURN_TO
-                            }))
+                            data: data
                         };
                         resolve(result);
                     }
@@ -461,66 +438,70 @@ class ldeMongoDb {
         return new Promise((resolve, reject) => {
             var result;
             var param,
-                match = {};
+                match = {},
+                sort = {'_id': -1};
 
             var user = params.user.data;
 
+            if (options.sort) {
+                sort = options.sort;
+            }
+
             if (user.group === 'AGE') {
                 match = {
-                    $or: [ {'STATUS.STATUS': 0}, {'STATUS.STATUS': 9}],
-                    'STATUS.AUD_USER': params.user.USUARIO
+                    $or: [ {'STATUS': 0}, {'STATUS': 9}],
+                    'USER': params.user.USUARIO
                 };
             } if (user.group === 'ADM') {
                 match = {
-                    $or: [ {'STATUS.STATUS': 0}, {'STATUS.STATUS': 9}]
+                    $or: [ {'STATUS': 0}, {'STATUS': 9}]
                 };
             } else if (user.group === 'TER') {
                 match = {
-                    'STATUS.STATUS': 0,
+                    'STATUS': 0,
                     TERMINAL: user.terminal
                 };
             } else if (user.group === 'FOR') {
                 match = {
-                    'STATUS.STATUS': 0
+                    'STATUS': 0,
+                    'CUIT_FIRST': user.cuit
                 };
             }
 
             param = [
-                {$unwind: '$STATUS'},
-                {$unwind: '$RETURN_TO'},
-                {$unwind: '$CLIENT'},
-                {$sort: {'STATUS.AUD_TIME': 1}},
-                {$group: {
-                    _id: {id: '$_id'},
-                    TERMINAL: {'$first': '$TERMINAL'},
-                    SHIP: {'$first': '$SHIP'},
-                    TRIP: {'$first': '$TRIP'},
-                    CONTAINER: {'$first': '$CONTAINER'},
-                    BL: {'$first': '$BL'},
-                    ID_CLIENT: {'$first': '$ID_CLIENT'},
-                    STATUS: {'$last': '$STATUS'},
-                    RETURN_TO: {'$last': '$RETURN_TO'},
-                    CLIENT: {'$last': '$CLIENT'},
-                    EXPIRATION: {'$first': '$EXPIRATION'}
-                }},
-                {$match: match},
-                {$skip: parseInt(options.skip)},
-                {$limit: parseInt(options.limit)},
                 {$project: {
-                    //ID: '$_id.id',
                     TERMINAL: true,
                     SHIP: true,
                     TRIP: true,
-                    CONTAINER: true,
                     BL: true,
-                    CUIT: '$CLIENT.CUIT',
+                    EXPIRATION: true,
+                    CONTAINER: true,
                     ID_CLIENT: true,
+                    CLIENT_FIRST: {$arrayElemAt: ['$CLIENT', 0]},
+                    CLIENT_LAST: {$arrayElemAt: ['$CLIENT', -1]},
+                    STATUS_FIRST: {$arrayElemAt: ['$STATUS', 0]},
+                    STATUS_LAST: {$arrayElemAt: ['$STATUS', -1]},
+                    RETURN_TO: {$arrayElemAt: ['$RETURN_TO', -1]}
+                }},
+                {$project: {
+                    TERMINAL: true,
+                    BUQUE: '$SHIP',
+                    VIAJE: '$TRIP',
+                    CONTENEDOR: '$CONTAINER',
+                    BL: true,
+                    ID_CLIENT: true,
+                    VENCE: '$EXPIRATION',
+                    CUIT_FIRST: '$CLIENT_FIRST.CUIT',
+                    CUIT: '$CLIENT_LAST.CUIT',
                     LUGAR_DEV: '$RETURN_TO.PLACE',
                     FECHA_DEV: '$RETURN_TO.DATE_TO',
-                    STATUS: '$STATUS.STATUS',
-                    USER: '$STATUS_FIRST.AUD_USER',
-                    VENCE: '$EXPIRATION'
-                }}
+                    STATUS: '$STATUS_LAST.STATUS',
+                    USER: '$STATUS_FIRST.AUD_USER'
+                }},
+                {$match: match},
+                {$sort: sort},
+                {$skip: parseInt(options.skip)},
+                {$limit: parseInt(options.limit)}
             ];
             this.model.aggregate(param)
                 .exec((err, data) => {
@@ -530,14 +511,34 @@ class ldeMongoDb {
                     } else {
 
                         param = [
-                            {$unwind: '$STATUS'},
-                            {$unwind: '$RETURN_TO'},
-                            {$unwind: '$CLIENT'},
-                            {$sort: {'STATUS.AUD_TIME': 1}},
-                            {$group: {
-                                _id: {id: '$_id'},
-                                TERMINAL: {'$first': '$TERMINAL'},
-                                STATUS: {'$last': '$STATUS'}
+                            {$project: {
+                                TERMINAL: true,
+                                SHIP: true,
+                                TRIP: true,
+                                BL: true,
+                                EXPIRATION: true,
+                                CONTAINER: true,
+                                ID_CLIENT: true,
+                                CLIENT_FIRST: {$arrayElemAt: ['$CLIENT', 0]},
+                                CLIENT_LAST: {$arrayElemAt: ['$CLIENT', -1]},
+                                STATUS_FIRST: {$arrayElemAt: ['$STATUS', 0]},
+                                STATUS_LAST: {$arrayElemAt: ['$STATUS', -1]},
+                                RETURN_TO: {$arrayElemAt: ['$RETURN_TO', -1]}
+                            }},
+                            {$project: {
+                                TERMINAL: true,
+                                BUQUE: '$SHIP',
+                                VIAJE: '$TRIP',
+                                CONTENEDOR: '$CONTAINER',
+                                BL: true,
+                                ID_CLIENT: true,
+                                VENCE: '$EXPIRATION',
+                                CUIT_FIRST: '$CLIENT_FIRST.CUIT',
+                                CUIT: '$CLIENT_LAST.CUIT',
+                                LUGAR_DEV: '$RETURN_TO.PLACE',
+                                FECHA_DEV: '$RETURN_TO.DATE_TO',
+                                STATUS: '$STATUS_LAST.STATUS',
+                                USER: '$STATUS_FIRST.AUD_USER'
                             }},
                             {$match: match},
                             {$group: {_id: '$id._id', totalCount: {$sum: 1}}
@@ -552,21 +553,7 @@ class ldeMongoDb {
                                     result = {
                                         status: "OK",
                                         totalCount: dataTotalCount[0].totalCount,
-                                        data: data.map(lde => ({
-                                            ID: lde._id,
-                                            ID_CLIENT: lde.ID_CLIENT,
-                                            CUIT: lde.CUIT,
-                                            CONTENEDOR: lde.CONTAINER,
-                                            TERMINAL: lde.TERMINAL,
-                                            BUQUE: lde.SHIP,
-                                            VIAJE: lde.TRIP,
-                                            BL: lde.BL,
-                                            LUGAR_DEV: lde.LUGAR_DEV,
-                                            FECHA_DEV: lde.FECHA_DEV,
-                                            STATUS: lde.STATUS,
-                                            USER: lde.USER,
-                                            VENCE: lde.VENCE
-                                        }))
+                                        data: data
                                     };
                                     resolve(result);
                                 }
@@ -601,8 +588,9 @@ class ldeMongoDb {
                     } else {
                         data = data.data.filter(item => (item.STATUS.STATUS === 3 || item.STATUS.STATUS === 0));
                         let lde = data[0];
-                        this.model.find({_id: lde.ID.id}, (err, data) => {
+                        this.model.find({_id: lde.ID}, (err, data) => {
                             if (err) {
+                                console.error(err);
                                 result = Error.ERROR("MONGO-ERROR").data(err.message);
                                 reject(result);
                             } else {
@@ -624,6 +612,7 @@ class ldeMongoDb {
                                         lde.RETURN_TO.push(newReturn_To);
                                         lde.save((err, data) => {
                                             if (err) {
+                                                console.error(err);
                                                 result = Error.ERROR("MONGO-ERROR").data(err.message);
                                                 reject(result);
                                             } else {
@@ -645,6 +634,7 @@ class ldeMongoDb {
                                         lde.RETURN_TO.push(newReturn_To);
                                         lde.save((err, data) => {
                                             if (err) {
+                                                console.error(err);
                                                 result = Error.ERROR("MONGO-ERROR").data(err.message);
                                                 reject(result);
                                             } else {

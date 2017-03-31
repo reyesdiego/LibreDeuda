@@ -23,15 +23,10 @@
         "pass": "Pt trend 54",
         "auth": {"authdb": "admin"}
     },
-    "email": {
-        "user":    "",
-        "password": "",
-        "host":    "10.10.0.176",
-        "port": "25",
-        "domain": "",
-        "from": "Administración General de Puertos <noreply@puertobuenosaires.gob.ar>",
-        "ssl":     false,
-        "status": true,
-        "throughBcc": true
+    "microService": {
+        "email": {
+            "port": 10001,
+            "host": "10.1.0.65"
+        }
     }
 }

@@ -9,23 +9,18 @@
         "toFile": false
     },
     "mongo": {
-        "url": "mongodb://10.10.0.223:27017/free"
+        "url": "mongodb://10.1.0.65:27017/free"
     },
-    "mongo_url_log": "mongodb://localhost:27017/logging",
+    "mongo_url_log": "mongodb://10.10.0.65:27017/logging",
     "mongo_opts_log": {
         "user": "admin",
-        "pass": "Pt trend 54",
+        "pass": "Pt trend 55",
         "auth": {"authdb": "admin"}
     },
-    "email": {
-        "user":    "",
-        "password": "",
-        "host":    "10.10.0.176",
-        "port": "25",
-        "domain": "",
-        "from": "Administración General de Puertos <noreply@puertobuenosaires.gob.ar>",
-        "ssl":     false,
-        "status": true,
-        "throughBcc": true
+    "microService": {
+        "email": {
+            "port": 10001,
+            "host": "10.1.0.65"
+        }
     }
 }
