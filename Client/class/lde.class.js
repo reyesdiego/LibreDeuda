@@ -97,15 +97,16 @@ myApp.factory('Lde', ['$http', '$q', 'configService', function($http, $q, config
 			let params = {
 				CONTENEDOR: this.CONTENEDOR,
 				LUGAR_DEV: newPlace,
+				FECHA_DEV: fechaDev,
 				ID_CLIENTE: this.ID_CLIENT,
 				ID: this.ID.id
 			};
-			if (fechaDev) params.FECHA_DEV = fechaDev;
 			if (email) params.EMAIL = email;
 			$http.put(insertUrl, params).then((response) => {
 				//console.log(response);
 				deferred.resolve(response.data);
 				this.LUGAR_DEV = newPlace;
+				this.FECHA_DEV = fechaDev
 			}).catch((response) => {
 				//console.log(response);
 				deferred.reject(response.data);

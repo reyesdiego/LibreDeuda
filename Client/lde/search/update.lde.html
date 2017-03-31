@@ -39,7 +39,7 @@
                 <div class="form-group">
                     <div class="input-group col-lg-12">
                         <span class="input-group-addon glyphicon glyphicon-calendar" ng-click="openDate()"></span>
-                        <input type="text" class="form-control" ng-model="updateModel.FECHA_DEV" uib-datepicker-popup="{{datePopUp.format}}" is-open="datePopUp.opened" datepicker-options="datePopUp.options" close-text="Cerrar" current-text="Hoy" clear-text="Borrar">
+                        <input type="text" class="form-control" ng-model="updateModel.FECHA_DEV" uib-datepicker-popup="{{datePopUp.format}}" is-open="datePopUp.opened" datepicker-options="datePopUp.options" close-text="Cerrar" current-text="Hoy" clear-text="Borrar" ng-required="true">
                     </div>
                 </div>
                 <h5>
