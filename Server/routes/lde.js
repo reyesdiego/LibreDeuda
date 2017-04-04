@@ -54,11 +54,17 @@ module.exports = (socket, log) => {
             skip: req.params.skip,
             limit: req.params.limit
         };
+
+        if (req.query.order) {
+            options.sort = JSON.parse(req.query.order) || {_id: -1};
+        }
+
         Lde.getLdes(param, options)
             .then(data => {
                 res.status(200).send(data);
             })
             .catch(err => {
+                log.logger.error(err);
                 res.status(err.http_status).send(err);
             });
     };
@@ -157,7 +163,7 @@ module.exports = (socket, log) => {
                     fecha_dev = moment(req.body.FECHA_DEV, "YYYY-MM-DD").toDate();
                 }
 
-                if (fecha_dev !== undefined && fecha_dev > moment() ) {
+                if (fecha_dev !== undefined && fecha_dev < moment(moment().format("YYYY-MM-DD")).toDate() ) {
                     fecha_dev = moment(fecha_dev).format("DD/MM/YYYY");
                     res.status(400).send({
                         status: `ERROR`,
@@ -218,7 +224,6 @@ module.exports = (socket, log) => {
         var lde2insert;
         var param, result;
         var user = req.user;
-        var mail = require('local-emailjs');
         var config = require('../config/config.js');
 
         if (user.data.group !== 'AGE') {
@@ -312,18 +317,16 @@ module.exports = (socket, log) => {
                                                 data : html,
                                                 alternative: true
                                             };
-                                            var emailConfig = config.email;
-                                            emailConfig.throughBcc = false;
 
-                                            var mailer = new mail(emailConfig);
                                             var subject = `Libre Deuda Electónico ${lde.CONTENEDOR}`;
-                                            mailer.send(lde.EMAIL, subject, html, (err, emailData) => {
-                                                if (err) {
-                                                    console.error(err);
-                                                } else {
+
+                                            var Mail = require('../include/micro-emailjs.js');
+                                            Mail.send(lde.EMAIL, subject, html)
+                                            .then(data => {
                                                     console.info(`Email enviado a: ${lde.EMAIL}`);
-                                                }
-                                            });
+                                                }).catch(err => {
+                                                    console.error(err);
+                                                });
                                         }
                                     });
                                 }
@@ -357,7 +360,6 @@ module.exports = (socket, log) => {
         var user = req.user;
         var moment = require("moment");
         var result;
-        var mail = require('local-emailjs');
         var config = require('../config/config.js');
 
         var toDay = moment(moment().format("YYYY-MM-DD")).toDate();
@@ -414,19 +416,17 @@ module.exports = (socket, log) => {
                                     data : html,
                                     alternative: true
                                 };
-                                var emailConfig = config.email;
-                                emailConfig.throughBcc = false;
 
-                                var mailer = new mail(emailConfig);
                                 var subject = `Libre Deuda Electónico ${req.body.CONTENEDOR}`;
-                                mailer.send(req.body.EMAIL, subject, html, (err, emailData) => {
-                                    if (err) {
-                                        console.error(err);
-                                    } else {
+
+                                var Mail = require('../include/micro-emailjs.js');
+                                Mail.send(req.body.EMAIL, subject, html)
+                                .then(data => {
                                         console.info(`Email enviado a: ${req.body.EMAIL}`);
                                         res.status(200).send(data);
-                                    }
-                                });
+                                    }).catch(err => {
+                                        console.error(err);
+                                    });
                             }
                         });
 
