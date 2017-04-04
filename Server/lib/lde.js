@@ -399,7 +399,7 @@ class ldeMongoDb {
                 match.ID_CLIENT = params.id_cliente;
             }
             if (params.id !== undefined) {
-                match._id = {id: mongoose.Types.ObjectId(params.id)};
+                match._id = mongoose.Types.ObjectId(params.id);
             }
 
             param = [
