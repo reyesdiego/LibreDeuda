@@ -24,7 +24,7 @@ myApp.service('containersService', [function(){
 
 		statusContainersAsArray(){
 			let result = [];
-			for (var key in this.statusContainers) {
+			for (let key in this.statusContainers) {
 				if (this.statusContainers.hasOwnProperty(key)) {
 					let newValue = {
 						id: parseInt(key),

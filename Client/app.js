@@ -2,7 +2,7 @@
  * Created by kolesnikov-a on 15/04/2016.
  */
 
-var myApp = angular.module('libreDeuda', [
+let myApp = angular.module('libreDeuda', [
     'ui.router',
     'ui.bootstrap',
     'ngSanitize',
@@ -117,8 +117,8 @@ myApp.config(['$provide', '$httpProvider', function($provide, $httpProvider){
                         if (rejection.config.url != configService.serverUrl + '/login'){
                             if (rejection.data.message != 'No tiene privilegios para realizar esta petición.' && rejection.data.message != 'No tiene permisos para realizar esta operación'){
                                 $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
-                                var deferred = $q.defer();
-                                var req = {
+                                const deferred = $q.defer();
+                                const req = {
                                     config: rejection.config,
                                     deferred: deferred
                                 };
@@ -153,6 +153,12 @@ myApp.config(['IdleProvider', 'KeepaliveProvider', function(IdleProvider, Keepal
 myApp.run(['$rootScope', 'appSocket', 'storageService', '$state', '$http', 'dialogsService', 'Idle', 'AUTH_EVENTS', 'Session', '$timeout', 'Title',
     function($rootScope, appSocket, storageService, $state, $http, dialogsService, Idle, AUTH_EVENTS, Session, $timeout, Title){
 
+		function retry(req) {
+			$http(req.config).then((response) => {
+				req.deferred.resolve(response);
+			});
+		}
+
         Title.timedOutMessage('Su sesión ha expirado.');
         Title.idleMessage('Tiene {{ seconds }} hasta que su sesión expire.');
 
@@ -171,57 +177,57 @@ myApp.run(['$rootScope', 'appSocket', 'storageService', '$state', '$http', 'dial
         $rootScope.loggedUser = '';
         $rootScope.dialogIdle = null;
 
-        $rootScope.$on('IdleStart', function() {
+        $rootScope.$on('IdleStart', () => {
             $rootScope.dialogIdle = dialogsService.notify('Usuario inactivo', 'Se ha detectado que se encuentra inactivo, se procederá a cerrar su sesión en 60 segundos.');
         });
 
-        $rootScope.logOut = function(){
+        $rootScope.logOut = () => {
             $rootScope.session.logOut();
             Idle.unwatch();
             $state.transitionTo('login');
         };
 
-        $rootScope.$on('IdleTimeout', function() {
+        $rootScope.$on('IdleTimeout', () => {
             $rootScope.dialogIdle.dismiss();
             dialogsService.notify('Usuario inactivo', 'Se ha cerrado su sesión debido a que ha sobrepasado el período de inactividad permitido.');
             $rootScope.logOut();
         });
 
-        $rootScope.$on('IdleEnd', function() {
+        $rootScope.$on('IdleEnd', () => {
             $rootScope.dialogIdle.dismiss();
             Title.restore();
         });
 
-        $rootScope.$on('Keepalive', function(){
+        $rootScope.$on('Keepalive', () => {
             $rootScope.session.keepAlive(() => {}, (error) => {
                 console.log(error);
             })
         });
 
-        $rootScope.$on(AUTH_EVENTS.notAuthorized, function(){
+        $rootScope.$on(AUTH_EVENTS.notAuthorized, () => {
             dialogsService.notify('Error de acceso', 'Su usario no se encuentra autorizado para realizar esa operación.')
         });
 
-        $rootScope.$on(AUTH_EVENTS.notAuthenticated, function(){
+        $rootScope.$on(AUTH_EVENTS.notAuthenticated, () => {
             if ($rootScope.routeChange.from != 'login'){
-                var loginDialog = dialogsService.login();
-                loginDialog.result.then(function(result){
+                const loginDialog = dialogsService.login();
+                loginDialog.result.then((result) => {
                     if (result.statusText != 'OK'){
                         dialogsService.error('Error', result.data);
                         $state.transitionTo('login');
                     } else {
 						$rootScope.loginScreen = false;
                     }
-                }, function(){
-                    $state.transitionTo('login');
-                });
+                }).catch(() => {
+					$state.transitionTo('login');
+				});
             } else {
                 dialogsService.notify('No autorizado', 'Se requiere un inicio de sesión antes de poder continuar.')
             }
             //$state.transitionTo('login');
         });
 
-        $rootScope.$on(AUTH_EVENTS.loginSucces, function() {
+        $rootScope.$on(AUTH_EVENTS.loginSucces, () => {
             Title.restore();
             Idle.watch();
 
@@ -243,12 +249,6 @@ myApp.run(['$rootScope', 'appSocket', 'storageService', '$state', '$http', 'dial
                 $state.transitionTo(next);
             }
 
-
-            function retry(req) {
-                $http(req.config).then(function(response) {
-                    req.deferred.resolve(response);
-                });
-            }
         });
 
         $rootScope.socket = appSocket;
@@ -256,13 +256,13 @@ myApp.run(['$rootScope', 'appSocket', 'storageService', '$state', '$http', 'dial
 
         $rootScope.loginScreen = true;
 
-        $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromParams) {
+        $rootScope.$on('$stateChangeSuccess', (event, toState, toParams, fromParams) => {
             $rootScope.loginScreen = (toState.name == 'login');
         });
 
-        $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){
+        $rootScope.$on('$stateChangeStart', (event, toState, toParams, fromState, fromParams) => {
             if (angular.isDefined(toState.data)){ //state requires logged user
-                var authorizedRoles = toState.data.authorizedRoles;
+                const authorizedRoles = toState.data.authorizedRoles;
                 if (authorizedRoles){
                     if ($rootScope.session.isAuthenticated){
                         if (!$rootScope.session.isAuthorized(authorizedRoles)){
