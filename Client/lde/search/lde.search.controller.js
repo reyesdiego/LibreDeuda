@@ -122,7 +122,7 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'dialogsService
         //antes de llamar al método de actualización
         $scope.updateWithModal = function(event, operation, lde){
             event.stopPropagation();
-            var modalInstance = $uibModal.open({
+            const modalInstance = $uibModal.open({
                 templateUrl: 'lde/search/update.lde.html',
                 controller: 'updateLdeCtrl',
                 backdrop: 'static',
