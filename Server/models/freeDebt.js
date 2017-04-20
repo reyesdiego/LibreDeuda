@@ -5,7 +5,7 @@
 var mongoose = require("mongoose");
 
 var freeDebt = new mongoose.Schema({
-    TERMINAL: {type: String, enum: ['BACTSSA', 'TRP', 'TERMINAL4']},
+    TERMINAL: {type: String, enum: ['BACTSSA', 'TRP', 'TERMINAL4', 'EXOLGAN']},
     SHIP: {type: String},
     TRIP: {type: String},
     CONTAINER: {type: String, required: true},

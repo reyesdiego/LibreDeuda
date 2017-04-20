@@ -155,7 +155,6 @@ module.exports = (log) => {
 
         var params = req.body;
         var config = require('../config/config.js');
-        var mail = require("../include/emailjs.js");
 
         var account = new Account();
 
@@ -200,20 +199,19 @@ module.exports = (log) => {
                                     data: html,
                                     alternative: true
                                 };
-                                var mailer = new mail.mail(config.email);
-                                mailer.send(data.data.email, "Usuario Creado", html, (err, emailData) => {
-                                    if (err) {
+                                var Mail = require('../include/micro-emailjs.js');
+                                Mail.send(data.data.email, "Usuario Creado", html)
+                                    .then(emailData => {
+                                        log.logger.info(`Email enviado a: ${data.data.email}`);
+                                        res.status(200).send(data);
+                                    }).catch(err => {
                                         log.logger.error("Error al enviar mail a %s.", data.data.email);
                                         res.status(500).send({
                                             status: 'ERROR',
                                             message: err.message,
                                             data: err
                                         });
-                                    } else {
-                                        log.logger.info("Nuevo usuario.", data.data.email);
-                                    }
-                                });
-                                res.status(200).send(data);
+                                    });
 
                             }
                         });

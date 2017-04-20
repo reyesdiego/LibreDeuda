@@ -5,7 +5,7 @@
 
 const config = require("../config/config.js");
 var seneca = require("seneca")();
-seneca.client(config.microService.email.port, config.microService.email.host);
+seneca.client( config.microService.email.port, config.microService.email.host);
 
 const send = (to, subject, text, attachment) => {
     return new Promise((resolve, reject) => {
