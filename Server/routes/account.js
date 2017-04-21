@@ -184,9 +184,15 @@ module.exports = (log) => {
                 };
                 token.createToken(payload, {expiredIn: '10 years'})
                 .then(token => {
-                        data.data.token = token;
-                        data.data.url = config.url;
-                        res.render('register.pug', data.data, (err, html) => {
+                        let mailData = {
+                            email: data.data.email,
+                            company: data.data.company,
+                            password: data.data.password,
+                            url: config.url,
+                            token: token
+                        };
+                        res.render('register.pug', mailData, (err, html) => {
+                            res.status(200).send(html);
                             if (err) {
                                 res.status(500).send({
                                     status: 'ERROR',
@@ -207,7 +213,10 @@ module.exports = (log) => {
                                     });
                             }
                         });
-                        res.status(200).send(data);
+                        //res.status(200).send(data);
+                    })
+                    .catch(err => {
+                        res.status(500).send(err);
                     });
 
         })
@@ -216,7 +225,6 @@ module.exports = (log) => {
                 log.logger.error(`INS Account: ${err.message}`);
                 res.status(err.http_status).send(err);
             });
-
     };
 
     var validate = (req, res) => {
@@ -233,15 +241,25 @@ module.exports = (log) => {
             } else {
                 account.getAccount(payload.USUARIO, payload.CLAVE)
                 .then(data => {
-                        account.setStatus(data.data._id, Account.STATUS.PENDING)
-                            .then(data => {
-                                res.render('validated.pug', data.data, (err, html) => {
-                                    res.status(200).send(html);
+                        if (data.data.status === Account.STATUS.NEW) {
+                            account.setStatus(data.data._id, Account.STATUS.PENDING)
+                                .then(data => {
+                                    res.render('validated.pug', data.data, (err, html) => {
+                                        res.status(200).send(html);
+                                        var Mail = require('../include/micro-emailjs.js');
+                                        html = {
+                                            data: html,
+                                            alternative: true
+                                        };
+                                        Mail.send("dreyes@puertobuenosaires.gob.ar", "Aprobar usuario Libre Deuda", html);
+                                    });
+                                })
+                                .catch(err => {
+                                    res.status(err.http_status).send(err);
                                 });
-                            })
-                            .catch(err => {
-                                res.status(err.http_status).send(err);
-                            });
+                        } else {
+                            res.status(500).send("El usuario está pendiente de Aprobación");
+                        }
                     }).catch(err => {
                         res.status(err.http_status).send(err);
                     });

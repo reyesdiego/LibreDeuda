@@ -8,8 +8,8 @@ html(lang='fr')
             td
                img(src="http://terminales.puertobuenosaires.gob.ar/images/logoPuerto.png", height="40", width="75")
             td
-               h1(style="font-family: inherit; font-weight: 400; font-size: 30px; line-height: 1.1; color: #0099d7;") &nbsp;Servicio Terminales Portuarias
-      p Ud. a solicitado un usuario para utilizar los servicios de Libre Deuda y Control Pre Gate Electrónicos.
+               h1(style="font-family: inherit; font-weight: 400; font-size: 25px; line-height: 1.1; color: #0099d7;") &nbsp;Servicio Libre Deuda Electrónico
+      p Ud. a solicitado un usuario para utilizar los servicios de Libre Deuda Electrónico.
       p
          b Razón Social:&nbsp;
          span #{company}
@@ -21,7 +21,8 @@ html(lang='fr')
          span #{password}
       br
       p Para proceder a la aprobación de la cuenta haga click &nbsp;
-         a(href="#{url}/validate/token?salt=#{token}") aquí
+         - var ww = url + '/validate/token?salt=' + token;
+         a(href=ww) aquí
       p
          span(style="color:red") Importante:&nbsp;
          span &nbsp;Recibirá un nuevo correo electrónico una vez que la cuenta haya sido aprobada por el Administrador del Sistema.
