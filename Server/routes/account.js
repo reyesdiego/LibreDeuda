@@ -186,9 +186,8 @@ module.exports = (log) => {
                 .then(token => {
                         data.data.token = token;
                         data.data.url = config.url;
-                        res.render('register.jade', data.data, (err, html) => {
+                        res.render('register.pug', data.data, (err, html) => {
                             if (err) {
-                                //log.logger.error("Se produjo un error en la creacion del comprobante, Email No enviado. %s", err.message);
                                 res.status(500).send({
                                     status: 'ERROR',
                                     message: err.message,
@@ -203,21 +202,18 @@ module.exports = (log) => {
                                 Mail.send(data.data.email, "Usuario Creado", html)
                                     .then(emailData => {
                                         log.logger.info(`Email enviado a: ${data.data.email}`);
-                                        res.status(200).send(data);
                                     }).catch(err => {
                                         log.logger.error("Error al enviar mail a %s.", data.data.email);
-                                        res.status(500).send({
-                                            status: 'ERROR',
-                                            message: err.message,
-                                            data: err
-                                        });
                                     });
-
                             }
                         });
+                        res.status(200).send(data);
                     });
+
         })
         .catch(err => {
+                console.error(err.message);
+                log.logger.error(`INS Account: ${err.message}`);
                 res.status(err.http_status).send(err);
             });
 
@@ -239,7 +235,7 @@ module.exports = (log) => {
                 .then(data => {
                         account.setStatus(data.data._id, Account.STATUS.PENDING)
                             .then(data => {
-                                res.render('validated.jade', data.data, (err, html) => {
+                                res.render('validated.pug', data.data, (err, html) => {
                                     res.status(200).send(html);
                                 });
                             })

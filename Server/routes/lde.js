@@ -309,7 +309,7 @@ module.exports = (socket, log) => {
                                         fecha: lde.FECHA_DEV,
                                         lugar: lde.LUGAR_DEV
                                     };
-                                    res.render('lde.jade', ldeMail, (err, html) => {
+                                    res.render('lde.pug', ldeMail, (err, html) => {
                                         if (err) {
                                             log.logger.error("Error %s", err);
                                         } else {
@@ -408,7 +408,7 @@ module.exports = (socket, log) => {
                             fecha: return_to.DATE_TO,
                             lugar: return_to.PLACE
                         };
-                        res.render('changePlace.jade', ldeMail, (err, html) => {
+                        res.render('changePlace.pug', ldeMail, (err, html) => {
                             if (err) {
                                 log.logger.error("Error %s", err);
                             } else {

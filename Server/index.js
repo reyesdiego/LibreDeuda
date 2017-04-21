@@ -42,8 +42,8 @@ app.use(expressValidator({
 }));
 
 app.set('views', path.join(__dirname, '.', '/public'));
-app.set('view engine', 'jade');
-/** For Jade Views*/
+app.set('view engine', 'pug');
+/** For Pug Views*/
 app.locals.moment = require('moment');
 
 app.all('/*', (req, res, next) => {
@@ -84,7 +84,7 @@ socket = socket(server, {
 server.listen(port, () => {
     log.logger.info("#%s Nodejs %s Running on %s://localhost:%s", process.pid, process.version, 'http', port);
     /** Conecta a la base de datos MongoDb */
-    require('./include/mongoose.js')(config.mongo.url, config.mongo.options, log);
+    require('local-mongoose')(config.mongo.url, config.mongo.options);
 });
 server.on('error', (err) => {
     if (err.code === 'EADDRINUSE') {
