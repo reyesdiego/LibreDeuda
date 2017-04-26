@@ -80,7 +80,11 @@
 
     <br>
 
-    <div ng-hide="dataContainers.length != 0" class="col-lg-12">
+    <div ng-show="loading" class="col-lg-12">
+        <img class="media-object center-block" src="./images/loading.gif">
+    </div>
+
+    <div ng-hide="dataContainers.length != 0 || loading" class="col-lg-12">
         <div class="panel panel-info">
             <div class="panel-heading {{ panelLde.type }}">
                 <h5>Libre deuda</h5>
@@ -91,7 +95,7 @@
         </div>
     </div>
 
-    <div ng-hide="dataContainers.length == 0" class="table-responsive col-lg-12">
+    <div ng-hide="dataContainers.length == 0 || loading" class="table-responsive col-lg-12">
         <table class="table top-gap">
             <thead>
             <tr>
