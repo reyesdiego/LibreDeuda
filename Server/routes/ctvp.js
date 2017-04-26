@@ -48,9 +48,8 @@ module.exports = (socket) => {
     };
 
     let getCtvps = (req, res) => {
-        var params = {contenedor: req.params.contenedor};
 
-        Ctvp.check(params)
+        Ctvp.get()
             .then(data => {
                 res.status(200).send(data);
             })

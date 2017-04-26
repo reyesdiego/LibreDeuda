@@ -41,7 +41,7 @@ class Account {
                 } else {
                     resolve({
                         status: 'OK',
-                        data: data
+                        data: JSON.parse(JSON.stringify(data))
                     });
                 }
             });

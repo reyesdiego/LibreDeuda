@@ -155,7 +155,6 @@ module.exports = (log) => {
 
         var params = req.body;
         var config = require('../config/config.js');
-        var mail = require("../include/emailjs.js");
 
         var account = new Account();
 
@@ -185,11 +184,16 @@ module.exports = (log) => {
                 };
                 token.createToken(payload, {expiredIn: '10 years'})
                 .then(token => {
-                        data.data.token = token;
-                        data.data.url = config.url;
-                        res.render('register.jade', data.data, (err, html) => {
+                        let mailData = {
+                            email: data.data.email,
+                            company: data.data.company,
+                            password: data.data.password,
+                            url: config.url,
+                            token: token
+                        };
+                        res.render('register.pug', mailData, (err, html) => {
+                            res.status(200).send(html);
                             if (err) {
-                                //log.logger.error("Se produjo un error en la creacion del comprobante, Email No enviado. %s", err.message);
                                 res.status(500).send({
                                     status: 'ERROR',
                                     message: err.message,
@@ -200,29 +204,27 @@ module.exports = (log) => {
                                     data: html,
                                     alternative: true
                                 };
-                                var mailer = new mail.mail(config.email);
-                                mailer.send(data.data.email, "Usuario Creado", html, (err, emailData) => {
-                                    if (err) {
+                                var Mail = require('../include/micro-emailjs.js');
+                                Mail.send(data.data.email, "Usuario Creado", html)
+                                    .then(emailData => {
+                                        log.logger.info(`Email enviado a: ${data.data.email}`);
+                                    }).catch(err => {
                                         log.logger.error("Error al enviar mail a %s.", data.data.email);
-                                        res.status(500).send({
-                                            status: 'ERROR',
-                                            message: err.message,
-                                            data: err
-                                        });
-                                    } else {
-                                        log.logger.info("Nuevo usuario.", data.data.email);
-                                    }
-                                });
-                                res.status(200).send(data);
-
+                                    });
                             }
                         });
+                        //res.status(200).send(data);
+                    })
+                    .catch(err => {
+                        res.status(500).send(err);
                     });
+
         })
         .catch(err => {
+                console.error(err.message);
+                log.logger.error(`INS Account: ${err.message}`);
                 res.status(err.http_status).send(err);
             });
-
     };
 
     var validate = (req, res) => {
@@ -239,15 +241,25 @@ module.exports = (log) => {
             } else {
                 account.getAccount(payload.USUARIO, payload.CLAVE)
                 .then(data => {
-                        account.setStatus(data.data._id, Account.STATUS.PENDING)
-                            .then(data => {
-                                res.render('validated.jade', data.data, (err, html) => {
-                                    res.status(200).send(html);
+                        if (data.data.status === Account.STATUS.NEW) {
+                            account.setStatus(data.data._id, Account.STATUS.PENDING)
+                                .then(data => {
+                                    res.render('validated.pug', data.data, (err, html) => {
+                                        res.status(200).send(html);
+                                        var Mail = require('../include/micro-emailjs.js');
+                                        html = {
+                                            data: html,
+                                            alternative: true
+                                        };
+                                        Mail.send("dreyes@puertobuenosaires.gob.ar", "Aprobar usuario Libre Deuda", html);
+                                    });
+                                })
+                                .catch(err => {
+                                    res.status(err.http_status).send(err);
                                 });
-                            })
-                            .catch(err => {
-                                res.status(err.http_status).send(err);
-                            });
+                        } else {
+                            res.status(500).send("El usuario está pendiente de Aprobación");
+                        }
                     }).catch(err => {
                         res.status(err.http_status).send(err);
                     });
