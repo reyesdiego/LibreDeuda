@@ -3,13 +3,11 @@ html(lang='es')
     head
         title Servicio Terminales Portuarias
     body(style="font-family: 'Open Sans',sans-serif; font-size: 12px; background-color:white !important")
-        - var fecha = moment(inicio).format("DD-MM-YYYY")
-        - var horario = moment(inicio).format("HH:mm") + 'hs. a ' + moment(fin).format("HH:mm") + "hs.";
         - var altal = moment(alta).format("DD-MM-YYYY HH:mm") + " hs.";
         table
             tr(style="background-color: white !important;")
                 td
-                    img(style="max-height:200px" src="http://terminales.puertobuenosaires.gob.ar/images/logoBlanco.png")
+                    img(style="max-height:200px;max-width:200px" src="http://terminales.puertobuenosaires.gob.ar/images/logoPuerto.png")
                 td
                     h1(style="font-family: inherit; font-weight: 400; font-size: 30px; line-height: 1.1; background-color:white !important; color: #0099d7;") &nbsp;Libre Deuda Electrónico
         p(style="text-align: left") Cambio de Lugar y/o Fecha de Devolución&nbsp;
