@@ -95,14 +95,18 @@
         </div>
     </div>
 
+    <div class="col-lg-12" ng-hide="dataContainers.length == 0 || loading">
+        <label class="checkbox"><input type="checkbox" ng-model="agruparBl"> Agrupar por Conocimiento</label>
+    </div>
+
     <div ng-hide="dataContainers.length == 0 || loading" class="table-responsive col-lg-12">
         <table class="table top-gap">
             <thead>
             <tr>
-                <th ng-click="getLdeData('TERMINAL')" class="clickable">
-                    <i class="glyphicon glyphicon-sort-by-attributes" ng-show="order.field == 'TERMINAL' && !order.reverse"></i>
-                    <i class="glyphicon glyphicon-sort-by-attributes" ng-show="order.field == 'TERMINAL' && order.reverse"></i>
-                    Terminal
+                <th ng-click="getLdeData('BL')" class="clickable">
+                    <i class="glyphicon glyphicon-sort-by-attributes" ng-show="order.field == 'BL' && !order.reverse"></i>
+                    <i class="glyphicon glyphicon-sort-by-attributes-alt" ng-show="order.field == 'BL' && order.reverse"></i>
+                    Conocimiento
                 </th>
                 <th ng-click="getLdeData('BUQUE')" class="clickable">
                     <i class="glyphicon glyphicon-sort-by-attributes" ng-show="order.field == 'BUQUE' && !order.reverse"></i>
@@ -114,15 +118,15 @@
                     <i class="glyphicon glyphicon-sort-by-attributes-alt" ng-show="order.field == 'VIAJE' && order.reverse"></i>
                     Viaje
                 </th>
+                <th ng-click="getLdeData('TERMINAL')" class="clickable">
+                    <i class="glyphicon glyphicon-sort-by-attributes" ng-show="order.field == 'TERMINAL' && !order.reverse"></i>
+                    <i class="glyphicon glyphicon-sort-by-attributes" ng-show="order.field == 'TERMINAL' && order.reverse"></i>
+                    Terminal
+                </th>
                 <th ng-click="getLdeData('CONTENEDOR')" class="clickable">
                     <i class="glyphicon glyphicon-sort-by-attributes" ng-show="order.field == 'CONTENEDOR' && !order.reverse"></i>
                     <i class="glyphicon glyphicon-sort-by-attributes-alt" ng-show="order.field == 'CONTENEDOR' && order.reverse"></i>
                     Contenedor
-                </th>
-                <th ng-click="getLdeData('BL')" class="clickable">
-                    <i class="glyphicon glyphicon-sort-by-attributes" ng-show="order.field == 'BL' && !order.reverse"></i>
-                    <i class="glyphicon glyphicon-sort-by-attributes-alt" ng-show="order.field == 'BL' && order.reverse"></i>
-                    Conocimiento
                 </th>
                 <th ng-click="getLdeData('FECHA_DEV')" class="clickable">
                     <i class="glyphicon glyphicon-sort-by-attributes" ng-show="order.field == 'FECHA_DEV' && !order.reverse"></i>
@@ -147,14 +151,49 @@
                 <th ng-if="session.data.group != 'ADMIN'">Modificar Libre Deuda</th>
             </tr>
             </thead>
-            <tbody>
+            <tbody ng-if="!agruparBl">
             <tr ng-repeat="lde in pageContainers = (dataContainers | filter: search)" ng-class="lde.isExpired ? 'expired': ''">
-            <!--<tr ng-repeat="lde in pageContainers = (dataContainers | filter: search) | startFrom: (pagination.page-1)*pagination.itemsPerPage | limitTo: pagination.itemsPerPage ">-->
+                <!--<tr ng-repeat="lde in pageContainers = (dataContainers | filter: search) | startFrom: (pagination.page-1)*pagination.itemsPerPage | limitTo: pagination.itemsPerPage ">-->
+                <td>{{ lde.BL }}</td>
                 <td>{{ lde.TERMINAL }}</td>
                 <td>{{ lde.BUQUE }}</td>
                 <td>{{ lde.VIAJE }}</td>
                 <td>{{ lde.CONTENEDOR }}</td>
-                <td>{{ lde.BL }}</td>
+                <td>{{ lde.FECHA_DEV | date: 'dd/MM/yyyy' }}</td>
+                <td>{{ lde.LUGAR_DEV | lugarDevolucion: returnPlaces }}</td>
+                <td>{{ lde.CUIT }}</td>
+                <td ng-if="!lde.isExpired" class="{{ lde.STATUS | containerClass }}">{{ lde.STATUS | containerStatus }}</td>
+                <td ng-if="lde.isExpired" class="text-danger">EXPIRADO</td>
+                <td ng-if="session.data.group != 'ADMIN'">
+                    <button type="button"  ng-if="session.data.group == 'AGE' && lde.STATUS != 3 && !lde.isExpired" class="btn btn-success btn-sm" ng-click="update($event, 'enable', lde)" uib-tooltip="Habilitar" ng-disabled="lde.STATUS == 0"><span class="glyphicon glyphicon-ok"></span></button>
+                    <button type="button"  ng-if="session.data.group == 'TER' && lde.STATUS != 3 && !lde.isExpired" class="btn btn-primary btn-sm" ng-click="updateWithModal($event, 'invoice', lde)" uib-tooltip="Entregar"><span class="glyphicon glyphicon-edit"></span></button>
+                    <button type="button"  ng-if="session.data.group == 'AGE' && lde.STATUS != 3 && !lde.isExpired" class="btn btn-danger btn-sm" ng-click="update($event, 'disable', lde)" uib-tooltip="Anular" ng-disabled="lde.STATUS == 9"><span class="glyphicon glyphicon-remove"></span></button>
+                    <button type="button"  ng-if="session.data.group == 'AGE' && lde.STATUS != 3 && !lde.isExpired" class="btn btn-info btn-sm" ng-click="updateWithModal($event, 'place', lde)" uib-tooltip="Cambiar lugar"><span class="glyphicon glyphicon-backward"></span></button>
+                    <button type="button"  ng-if="session.data.group == 'FOR' && lde.STATUS != 3 && !lde.isExpired" class="btn btn-info btn-sm" ng-click="updateWithModal($event, 'forward', lde)" uib-tooltip="Cambiar CUIT"><span class="glyphicon glyphicon-forward"></span></button>
+                </td>
+            </tr>
+            </tbody>
+
+            <tbody ng-if="agruparBl" ng-repeat="bl in dataBl">
+            <tr ng-click="bl.detallar = !bl.detallar" class="bl-row">
+                <td>{{ bl.BL }}</td>
+                <td>{{ bl.BUQUE }}</td>
+                <td>{{ bl.VIAJE }}</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr ng-repeat="lde in bl.ldeList  | filter: search" ng-class="lde.isExpired ? 'expired': ''" ng-show="bl.detallar">
+            <!--<tr ng-repeat="lde in pageContainers = (dataContainers | filter: search) | startFrom: (pagination.page-1)*pagination.itemsPerPage | limitTo: pagination.itemsPerPage ">-->
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>{{ lde.TERMINAL }}</td>
+                <td>{{ lde.CONTENEDOR }}</td>
                 <td>{{ lde.FECHA_DEV | date: 'dd/MM/yyyy' }}</td>
                 <td>{{ lde.LUGAR_DEV | lugarDevolucion: returnPlaces }}</td>
                 <td>{{ lde.CUIT }}</td>
@@ -198,7 +237,7 @@
 
     </div>
 
-    <div class="col-lg-12 hidden-print hidden-xs" ng-show="totalContainers > pagination.itemsPerPage">
+    <div class="col-lg-12 hidden-print hidden-xs" ng-show="totalContainers > pagination.itemsPerPage" ng-if="!agruparBl">
         <div class="text-center visible-sm"><uib-pagination boundary-links="true" ng-change="getLdeData()" total-items="totalContainers" items-per-page="pagination.itemsPerPage" ng-model="pagination.page" max-size="10" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></uib-pagination></div>
         <div class="text-center visible-md"><uib-pagination boundary-links="true" ng-change="getLdeData()" total-items="totalContainers" items-per-page="pagination.itemsPerPage" ng-model="pagination.page" max-size="15" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></uib-pagination></div>
         <div class="text-center visible-lg"><uib-pagination boundary-links="true" ng-change="getLdeData()" total-items="totalContainers" items-per-page="pagination.itemsPerPage" ng-model="pagination.page" max-size="19" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></uib-pagination></div>

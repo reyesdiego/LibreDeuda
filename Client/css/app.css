@@ -93,6 +93,11 @@ html, body {
     background-color: #b5b5b5;
 }
 
+.bl-row {
+    cursor: pointer;
+    background-color: #c8c8c8;
+}
+
 .clickable{
     cursor: pointer;
 }

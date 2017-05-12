@@ -8,6 +8,8 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'dialogsService
         $scope.search = '';
         $scope.session = Session;
 
+        $scope.agruparBl = false;
+
         $scope.containerLde = null;
         $scope.searchContainer = '';
 
@@ -101,8 +103,9 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'dialogsService
             };
             //$scope.dataContainers = [];
             ldeFactory.getAllLde(page, $scope.order).then(data => {
-                if (data.data.length > 0){
-                    $scope.dataContainers = data.data;
+                if (data.data.ldeArray.length > 0){
+                    $scope.dataBl = data.data.blArray;
+                    $scope.dataContainers = data.data.ldeArray;
                     $scope.totalContainers = data.totalCount;
                 } else {
                     $scope.panelLde = {

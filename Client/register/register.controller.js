@@ -22,11 +22,13 @@ myApp.controller('registerCtrl', ['$scope', 'Register', 'dialogsService', 'valid
 					dialogsService.notify('Registro', `Se ha enviado un mail a la cuenta de correo ${$scope.user.email}, ingrese para validar su usuario.`);
 				}).catch((error) => {
 					//console.log(error);
-					if (error.code === 11000) {
+					if (!error.message) error.message = 'Se produjo un error al intentar crear el nuevo usuario.';
+					dialogsService.error('Registro', error.message);
+					/*if (error.code === 11000) {
 						dialogsService.error('Registro', error.message);
 					} else {
 						dialogsService.error('Registro', 'Se produjo un error al intentar crear el nuevo usuario.');
-					}
+					}*/
 				});
 			}
 	};

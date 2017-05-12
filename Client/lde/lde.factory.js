@@ -2,16 +2,31 @@
  * Created by kolesnikov-a on 18/04/2016.
  */
 
-myApp.factory('ldeFactory', ['$http', 'configService', '$q', 'Lde', function($http, configService, $q, Lde){
+myApp.factory('ldeFactory', ['$http', 'configService', '$q', 'Lde', 'BL', function($http, configService, $q, Lde, BL){
 
     class ldeFactory {
 
         retrieveLdes(ldesData){
+            let blContainer = {};
             let ldeArray = [];
+            let blArray = [];
             for (let lde of ldesData){
-                ldeArray.push(new Lde(lde));
+                let ldeObject = new Lde(lde);
+                if (blContainer[lde.BL]){
+                    blContainer[lde.BL].addLde(ldeObject)
+                } else {
+                    blContainer[lde.BL] = new BL(ldeObject)
+                }
+                ldeArray.push(ldeObject);
             }
-            return ldeArray;
+            for (let blCode in blContainer){
+                if (blContainer.hasOwnProperty(blCode)) blArray.push(blContainer[blCode]);
+            }
+
+            return {
+                ldeArray: ldeArray,
+                blArray: blArray
+			};
         }
 
         getAllLde(page, order){
