@@ -325,7 +325,7 @@ module.exports = (socket, log) => {
                                             .then(data => {
                                                     console.info(`Email enviado a: ${lde.EMAIL}`);
                                                 }).catch(err => {
-                                                    console.error(err);
+                                                    console.error(`Email NO enviado a: ${lde.EMAIL}. ERROR: ${err.message}`);
                                                 });
                                         }
                                     });
@@ -425,7 +425,7 @@ module.exports = (socket, log) => {
                                         console.info(`Email enviado a: ${req.body.EMAIL}`);
                                         res.status(200).send(data);
                                     }).catch(err => {
-                                        console.error(err);
+                                        console.error(`Email NO enviado a: ${req.body.EMAIL} - ERROR: ${err.message}`);
                                     });
                             }
                         });
