@@ -31,6 +31,10 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'dialogsService
         $scope.totalContainers = 0;
         $scope.pageContainers = [];
 
+        $scope.totalBl = 0;
+        $scope.pageBl = [];
+        $scope.dataBl = [];
+
         $scope.pagination = {
             page: 1,
             itemsPerPage: 10
@@ -86,6 +90,7 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'dialogsService
         });
 
         $scope.getLdeData = function(order){
+            console.log(order);
             $scope.loading = true;
         	if (order){
         		if ($scope.order.field == order) {
@@ -97,14 +102,24 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'dialogsService
 					}
 				}
 			}
-            const page = {
-                skip: $scope.pagination.page * $scope.pagination.itemsPerPage - $scope.pagination.itemsPerPage,
-                limit: $scope.pagination.itemsPerPage
-            };
+			let page;
+			if ($scope.agruparBl){
+				page = {
+					skip: 0,
+					limit: $scope.totalContainers
+				}
+            } else {
+				page = {
+					skip: $scope.pagination.page * $scope.pagination.itemsPerPage - $scope.pagination.itemsPerPage,
+					limit: $scope.pagination.itemsPerPage
+				}
+            }
+
             //$scope.dataContainers = [];
             ldeFactory.getAllLde(page, $scope.order).then(data => {
                 if (data.data.ldeArray.length > 0){
                     $scope.dataBl = data.data.blArray;
+                    $scope.totalBl = data.data.blArray.length;
                     $scope.dataContainers = data.data.ldeArray;
                     $scope.totalContainers = data.totalCount;
                 } else {
@@ -231,4 +246,11 @@ myApp.filter('lugarDevolucion', [function(){
         return result;
     }
 
+}]);
+
+myApp.filter('startFrom', [function() {
+	return function(input, start) {
+		start = +start; //parse to int
+		return input.slice(start);
+	}
 }]);

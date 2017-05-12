@@ -96,7 +96,7 @@
     </div>
 
     <div class="col-lg-12" ng-hide="dataContainers.length == 0 || loading">
-        <label class="checkbox"><input type="checkbox" ng-model="agruparBl"> Agrupar por Conocimiento</label>
+        <label class="checkbox"><input type="checkbox" ng-model="agruparBl" ng-change="getLdeData('el check')"> Agrupar por Conocimiento</label>
     </div>
 
     <div ng-hide="dataContainers.length == 0 || loading" class="table-responsive col-lg-12">
@@ -174,7 +174,7 @@
             </tr>
             </tbody>
 
-            <tbody ng-if="agruparBl" ng-repeat="bl in dataBl">
+            <tbody ng-if="agruparBl" ng-repeat="bl in pageBl = (dataBl | filter: search) | startFrom: (pagination.page-1)*pagination.itemsPerPage | limitTo: pagination.itemsPerPage">
             <tr ng-click="bl.detallar = !bl.detallar" class="bl-row">
                 <td>{{ bl.BL }}</td>
                 <td>{{ bl.BUQUE }}</td>
@@ -187,7 +187,7 @@
                 <td></td>
                 <td></td>
             </tr>
-            <tr ng-repeat="lde in bl.ldeList  | filter: search" ng-class="lde.isExpired ? 'expired': ''" ng-show="bl.detallar">
+            <tr ng-repeat="lde in bl.ldeList" ng-class="lde.isExpired ? 'expired': ''" ng-show="bl.detallar">
             <!--<tr ng-repeat="lde in pageContainers = (dataContainers | filter: search) | startFrom: (pagination.page-1)*pagination.itemsPerPage | limitTo: pagination.itemsPerPage ">-->
                 <td></td>
                 <td></td>
@@ -237,13 +237,19 @@
 
     </div>
 
+    <div class="col-lg-12 hidden-print hidden-xs" ng-show="totalBl > pagination.itemsPerPage" ng-if="agruparBl">
+        <div class="text-center visible-sm"><uib-pagination boundary-links="true" ng-change="getLdeData('gato')" total-items="totalBl" items-per-page="pagination.itemsPerPage" ng-model="pagination.page" max-size="10" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></uib-pagination></div>
+        <div class="text-center visible-md"><uib-pagination boundary-links="true" ng-change="getLdeData('gato')" total-items="totalBl" items-per-page="pagination.itemsPerPage" ng-model="pagination.page" max-size="15" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></uib-pagination></div>
+        <div class="text-center visible-lg"><uib-pagination boundary-links="true" ng-change="getLdeData('gato')" total-items="totalBl" items-per-page="pagination.itemsPerPage" ng-model="pagination.page" max-size="19" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></uib-pagination></div>
+    </div>
+
     <div class="col-lg-12 hidden-print hidden-xs" ng-show="totalContainers > pagination.itemsPerPage" ng-if="!agruparBl">
-        <div class="text-center visible-sm"><uib-pagination boundary-links="true" ng-change="getLdeData()" total-items="totalContainers" items-per-page="pagination.itemsPerPage" ng-model="pagination.page" max-size="10" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></uib-pagination></div>
-        <div class="text-center visible-md"><uib-pagination boundary-links="true" ng-change="getLdeData()" total-items="totalContainers" items-per-page="pagination.itemsPerPage" ng-model="pagination.page" max-size="15" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></uib-pagination></div>
-        <div class="text-center visible-lg"><uib-pagination boundary-links="true" ng-change="getLdeData()" total-items="totalContainers" items-per-page="pagination.itemsPerPage" ng-model="pagination.page" max-size="19" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></uib-pagination></div>
+        <div class="text-center visible-sm"><uib-pagination boundary-links="true" ng-change="getLdeData('otro')" total-items="totalContainers" items-per-page="pagination.itemsPerPage" ng-model="pagination.page" max-size="10" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></uib-pagination></div>
+        <div class="text-center visible-md"><uib-pagination boundary-links="true" ng-change="getLdeData('otro')" total-items="totalContainers" items-per-page="pagination.itemsPerPage" ng-model="pagination.page" max-size="15" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></uib-pagination></div>
+        <div class="text-center visible-lg"><uib-pagination boundary-links="true" ng-change="getLdeData('otro')" total-items="totalContainers" items-per-page="pagination.itemsPerPage" ng-model="pagination.page" max-size="19" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></uib-pagination></div>
     </div>
     <div class="col-lg-12 hidden-print visible-xs" ng-show="totalContainers > pagination.itemsPerPage">
-        <uib-pager total-items="totalContainers" ng-click="getLdeData()" ng-model="pagination.page" previous-text="<< Anterior" next-text="Siguiente >>"></uib-pager>
+        <uib-pager total-items="totalContainers" ng-click="getLdeData('yo?')" ng-model="pagination.page" previous-text="<< Anterior" next-text="Siguiente >>"></uib-pager>
     </div>
 
     <div class="col-lg-12 right text-right">
