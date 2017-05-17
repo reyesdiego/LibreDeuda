@@ -180,12 +180,18 @@
                 <td>{{ bl.BUQUE }}</td>
                 <td>{{ bl.VIAJE }}</td>
                 <td></td>
+                <td>{{ bl.ldeList.length }} contenedores</td>
                 <td></td>
                 <td></td>
                 <td></td>
                 <td></td>
-                <td></td>
-                <td></td>
+                <td>
+                    <button type="button"  ng-if="session.data.group == 'AGE'" class="btn btn-success btn-sm" ng-click="update($event, 'enable', bl)" uib-tooltip="Habilitar" ng-disabled="lde.STATUS == 0"><span class="glyphicon glyphicon-ok"></span></button>
+                    <button type="button"  ng-if="session.data.group == 'TER'" class="btn btn-primary btn-sm" ng-click="updateWithModal($event, 'invoice', bl)" uib-tooltip="Entregar"><span class="glyphicon glyphicon-edit"></span></button>
+                    <button type="button"  ng-if="session.data.group == 'AGE'" class="btn btn-danger btn-sm" ng-click="update($event, 'disable', bl)" uib-tooltip="Anular" ng-disabled="lde.STATUS == 9"><span class="glyphicon glyphicon-remove"></span></button>
+                    <button type="button"  ng-if="session.data.group == 'AGE'" class="btn btn-info btn-sm" ng-click="updateWithModal($event, 'place', bl)" uib-tooltip="Cambiar lugar"><span class="glyphicon glyphicon-backward"></span></button>
+                    <button type="button"  ng-if="session.data.group == 'FOR'" class="btn btn-info btn-sm" ng-click="updateWithModal($event, 'forward', bl)" uib-tooltip="Cambiar CUIT"><span class="glyphicon glyphicon-forward"></span></button>
+                </td>
             </tr>
             <tr ng-repeat="lde in bl.ldeList" ng-class="lde.isExpired ? 'expired': ''" ng-show="bl.detallar">
             <!--<tr ng-repeat="lde in pageContainers = (dataContainers | filter: search) | startFrom: (pagination.page-1)*pagination.itemsPerPage | limitTo: pagination.itemsPerPage ">-->

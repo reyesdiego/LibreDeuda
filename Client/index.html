@@ -35,6 +35,7 @@
     <script src="lde/new/lde.new.controller.js"></script>
     <script src="lde/search/lde.search.controller.js"></script>
     <script src="lde/search/lde.update.controller.js"></script>
+    <script src="lde/consult/lde.consult.controller.js"></script>
     <script src="pregate/search/pregate.search.controller.js"></script>
     <script src="pregate/new/pregate.new.controller.js"></script>
     <script src="register/register.controller.js"></script>
@@ -78,6 +79,9 @@
 
         <div class="collapse navbar-collapse" id="register" aria-expanded="false" uib-collapse="isCollapsed" ng-if="!session.isAuthenticated">
             <ul class="nav navbar-nav navbar-right">
+                <li class="nav navbar-nav"  ui-sref="consultLde">
+                    <a href><span class="glyphicon"></span>Consulta LDE</a>
+                </li>
                 <li class="dropdown open" uib-dropdown>
                     <a href="#" class="dropdown-toggle" uib-dropdown-toggle data-toggle="dropdown" role="button" aria-expanded="true"><span uib-dropdown-toggle class="glyphicon glyphicon-user"></span> Solicitar Usuario</a>
                     <ul class="dropdown-menu" role="menu" uib-dropdown-menu>

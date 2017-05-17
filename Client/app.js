@@ -31,7 +31,11 @@ myApp.config(['$urlRouterProvider', '$stateProvider', 'USER_ROLES', function($ur
         url: '/login',
         templateUrl: 'login/login.html',
         controller: 'loginCtrl'
-    }).state('lde', {
+    }).state('consultLde', {
+		url: '/consultLde',
+		templateUrl: 'lde/consult/lde.consult.html',
+		controller: 'ldeConsultCtrl as vmConsult'
+	}).state('lde', {
         url: '/lde',
         templateUrl: 'lde/search/lde.search.html',
         controller: 'ldeCtrl',

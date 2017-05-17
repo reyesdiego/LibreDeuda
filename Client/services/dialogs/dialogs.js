@@ -4,6 +4,20 @@
 myApp.service('dialogsService', ['$uibModal', function($uibModal){
 
     return {
+		confirm: function(title, message){
+			return $uibModal.open({
+				controller: 'dialogsCtrl',
+				templateUrl: './services/dialogs/confirm.html',
+				resolve: {
+					title: function(){
+						return title;
+					},
+					message: function(){
+						return message;
+					}
+				}
+			})
+		},
         error: function(title, message){
             return $uibModal.open({
                 controller: 'dialogsCtrl',

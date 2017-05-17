@@ -4,7 +4,6 @@
 myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'dialogsService', '$q', '$location', '$state', '$uibModal', 'Lde', 'containersService', 'Session',
     function($scope, ldeFactory, $timeout, dialogsService, $q, $location, $state, $uibModal, Lde, containersService, Session){
 
-        //$scope.search = 'ZCSU2576607';
         $scope.search = '';
         $scope.session = Session;
 
@@ -45,7 +44,6 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'dialogsService
         ldeFactory.getReturnPlaces((data) => {
             $scope.returnPlaces = data.data
         });
-
 
         $scope.searchLde = function(){
             $scope.containerLde = null;
@@ -141,7 +139,7 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'dialogsService
 
         //Para facturar, cambiar lugar de devolución o CUIT, se requiere abrir un modal para agregar los demás datos
         //antes de llamar al método de actualización
-        $scope.updateWithModal = function(event, operation, lde){
+        $scope.updateWithModal = function(event, operation, ldeOrBl){
             event.stopPropagation();
             const modalInstance = $uibModal.open({
                 templateUrl: 'lde/search/update.lde.html',
@@ -152,10 +150,10 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'dialogsService
                         return operation;
                     },
                     ldeDate: function(){
-                        return lde.FECHA_DEV;
+                        return ldeOrBl.FECHA_DEV;
                     },
                     ldePlace: function(){
-                        return lde.LUGAR_DEV;
+                        return ldeOrBl.LUGAR_DEV;
                     },
                     places: function(){
                         return $scope.returnPlaces;
@@ -166,13 +164,13 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'dialogsService
                 let promise = {};
                 switch (operation){
                     case 'invoice':
-                        promise = lde.deliver(ldeData.EMAIL_CLIENTE);
+                        promise = ldeOrBl.deliver(ldeData.EMAIL_CLIENTE);
                         break;
                     case 'place':
-                        promise = lde.updatePlace(ldeData.LUGAR_DEV, ldeData.FECHA_DEV, ldeData.EMAIL);
+                        promise = ldeOrBl.updatePlace(ldeData.LUGAR_DEV, ldeData.FECHA_DEV, ldeData.EMAIL);
                         break;
                     case 'forward':
-                        promise = lde.forward(ldeData.CUIT, ldeData.FECHA_DEV);
+                        promise = ldeOrBl.forward(ldeData.CUIT, ldeData.FECHA_DEV);
                         break;
                 }
                 promise.then((data) => {
@@ -185,13 +183,13 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'dialogsService
         };
 
         //Para disable y enable, solo se requiere el contenedor
-        $scope.update = function(event, operation, lde){
+        $scope.update = function(event, operation, ldeOrBl){
             event.stopPropagation();
             let promise = {};
             if (operation == 'disable'){
-                promise = lde.disable();
+                promise = ldeOrBl.disable();
             } else {
-                promise = lde.enable();
+                promise = ldeOrBl.enable();
             }
             promise.then((data) => {
                 dialogsService.notify('Libre deuda', data.message);
