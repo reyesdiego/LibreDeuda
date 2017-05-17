@@ -41,11 +41,11 @@ myApp.factory('ldeFactory', ['$http', 'configService', '$q', 'Lde', 'BL', functi
             }
 
             $http.get(insertUrl, { params: params }).then(response => {
-                console.log(response);
+                //console.log(response);
                 response.data.data = this.retrieveLdes(response.data.data);
                 deferred.resolve(response.data);
             }).catch(response => {
-                console.log(response);
+                //console.log(response);
                 deferred.reject(response.data);
             });
             return deferred.promise;
@@ -61,7 +61,7 @@ myApp.factory('ldeFactory', ['$http', 'configService', '$q', 'Lde', 'BL', functi
                     deferred.reject(response.data);
                 }
             }).catch((response) => {
-                console.log(response);
+                //console.log(response);
                 deferred.reject(response.data);
                 //callback(response);
             });

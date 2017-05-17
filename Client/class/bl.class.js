@@ -18,7 +18,7 @@ myApp.factory('BL', ['$http', '$q', 'configService', 'dialogsService', function(
 		}
 
 		confirmation(){
-			const dialog = dialogsService.confirm('Modificar Conocimiento', `Atención, el cambio que está a punto de realizar, se aplicará a cada uno de Libre Deuda incluídos en el conocimiento\n¿Desea continuar?`);
+			const dialog = dialogsService.confirm('Modificar Conocimiento', `Atención, el cambio que está a punto de realizar, se aplicará a cada uno de los Libre Deuda incluídos en el conocimiento\n¿Desea continuar?`);
 			return dialog.result;
 		}
 
@@ -34,23 +34,52 @@ myApp.factory('BL', ['$http', '$q', 'configService', 'dialogsService', function(
 			return deferred.promise;
 		}
 
-		updatePlace(){
+		updatePlace(newPlace, fechaDev, email){
 			const deferred = $q.defer();
 			this.confirmation().then(() => {
-				console.log('hola');
-				deferred.resolve();
+				const insertUrl = `${configService.serverUrl}/lde/lugar`;
+				let params = {
+					BL: this.BL,
+					LUGAR_DEV: newPlace,
+					FECHA_DEV: fechaDev
+				};
+				if (email) params.EMAIL = email;
+				$http.put(insertUrl, params).then((response) => {
+					//console.log(response);
+					console.log(response.data);
+					deferred.resolve(response.data);
+					//this.LUGAR_DEV = newPlace;
+					//this.FECHA_DEV = fechaDev
+				}).catch((response) => {
+					//console.log(response);
+					deferred.reject(response.data);
+				});
 			}).catch(() => {
-				console.log('nada');
 				deferred.reject();
 			});
 			return deferred.promise;
 		}
 
-		forward(){
+		forward(cuit, fechaDev){
 			const deferred = $q.defer();
 			this.confirmation().then(() => {
-				console.log('hola');
-				deferred.resolve();
+				const insertUrl = `${configService.serverUrl}/lde/forward`;
+				const params = {
+					BL: this.BL,
+					CUIT: cuit,
+					FECHA_DEV: fechaDev
+				};
+
+				$http.put(insertUrl, params).then((response) => {
+					//console.log(response);
+					console.log(response.data);
+					deferred.resolve(response.data);
+					//this.CUIT = cuit;
+					//this.FECHA_DEV = fechaDev || this.FECHA_DEV;
+				}).catch((response) => {
+					//console.log(response);
+					deferred.reject(response.data);
+				});
 			}).catch(() => {
 				console.log('nada');
 				deferred.reject();
@@ -61,8 +90,24 @@ myApp.factory('BL', ['$http', '$q', 'configService', 'dialogsService', function(
 		disable(){
 			const deferred = $q.defer();
 			this.confirmation().then(() => {
-				console.log('hola');
-				deferred.resolve();
+				const deferred = $q.defer();
+				const insertUrl = `${configService.serverUrl}/lde/disable`;
+				const params = {
+					BL: this.BL
+				};
+
+				$http.put(insertUrl, params).then((response) => {
+					console.log(response);
+					if (response.data.status == 'OK'){
+						//this.STATUS = response.data.data.STATUS.STATUS;
+						deferred.resolve(response.data);
+					} else {
+						deferred.reject(response.data);
+					}
+				}).catch((response) => {
+					//console.log(response);
+					deferred.reject(response.data);
+				});
 			}).catch(() => {
 				console.log('nada');
 				deferred.reject();
@@ -73,13 +118,33 @@ myApp.factory('BL', ['$http', '$q', 'configService', 'dialogsService', function(
 		enable(){
 			const deferred = $q.defer();
 			this.confirmation().then(() => {
-				console.log('hola');
-				deferred.resolve();
+				const insertUrl = `${configService.serverUrl}/lde/enable`;
+				const params = {
+					BL: this.BL
+				};
+
+				$http.put(insertUrl, params).then((response) => {
+					console.log(response);
+					//this.STATUS = response.data.data.STATUS.STATUS;
+					deferred.resolve(response.data);
+				}).catch((response) => {
+					//console.log(response);
+					deferred.reject(response.data);
+				});
 			}).catch(() => {
 				console.log('nada');
 				deferred.reject();
 			});
 			return deferred.promise;
+		}
+
+		get cantidadLdes(){
+			let cantidad = this.ldeList.length;
+			if (this.ldeList.length > 1) {
+				return cantidad += ' contenedores';
+			} else {
+				return cantidad += ' contenedor';
+			}
 		}
 	}
 

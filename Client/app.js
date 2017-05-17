@@ -24,7 +24,9 @@ myApp.constant('AUTH_EVENTS', {
     loginSucces: 'loginConfirmed'
 });
 
-myApp.config(['$urlRouterProvider', '$stateProvider', 'USER_ROLES', function($urlRouterProvider, $stateProvider, USER_ROLES){
+myApp.config(['$urlRouterProvider', '$stateProvider', 'USER_ROLES', '$qProvider', function($urlRouterProvider, $stateProvider, USER_ROLES, $qProvider){
+	$qProvider.errorOnUnhandledRejections(false);
+
     $urlRouterProvider.otherwise('/login');
 
     $stateProvider.state('login', {

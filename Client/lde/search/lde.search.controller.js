@@ -88,7 +88,6 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'dialogsService
         });
 
         $scope.getLdeData = function(order){
-            console.log(order);
             $scope.loading = true;
         	if (order){
         		if ($scope.order.field == order) {
@@ -160,7 +159,7 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'dialogsService
                     }
                 }
             });
-            modalInstance.result.then(function(ldeData){
+            modalInstance.result.then((ldeData) => {
                 let promise = {};
                 switch (operation){
                     case 'invoice':
@@ -198,7 +197,7 @@ myApp.controller('ldeCtrl', ['$scope', 'ldeFactory', '$timeout', 'dialogsService
             }).catch((error) => {
                 //console.log('todo mal');
                 //console.log(error);
-                dialogsService.error('LDE', error.message);
+                if (error) dialogsService.error('LDE', error.message);
             })
         };
 
