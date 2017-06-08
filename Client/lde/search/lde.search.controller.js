@@ -235,12 +235,17 @@ myApp.filter('lugarDevolucion', [function(){
 
     return function(idPlace, places){
         let result = idPlace;
-        for (let lugar of places){
-            if (idPlace == lugar._id) {
-                result = lugar.NOMBRE
-            }
+        if (places){
+			for (let lugar of places){
+				if (idPlace == lugar._id) {
+					result = lugar.NOMBRE
+				}
+			}
+			return result;
+        } else {
+            return ''
         }
-        return result;
+
     }
 
 }]);
