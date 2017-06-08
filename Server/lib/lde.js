@@ -228,92 +228,133 @@ class ldeMongoDb {
     forwardLde (params) {
         return new Promise((resolve, reject) => {
             var result;
+            var async = require("async");
 
             var user = params.user.data;
 
             if (user.group !== 'FOR') {
                 result = Error.ERROR("AGP-0008").data({CONTENEDOR: params.contenedor});
             } else {
-                this.checkLde(params)
-                    .then(lde => {
-                        if (lde.data.length <= 0) {
-                            result = Error.ERROR("AGP-0008").data({CONTENEDOR: params.contenedor});
-                            reject(result);
-                        } else {
-                            lde = lde.data;
-                            var lastStatus = lde.STATUS;
-                            if (lastStatus !== 0 && lastStatus !== 3) {
-                                result = Error.ERROR("AGP-0001").data({CONTENEDOR: params.contenedor});
-                                reject(result);
-                            } else {
-                                this.model.findOne({_id: lde.ID})
-                                    .exec((err, lde) => {
-                                        if (err) {
-                                            result = Error.ERROR("MONGO-ERROR").data(err.message);
-                                            reject(result);
-                                        } else {
-                                            var aud_date = new Date();
-                                            var clientFirst = lde.CLIENT[0];
-                                            if (clientFirst.CUIT === user.cuit) {
-                                                let client = {
-                                                    CUIT: params.cuit,
-                                                    AUD_TIME: aud_date,
-                                                    AUD_USER: params.user.USUARIO
-                                                };
-                                                lde.CLIENT.push(client);
+                let task,
+                    tasks = [];
+                this.getLdes(params, {skip: 0, limit: 10000})
+                    .then(dataLdes => {
 
-                                                let return_to = {};
+                        if (dataLdes.status === "OK" && dataLdes.totalCount > 0) {
+                            dataLdes.data.forEach(item => {
+                                task = (callbackAsync) => {
+                                    let parametro = {
+                                        contenedor: item.CONTENEDOR,
+                                        cuit: params.cuit,
+                                        user: params.user
+                                    };
+                                    this.checkLde(parametro)
+                                        .then(lde => {
 
-                                                /** El forwarder puede cambiar la fecha de devolución solo con una fecha anterior
-                                                 * a la fecha original de devolución del AG Marítimo
-                                                 * */
-                                                if (params.fecha_dev) {
-                                                    var placeFirst = lde.RETURN_TO[0];
-                                                    var placeLast = lde.RETURN_TO[lde.RETURN_TO.length - 1];
-                                                    if (placeFirst.DATE_TO >= params.fecha_dev) {
-                                                        return_to.DATE_TO = params.fecha_dev;
-                                                        return_to.PLACE = placeLast.PLACE;
-                                                        return_to.AUD_USER = params.user.USUARIO;
-                                                        return_to.AUD_TIME = aud_date;
-                                                        lde.RETURN_TO.push(return_to);
-                                                    } else {
-                                                        result = Error.ERROR("AGP-0007").data({FECHA_DEV: placeFirst.DATE_TO});
-                                                        return reject(result);
-                                                    }
-                                                }
-
-                                                lde.save((err, dataSaved) => {
-                                                    if (err) {
-                                                        result = Error.ERROR("MONGO-ERROR").data(err.message);
-                                                        reject(result);
-                                                    } else {
-                                                        let cuit = dataSaved.CLIENT[dataSaved.CLIENT.length - 1].CUIT;
-                                                        let returnTo = dataSaved.RETURN_TO[dataSaved.RETURN_TO.length - 1];
-                                                        let fecha_dev = returnTo.DATE_TO;
-                                                        let lugar_dev = returnTo.PLACE;
-                                                        result = {
-                                                            status: "OK",
-                                                            message: `El Libre Deuda ha sido Habilitado para el CUIT ${cuit}`,
-                                                            data: {
-                                                                ID: dataSaved._id,
-                                                                CUIT: cuit,
-                                                                FECHA_DEV: fecha_dev,
-                                                                LUGAR_DEV: lugar_dev
-                                                            }
-                                                        };
-                                                        resolve(result);
-                                                    }
-                                                });
+                                            if (lde.data.length <= 0) {
+                                                result = Error.ERROR("AGP-0008").data({CONTENEDOR: params.contenedor});
+                                                callbackAsync(null, result);
                                             } else {
-                                                result = Error.ERROR("AGP-0014").data({
-                                                    email: user.email,
-                                                    cuit: user.cuit
-                                                });
-                                                return reject(result);
+                                                lde = lde.data;
+                                                var lastStatus = lde.STATUS;
+                                                if (lastStatus !== 0 && lastStatus !== 3) {
+                                                    result = Error.ERROR("AGP-0001").data({CONTENEDOR: params.contenedor});
+                                                    callbackAsync(null, result);
+                                                } else {
+                                                    this.model.findOne({_id: lde.ID})
+                                                        .exec((err, lde) => {
+                                                            if (err) {
+                                                                result = Error.ERROR("MONGO-ERROR").data(err.message);
+                                                                callbackAsync(null, result);
+                                                            } else {
+                                                                var aud_date = new Date();
+                                                                var clientFirst = lde.CLIENT[0];
+                                                                if (clientFirst.CUIT === user.cuit) {
+                                                                    let client = {
+                                                                        CUIT: params.cuit,
+                                                                        AUD_TIME: aud_date,
+                                                                        AUD_USER: params.user.USUARIO
+                                                                    };
+                                                                    lde.CLIENT.push(client);
+
+                                                                    let return_to = {};
+
+                                                                    /** El forwarder puede cambiar la fecha de devolución solo con una fecha anterior
+                                                                     * a la fecha original de devolución del AG Marítimo
+                                                                     * */
+                                                                    if (params.fecha_dev) {
+                                                                        var placeFirst = lde.RETURN_TO[0];
+                                                                        var placeLast = lde.RETURN_TO[lde.RETURN_TO.length - 1];
+                                                                        if (placeFirst.DATE_TO >= params.fecha_dev) {
+                                                                            return_to.DATE_TO = params.fecha_dev;
+                                                                            return_to.PLACE = placeLast.PLACE;
+                                                                            return_to.AUD_USER = params.user.USUARIO;
+                                                                            return_to.AUD_TIME = aud_date;
+                                                                            lde.RETURN_TO.push(return_to);
+                                                                        } else {
+                                                                            result = Error.ERROR("AGP-0007").data({FECHA_DEV: placeFirst.DATE_TO});
+                                                                            callbackAsync(null, result);
+                                                                        }
+                                                                    }
+
+                                                                    lde.save((err, dataSaved) => {
+                                                                        if (err) {
+                                                                            result = Error.ERROR("MONGO-ERROR").data(err.message);
+                                                                            callbackAsync(null, result);
+                                                                        } else {
+                                                                            let cuit = dataSaved.CLIENT[dataSaved.CLIENT.length - 1].CUIT;
+                                                                            let returnTo = dataSaved.RETURN_TO[dataSaved.RETURN_TO.length - 1];
+                                                                            let fecha_dev = returnTo.DATE_TO;
+                                                                            let lugar_dev = returnTo.PLACE;
+                                                                            result = {
+                                                                                status: "OK",
+                                                                                message: `El Libre Deuda ha sido Habilitado para el CUIT ${cuit}`,
+                                                                                data: {
+                                                                                    ID: dataSaved._id,
+                                                                                    CUIT: cuit,
+                                                                                    FECHA_DEV: fecha_dev,
+                                                                                    LUGAR_DEV: lugar_dev
+                                                                                }
+                                                                            };
+                                                                            callbackAsync(null, result);
+                                                                        }
+                                                                    });
+                                                                } else {
+                                                                    result = Error.ERROR("AGP-0014").data({
+                                                                        email: user.email,
+                                                                        cuit: user.cuit
+                                                                    });
+                                                                    callbackAsync(null, result);
+                                                                }
+                                                            }
+                                                        });
+                                                }
                                             }
-                                        }
-                                    });
-                            }
+                                        })
+                                        .catch(err => {
+                                            callbackAsync(null, err);
+                                        });
+
+                                };
+                                tasks.push(task);
+                            });
+
+                            async.parallel(tasks, (err, data) => {
+                                if (err) {
+                                    reject(err);
+                                } else {
+                                    let response;
+                                    if (data.length === 1) {
+                                        response = data[0];
+                                    } else {
+                                        response = {
+                                            status: "OK",
+                                            data: data
+                                        };
+                                    }
+                                    resolve(response);
+                                }
+                            });
                         }
                     })
                     .catch(err => {
@@ -466,6 +507,12 @@ class ldeMongoDb {
                     'STATUS': 0,
                     'CUIT_FIRST': user.cuit
                 };
+                if (params.bl !== undefined) {
+                    match.BL = params.bl;
+                }
+                if (params.contenedor !== undefined) {
+                    match.CONTENEDOR = params.contenedor;
+                }
             }
 
             param = [
@@ -550,9 +597,11 @@ class ldeMongoDb {
                                     result = Error.ERROR("MONGO-ERROR").data(err.message);
                                     reject(result);
                                 } else {
+                                    let totalCount = 0;
+                                    totalCount = (dataTotalCount.length > 0) ? dataTotalCount[0].totalCount : 0;
                                     result = {
                                         status: "OK",
-                                        totalCount: dataTotalCount[0].totalCount,
+                                        totalCount: totalCount,
                                         data: data
                                     };
                                     resolve(result);

@@ -48,7 +48,8 @@ module.exports = (socket, log) => {
     /** GET */
     let getFrees = (req, res) => {
         var param = {
-            user: req.user
+            user: req.user,
+            bl: req.query.bl
         };
         var options = {
             skip: req.params.skip,
@@ -71,6 +72,7 @@ module.exports = (socket, log) => {
 
     /** GET */
     let getFreeDebt = (req, res) => {
+
         if (req.url.indexOf('/lugar') >= 0) {
             let place = require('../lib/place.js');
             let ID = req.query.ID;
@@ -173,6 +175,7 @@ module.exports = (socket, log) => {
                     var param = {
                         user: user,
                         contenedor: req.body.CONTENEDOR,
+                        bl: req.body.BL,
                         cuit: req.body.CUIT
                     };
                     if (fecha_dev !== undefined) {
