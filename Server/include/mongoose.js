@@ -4,26 +4,40 @@
 module.exports = (url, options, log) => {
     'use strict';
     var mongoose = require('mongoose');
+    mongoose.Promise = Promise;
+
+    var promise;
 
     if (options) {
-        mongoose.connect(url, options);
+        options.useMongoClient = true;
+        promise = mongoose.connect(url, {useMongoClient:true});
     } else {
-        mongoose.connect(url);
+        promise = mongoose.connect(url);
     }
 
-    mongoose.connection.on('connected', () => {
-        log.logger.info("Mongoose %s Connected to Database. %s", mongoose.version, url);
-        global.mongoose.connected = true;
+    promise.then(() => {
+        console.info("Mongoose %s Connected to Database.", mongoose.version);
     });
 
-    mongoose.connection.on('error', (err) => {
-        log.logger.error("Database or Mongoose error. %s", err.stack);
-    });
-    mongoose.connection.on('disconnected', () => {
-        log.logger.error("Mongoose default connection disconnected, el proceso %s se abortará", process.pid);
-        process.exit();
+    promise.catch(err => {
+        console.log(err);
     });
 
+
+    /*
+        mongoose.connection.on('connected', () => {
+            log.logger.info("Mongoose %s Connected to Database. %s", mongoose.version, url);
+            global.mongoose.connected = true;
+        });
+
+        mongoose.connection.on('error', (err) => {
+            log.logger.error("Database or Mongoose error. %s", err.stack);
+        });
+        mongoose.connection.on('disconnected', () => {
+            log.logger.error("Mongoose default connection disconnected, el proceso %s se abortará", process.pid);
+            process.exit();
+        });
+    */
     global.mongoose = {
         connected: false,
         version: mongoose.version
@@ -31,10 +45,10 @@ module.exports = (url, options, log) => {
 
     process.on('SIGINT', () => {
         mongoose.connection.close(() => {
-            log.logger.info("Mongoose default connection disconnected through app termination");
+            //log.logger.info("Mongoose default connection disconnected through app termination");
             process.exit();
         });
     });
 
-}
+};
 
