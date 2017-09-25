@@ -52,8 +52,8 @@ module.exports = (socket, log) => {
             bl: req.query.bl
         };
         var options = {
-            skip: req.params.skip,
-            limit: req.params.limit
+            skip: req.query.skip,
+            limit: req.query.limit
         };
 
         if (req.query.order) {
@@ -72,8 +72,7 @@ module.exports = (socket, log) => {
 
     /** GET */
     let getFreeDebt = (req, res) => {
-
-        if (req.url.indexOf('/lugar') >= 0) {
+        if (req.url.indexOf('/lugar?') >= 0) {
             let place = require('../lib/place.js');
             let ID = req.query.ID;
             place = new place();
@@ -95,7 +94,8 @@ module.exports = (socket, log) => {
                         res.status(500).send(err);
                     });
             }
-        } else {
+        }
+        else {
             let param = {
                 contenedor: req.params.contenedor,
                 user: req.user
@@ -108,8 +108,20 @@ module.exports = (socket, log) => {
                     res.status(err.http_status).send(err);
                 });
         }
-
     };
+
+    let getReturnToLde = (req, res) => {
+        let param = {
+            contenedor: req.params.contenedor,
+            user: req.user
+        };
+        Lde.returnToLde(param)
+            .then(data => {
+                res.status(200).send(data);
+            })
+            .catch(err => {
+                res.status(err.http_status).send(err);
+            });    };
 
     /** PUT */
     let enableFreeDebt = (req, res) => {
@@ -443,10 +455,13 @@ module.exports = (socket, log) => {
         }
     };
 
-    router.get("/:skip/:limit", getFrees);
+    router.get("/", getFrees);
     router.get("/:contenedor", getFreeDebt);
+    router.get("/lugar/:contenedor", getReturnToLde);
     router.put("/disable", contentCheck.isApplicationJson, disableFreeDebt);
     router.put("/enable", contentCheck.isApplicationJson, enableFreeDebt);
+
+    /** Marcar como utilizado a un LDE*/
     router.put("/invoice", contentCheck.isApplicationJson, invoiceFreeDebt);
 
     /** Dar de Alta un LDE*/

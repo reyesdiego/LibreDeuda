@@ -120,6 +120,71 @@ class ldeMongoDb {
         });
     }
 
+    returnToLde (params) {
+        return new Promise((resolve, reject) => {
+            var moment = require("moment");
+            var result;
+            var contenedor = params.contenedor;
+            var match = {CONTAINER: contenedor};
+            var toDay = moment(moment().format("YYYY-MM-DD")).toDate();
+
+            var user = params.user.data;
+
+            if (params.id_cliente !== undefined) {
+                match.ID_CLIENT = params.id_cliente;
+            }
+            if (params.id !== undefined) {
+                match._id = params.id;
+            }
+            //if (user.group === 'TER') {
+            //    match.TERMINAL = user.terminal;
+            //}
+            var param = [
+                {$project: {
+                    ID: '$_id',
+                    CONTAINER: true,
+                    ID_CLIENT: true,
+                    STATUS_LAST: {$arrayElemAt: ['$STATUS', -1]},
+                    RETURN_TO: {$arrayElemAt: ['$RETURN_TO', -1]}
+                }},
+                {$match: match},
+                {$match: {'STATUS_LAST.STATUS': 3}},
+                {$project: {
+                    CONTENEDOR: '$CONTAINER',
+                    LUGAR_DEV: '$RETURN_TO.PLACE',
+                    FECHA_DEV: '$RETURN_TO.DATE_TO'
+                }}
+            ];
+
+            this.model.aggregate(param)
+                .exec((err, data) => {
+                    if (err) {
+                        result = Error.ERROR("MONGO-ERROR").data(err.message);
+                        reject(result);
+                    } else {
+                        /** Libre deuda inexistente para este contenedor. */
+                        result = Error.ERROR("AGP-0001").data({CONTENEDOR: contenedor});
+                        if (data.length === 0) {
+                            reject(result);
+                        } else {
+                            let lde = data[0];
+
+                            if (user.group === 'AGE' && user.email !== lde.USER) {
+                                reject(result);
+                            } else {
+                                result = {
+                                    status: "OK",
+                                    message: "El Contenedor ya ha sido entregado.",
+                                    data: lde
+                                };
+                                resolve(result);
+                            }
+                        }
+                    }
+                });
+        });
+    }
+
     disableLde (params) {
         return new Promise((resolve, reject) => {
             var result;
@@ -499,7 +564,7 @@ class ldeMongoDb {
                 };
             } else if (user.group === 'TER') {
                 match = {
-                    'STATUS': 0,
+                    $or: [ {'STATUS': 0}, {'STATUS': 3}],
                     TERMINAL: user.terminal
                 };
             } else if (user.group === 'FOR') {
@@ -551,64 +616,62 @@ class ldeMongoDb {
                 {$limit: parseInt(options.limit)}
             ];
             this.model.aggregate(param)
-                .exec((err, data) => {
-                    if (err) {
-                        result = Error.ERROR("MONGO-ERROR").data(err.message);
-                        reject(result);
-                    } else {
-
-                        param = [
-                            {$project: {
-                                TERMINAL: true,
-                                SHIP: true,
-                                TRIP: true,
-                                BL: true,
-                                EXPIRATION: true,
-                                CONTAINER: true,
-                                ID_CLIENT: true,
-                                CLIENT_FIRST: {$arrayElemAt: ['$CLIENT', 0]},
-                                CLIENT_LAST: {$arrayElemAt: ['$CLIENT', -1]},
-                                STATUS_FIRST: {$arrayElemAt: ['$STATUS', 0]},
-                                STATUS_LAST: {$arrayElemAt: ['$STATUS', -1]},
-                                RETURN_TO: {$arrayElemAt: ['$RETURN_TO', -1]}
-                            }},
-                            {$project: {
-                                TERMINAL: true,
-                                BUQUE: '$SHIP',
-                                VIAJE: '$TRIP',
-                                CONTENEDOR: '$CONTAINER',
-                                BL: true,
-                                ID_CLIENT: true,
-                                VENCE: '$EXPIRATION',
-                                CUIT_FIRST: '$CLIENT_FIRST.CUIT',
-                                CUIT: '$CLIENT_LAST.CUIT',
-                                LUGAR_DEV: '$RETURN_TO.PLACE',
-                                FECHA_DEV: '$RETURN_TO.DATE_TO',
-                                STATUS: '$STATUS_LAST.STATUS',
-                                USER: '$STATUS_FIRST.AUD_USER'
-                            }},
-                            {$match: match},
-                            {$group: {_id: '$id._id', totalCount: {$sum: 1}}
-                            }
-                            ];
-                        this.model.aggregate(param)
-                        .exec((err, dataTotalCount) => {
-                                if (err) {
-                                    result = Error.ERROR("MONGO-ERROR").data(err.message);
-                                    reject(result);
-                                } else {
-                                    let totalCount = 0;
-                                    totalCount = (dataTotalCount.length > 0) ? dataTotalCount[0].totalCount : 0;
-                                    result = {
-                                        status: "OK",
-                                        totalCount: totalCount,
-                                        data: data
-                                    };
-                                    resolve(result);
-                                }
-                            });
-                    }
+                .then(data => {
+                    param = [
+                        {$project: {
+                            TERMINAL: true,
+                            SHIP: true,
+                            TRIP: true,
+                            BL: true,
+                            EXPIRATION: true,
+                            CONTAINER: true,
+                            ID_CLIENT: true,
+                            CLIENT_FIRST: {$arrayElemAt: ['$CLIENT', 0]},
+                            CLIENT_LAST: {$arrayElemAt: ['$CLIENT', -1]},
+                            STATUS_FIRST: {$arrayElemAt: ['$STATUS', 0]},
+                            STATUS_LAST: {$arrayElemAt: ['$STATUS', -1]},
+                            RETURN_TO: {$arrayElemAt: ['$RETURN_TO', -1]}
+                        }},
+                        {$project: {
+                            TERMINAL: true,
+                            BUQUE: '$SHIP',
+                            VIAJE: '$TRIP',
+                            CONTENEDOR: '$CONTAINER',
+                            BL: true,
+                            ID_CLIENT: true,
+                            VENCE: '$EXPIRATION',
+                            CUIT_FIRST: '$CLIENT_FIRST.CUIT',
+                            CUIT: '$CLIENT_LAST.CUIT',
+                            LUGAR_DEV: '$RETURN_TO.PLACE',
+                            FECHA_DEV: '$RETURN_TO.DATE_TO',
+                            STATUS: '$STATUS_LAST.STATUS',
+                            USER: '$STATUS_FIRST.AUD_USER'
+                        }},
+                        {$match: match},
+                        {$group: {_id: '$id._id', totalCount: {$sum: 1}}
+                        }
+                    ];
+                    this.model.aggregate(param)
+                    .then(dataTotalCount => {
+                            let totalCount = 0;
+                            totalCount = (dataTotalCount.length > 0) ? dataTotalCount[0].totalCount : 0;
+                            result = {
+                                status: "OK",
+                                totalCount: totalCount,
+                                data: data
+                            };
+                            resolve(result);
+                        })
+                        .catch(err => {
+                            result = Error.ERROR("MONGO-ERROR").data(err.message);
+                            reject(result);
+                        });
+                })
+                .catch(err => {
+                    result = Error.ERROR("MONGO-ERROR").data(err.message);
+                    reject(result);
                 });
+
         });
     }
 
@@ -742,6 +805,9 @@ class lde {
      */
     checkLde (params) {
         return this.clase.checkLde(params);
+    }
+    returnToLde (params) {
+        return this.clase.returnToLde(params);
     }
 
     disableLde (params) {
