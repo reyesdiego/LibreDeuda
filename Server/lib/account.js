@@ -74,7 +74,7 @@ class Account {
 
     getAccount (user, password) {
         return new Promise((resolve, reject) => {
-            this.model.findOne({email: user})
+            this.model.findOne({$or:[{email: user},{user: user}]})
                 .lean()
                 .exec((err, dataAccount) => {
                     if (err) {
