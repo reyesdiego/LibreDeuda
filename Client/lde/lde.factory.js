@@ -13,9 +13,9 @@ myApp.factory('ldeFactory', ['$http', 'configService', '$q', 'Lde', 'BL', functi
             for (let lde of ldesData){
                 let ldeObject = new Lde(lde);
                 if (blContainer[lde.BL]){
-                    blContainer[lde.BL].addLde(ldeObject)
+                    blContainer[lde.BL].addLde(ldeObject);
                 } else {
-                    blContainer[lde.BL] = new BL(ldeObject)
+                    blContainer[lde.BL] = new BL(ldeObject);
                 }
                 ldeArray.push(ldeObject);
             }
@@ -31,10 +31,10 @@ myApp.factory('ldeFactory', ['$http', 'configService', '$q', 'Lde', 'BL', functi
 
         getAllLde(page, order){
             const deferred = $q.defer();
-            const insertUrl = `${configService.serverUrl}/lde/${page.skip}/${page.limit}`;
+            const insertUrl = `${configService.serverUrl}/lde?skip=${page.skip}&limit=${page.limit}`;
 
 			let params = '';
-            if (order && order.field != ''){
+            if (order && order.field !== ''){
                 params = {};
                 params.order = {};
                 params.order[order.field] = (order.reverse ? -1 : 1);
@@ -55,7 +55,7 @@ myApp.factory('ldeFactory', ['$http', 'configService', '$q', 'Lde', 'BL', functi
             let deferred = $q.defer();
             const insertUrl = `${configService.serverUrl}/lde/${container}`;
             $http.get(insertUrl).then((response) => {
-                if (response.statusText == 'OK'){
+                if (response.statusText === 'OK'){
                     deferred.resolve(new Lde(response.data.data));
                 } else {
                     deferred.reject(response.data);
@@ -71,10 +71,10 @@ myApp.factory('ldeFactory', ['$http', 'configService', '$q', 'Lde', 'BL', functi
         getReturnPlaces(callback){
             const insertUrl = `${configService.serverUrl}/lde/lugar`;
             $http.get(insertUrl).then((response) => {
-                callback(response.data)
+                callback(response.data);
             }).catch((response) => {
-                callback(response.data)
-            })
+                callback(response.data);
+            });
         }
 
     }
