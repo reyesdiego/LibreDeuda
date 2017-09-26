@@ -144,12 +144,14 @@ class ldeMongoDb {
                     ID: '$_id',
                     CONTAINER: true,
                     ID_CLIENT: true,
+                    TERMINAL: true,
                     STATUS_LAST: {$arrayElemAt: ['$STATUS', -1]},
                     RETURN_TO: {$arrayElemAt: ['$RETURN_TO', -1]}
                 }},
                 {$match: match},
                 {$match: {'STATUS_LAST.STATUS': 3}},
                 {$project: {
+                    TERMINAL: '$TERMINAL',
                     CONTENEDOR: '$CONTAINER',
                     LUGAR_DEV: '$RETURN_TO.PLACE',
                     FECHA_DEV: '$RETURN_TO.DATE_TO'
