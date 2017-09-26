@@ -71,7 +71,7 @@ module.exports = (socket, log) => {
     };
 
     /** GET */
-    let getFreeDebt = (req, res) => {
+    let getFreeDebt = (req, res, next) => {
         if (req.url.indexOf('/lugar?') >= 0) {
             let place = require('../lib/place.js');
             let ID = req.query.ID;
@@ -105,7 +105,11 @@ module.exports = (socket, log) => {
                     res.status(200).send(data);
                 })
                 .catch(err => {
-                    res.status(err.http_status).send(err);
+                    if (param.user.data.group === 'TER') {
+                        next();
+                    } else {
+                        res.status(err.http_status).send(err);
+                    }
                 });
         }
     };
@@ -456,8 +460,7 @@ module.exports = (socket, log) => {
     };
 
     router.get("/", getFrees);
-    router.get("/:contenedor", getFreeDebt);
-    router.get("/lugar/:contenedor", getReturnToLde);
+    router.get("/:contenedor", getFreeDebt, getReturnToLde);
     router.put("/disable", contentCheck.isApplicationJson, disableFreeDebt);
     router.put("/enable", contentCheck.isApplicationJson, enableFreeDebt);
 
