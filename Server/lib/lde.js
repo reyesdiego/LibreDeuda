@@ -92,30 +92,29 @@ class ldeMongoDb {
             ];
 
             this.model.aggregate(param)
-                .exec((err, data) => {
-                    if (err) {
-                        result = Error.ERROR("MONGO-ERROR").data(err.message);
+                .then(data => {
+                    /** Libre deuda inexistente para este contenedor. */
+                    result = Error.ERROR("AGP-0001").data({CONTENEDOR: contenedor});
+                    if (data.length === 0) {
                         reject(result);
                     } else {
-                        /** Libre deuda inexistente para este contenedor. */
-                        result = Error.ERROR("AGP-0001").data({CONTENEDOR: contenedor});
-                        if (data.length === 0) {
+                        let lde = data[0];
+
+                        if (user.group === 'AGE' && user.email !== lde.USER) {
                             reject(result);
                         } else {
-                            let lde = data[0];
-
-                            if (user.group === 'AGE' && user.email !== lde.USER) {
-                                reject(result);
-                            } else {
-                                result = {
-                                    status: "OK",
-                                    message: "El Libre Deuda es Válido",
-                                    data: lde
-                                };
-                                resolve(result);
-                            }
+                            result = {
+                                status: "OK",
+                                message: "El Libre Deuda es Válido",
+                                data: lde
+                            };
+                            resolve(result);
                         }
                     }
+                })
+                .catch(err => {
+                    result = Error.ERROR("MONGO-ERROR").data(err.message);
+                    reject(result);
                 });
         });
     }
@@ -159,30 +158,29 @@ class ldeMongoDb {
             ];
 
             this.model.aggregate(param)
-                .exec((err, data) => {
-                    if (err) {
-                        result = Error.ERROR("MONGO-ERROR").data(err.message);
+                .then( data => {
+                    /** Libre deuda inexistente para este contenedor. */
+                    result = Error.ERROR("AGP-0001").data({CONTENEDOR: contenedor});
+                    if (data.length === 0) {
                         reject(result);
                     } else {
-                        /** Libre deuda inexistente para este contenedor. */
-                        result = Error.ERROR("AGP-0001").data({CONTENEDOR: contenedor});
-                        if (data.length === 0) {
+                        let lde = data[0];
+
+                        if (user.group === 'AGE' && user.email !== lde.USER) {
                             reject(result);
                         } else {
-                            let lde = data[0];
-
-                            if (user.group === 'AGE' && user.email !== lde.USER) {
-                                reject(result);
-                            } else {
-                                result = {
-                                    status: "OK",
-                                    message: "El Contenedor ya ha sido entregado.",
-                                    data: lde
-                                };
-                                resolve(result);
-                            }
+                            result = {
+                                status: "OK",
+                                message: "El Contenedor ya ha sido entregado.",
+                                data: lde
+                            };
+                            resolve(result);
                         }
                     }
+                })
+                .catch(err => {
+                    result = Error.ERROR("MONGO-ERROR").data(err.message);
+                    reject(result);
                 });
         });
     }
