@@ -4,20 +4,23 @@
   "description": "Front-End sistema de libre deudas AGP",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lite": "lite-server --port 10001",
+    "start": "npm run lite"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/reyesdiego/LibreDeuda.git"
   },
-  "author": "",
+  "author": "Diego Reyes",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/reyesdiego/LibreDeuda/issues"
   },
   "homepage": "https://github.com/reyesdiego/LibreDeuda#readme",
   "dependencies": {
-    "bower": "^1.7.9"
+    "bower": "^1.7.9",
+    "lite-server": "^2.3.0"
   },
   "devDependencies": {
     "babel-preset-es2015": "^6.18.0",
