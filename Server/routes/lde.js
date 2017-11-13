@@ -74,7 +74,7 @@ module.exports = (socket, log) => {
 
     /** GET */
     let getFreeDebt = (req, res, next) => {
-        if (req.url.indexOf("/lugar?") >= 0) {
+        if (req.url.indexOf("/lugar") >= 0) {
             let place = require("../lib/place.js");
             let ID = req.query.ID;
             place = new place();
