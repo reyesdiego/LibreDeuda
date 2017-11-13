@@ -10,7 +10,7 @@ module.exports = (socket, log) => {
     var contentCheck = require("../include/contentType.js");
     var Error = require("../include/error.js");
 
-    var Lde = require('../lib/lde.js');
+    var Lde = require("../lib/lde.js");
     Lde = new Lde();
 
     let validateFree = (req, res, next) => {
@@ -19,21 +19,23 @@ module.exports = (socket, log) => {
         req.checkBody(
             {
                 TERMINAL: {
-                    notEmpty: {errorMessage: "La Terminal es requerida." }
+                    notEmpty: { errorMessage: "La Terminal es requerida." }
                 },
                 BUQUE: {
-                    notEmpty: {errorMessage: "El buque es requerido." }
+                    notEmpty: { errorMessage: "El buque es requerido." }
                 },
                 VIAJE: {
-                    notEmpty: {errorMessage: "El Viaje es requerido." }
+                    notEmpty: { errorMessage: "El Viaje es requerido." }
                 },
                 LUGAR_DEV: {
-                    notEmpty: {errorMessage: "El Lugar de Devolución es requerido." }
+                    notEmpty: { errorMessage: "El Lugar de Devolución es requerido." }
                 },
                 FECHA_DEV: {
-                    notEmpty: {errorMessage: "La Fecha de Devolución es requerida." },
+                    notEmpty: { errorMessage: "La Fecha de Devolución es requerida." },
                     isDate: {
-                        errorMessage: "La Fecha de Devolución debe ser válida" }}
+                        errorMessage: "La Fecha de Devolución debe ser válida"
+                    }
+                }
             });
 
         var errors = req.validationErrors();
@@ -57,7 +59,7 @@ module.exports = (socket, log) => {
         };
 
         if (req.query.order) {
-            options.sort = JSON.parse(req.query.order) || {_id: -1};
+            options.sort = JSON.parse(req.query.order) || { _id: -1 };
         }
 
         Lde.getLdes(param, options)
@@ -72,8 +74,8 @@ module.exports = (socket, log) => {
 
     /** GET */
     let getFreeDebt = (req, res, next) => {
-        if (req.url.indexOf('/lugar?') >= 0) {
-            let place = require('../lib/place.js');
+        if (req.url.indexOf("/lugar?") >= 0) {
+            let place = require("../lib/place.js");
             let ID = req.query.ID;
             place = new place();
 
@@ -105,7 +107,7 @@ module.exports = (socket, log) => {
                     res.status(200).send(data);
                 })
                 .catch(err => {
-                    if (param.user.data.group === 'TER') {
+                    if (param.user.data.group === "TER") {
                         next();
                     } else {
                         res.status(err.http_status).send(err);
@@ -125,7 +127,8 @@ module.exports = (socket, log) => {
             })
             .catch(err => {
                 res.status(err.http_status).send(err);
-            });    };
+            });
+    };
 
     /** PUT */
     let enableFreeDebt = (req, res) => {
@@ -153,10 +156,10 @@ module.exports = (socket, log) => {
         };
 
         Lde.disableLde(param)
-        .then(data => {
+            .then(data => {
                 res.status(200).send(data);
             })
-        .catch(err => {
+            .catch(err => {
                 res.status(err.http_status).send(err);
             });
     };
@@ -168,24 +171,24 @@ module.exports = (socket, log) => {
         var moment = require("moment");
         var fecha_dev;
 
-        if (user.data.group !== 'FOR') {
+        if (user.data.group !== "FOR") {
             var result = Error.ERROR("AGP-0008").data();
             res.status(result.http_status).send(result);
         } else {
             var cuit = (req.body.CUIT === undefined) ? "" : req.body.CUIT;
             var checkCuit = Cuit(cuit);
             if (checkCuit === false) {
-                res.status(400).send({status: "ERROR", message: `El CUIT (${cuit}) no es válido`, data: {CUIT: req.body.CUIT}});
+                res.status(400).send({ status: "ERROR", message: `El CUIT (${cuit}) no es válido`, data: { CUIT: req.body.CUIT } });
             } else {
                 if (req.body.FECHA_DEV) {
                     fecha_dev = moment(req.body.FECHA_DEV, "YYYY-MM-DD").toDate();
                 }
 
-                if (fecha_dev !== undefined && fecha_dev < moment(moment().format("YYYY-MM-DD")).toDate() ) {
+                if (fecha_dev !== undefined && fecha_dev < moment(moment().format("YYYY-MM-DD")).toDate()) {
                     fecha_dev = moment(fecha_dev).format("DD/MM/YYYY");
                     res.status(400).send({
-                        status: `ERROR`,
-                        message: `La Fecha de Devolución ${fecha_dev} es menor a la fecha actual`, data: {FECHA_DEV: fecha_dev}
+                        status: "ERROR",
+                        message: `La Fecha de Devolución ${fecha_dev} es menor a la fecha actual`, data: { FECHA_DEV: fecha_dev }
                     });
                 } else {
                     var param = {
@@ -219,7 +222,7 @@ module.exports = (socket, log) => {
             user: req.user
         };
 
-        if (user.group !== 'TER') {
+        if (user.group !== "TER") {
             var result = Error.ERROR("AGP-0008").data();
             res.status(result.http_status).send(result);
         } else {
@@ -243,9 +246,8 @@ module.exports = (socket, log) => {
         var lde2insert;
         var param, result;
         var user = req.user;
-        var config = require('../config/config.js');
-
-        if (user.data.group !== 'AGE') {
+        
+        if (user.data.group !== "AGE") {
             result = Error.ERROR("AGP-0008");
             res.status(result.http_status).send(result);
         } else {
@@ -275,24 +277,24 @@ module.exports = (socket, log) => {
                     let dateReturn = moment(lde.FECHA_DEV, "YYYY-MM-DD").toDate();
 
                     if (checkCuit === false) {
-                        result = Error.ERROR("AGP-0004").data({CUIT: lde.CUIT || ""});
+                        result = Error.ERROR("AGP-0004").data({ CUIT: lde.CUIT || "" });
                         log.logger.error("Insert LDE - CUIT %j", JSON.stringify(result));
                         res.status(result.http_status).send(result);
-                    //} else if (dateReturn < toDay) {
-                    //    result = Error.ERROR("AGP-0006").data({FECHA_DEV: lde.FECHA_DEV || ""});
-                    //    log.logger.error("Insert LDE - FECHA DEVOLUCION %j", JSON.stringify(result));
-                    //    res.status(result.http_status).send(result);
+                        //} else if (dateReturn < toDay) {
+                        //    result = Error.ERROR("AGP-0006").data({FECHA_DEV: lde.FECHA_DEV || ""});
+                        //    log.logger.error("Insert LDE - FECHA DEVOLUCION %j", JSON.stringify(result));
+                        //    res.status(result.http_status).send(result);
                     } else {
                         lde2insert = {
-                            TERMINAL: (lde.TERMINAL !== undefined) ? lde.TERMINAL.trim() : '',
-                            SHIP: (lde.BUQUE !== undefined) ? lde.BUQUE.trim() : '',
-                            TRIP: (lde.VIAJE !== undefined) ? lde.VIAJE.trim() : '',
-                            CONTAINER: (lde.CONTENEDOR !== undefined) ? lde.CONTENEDOR.trim() : '',
-                            BL: (lde.BL !== undefined) ? lde.BL.trim() : '',
-                            ID_CLIENT: (lde.ID_CLIENTE !== undefined) ? lde.ID_CLIENTE.trim() : '',
+                            TERMINAL: (lde.TERMINAL !== undefined) ? lde.TERMINAL.trim() : "",
+                            SHIP: (lde.BUQUE !== undefined) ? lde.BUQUE.trim() : "",
+                            TRIP: (lde.VIAJE !== undefined) ? lde.VIAJE.trim() : "",
+                            CONTAINER: (lde.CONTENEDOR !== undefined) ? lde.CONTENEDOR.trim() : "",
+                            BL: (lde.BL !== undefined) ? lde.BL.trim() : "",
+                            ID_CLIENT: (lde.ID_CLIENTE !== undefined) ? lde.ID_CLIENTE.trim() : "",
                             RETURN_TO: [
                                 {
-                                    PLACE: (lde.LUGAR_DEV !== undefined) ? lde.LUGAR_DEV.trim() : '',
+                                    PLACE: (lde.LUGAR_DEV !== undefined) ? lde.LUGAR_DEV.trim() : "",
                                     DATE_TO: dateReturn,
                                     AUD_USER: req.user.USUARIO,
                                     AUD_TIME: timestamp
@@ -308,12 +310,12 @@ module.exports = (socket, log) => {
                             CLIENT: [
                                 {
                                     CUIT: lde.CUIT,
-                                    EMAIL: (lde.EMAIL !== undefined) ? lde.EMAIL.trim() : '',
+                                    EMAIL: (lde.EMAIL !== undefined) ? lde.EMAIL.trim() : "",
                                     AUD_USER: req.user.USUARIO,
                                     AUD_TIME: timestamp
                                 }
                             ],
-                            EXPIRATION: (lde.VENCE === undefined) ? '0' : lde.VENCE.toString()
+                            EXPIRATION: (lde.VENCE === undefined) ? "0" : lde.VENCE.toString()
                         };
                         Lde.add(lde2insert)
                             .then(data => {
@@ -328,20 +330,20 @@ module.exports = (socket, log) => {
                                         fecha: lde.FECHA_DEV,
                                         lugar: lde.LUGAR_DEV
                                     };
-                                    res.render('lde.pug', ldeMail, (err, html) => {
+                                    res.render("lde.pug", ldeMail, (err, html) => {
                                         if (err) {
                                             log.logger.error("Error %s", err);
                                         } else {
                                             html = {
-                                                data : html,
+                                                data: html,
                                                 alternative: true
                                             };
 
                                             var subject = `Libre Deuda Electónico ${lde.CONTENEDOR}`;
 
-                                            var Mail = require('../include/micro-emailjs.js');
+                                            var Mail = require("../include/micro-emailjs.js");
                                             Mail.send(lde.EMAIL, subject, html)
-                                            .then(data => {
+                                                .then(data => {
                                                     console.info(`Email enviado a: ${lde.EMAIL}`);
                                                 }).catch(err => {
                                                     console.error(`Email NO enviado a: ${lde.EMAIL}. ERROR: ${err.message}`);
@@ -350,7 +352,7 @@ module.exports = (socket, log) => {
                                     });
                                 }
 
-                                socket.emit('container', lde2insert);
+                                socket.emit("container", lde2insert);
                                 let result = {
                                     status: "OK",
                                     data: {
@@ -379,7 +381,6 @@ module.exports = (socket, log) => {
         var user = req.user;
         var moment = require("moment");
         var result;
-        var config = require('../config/config.js');
 
         var toDay = moment(moment().format("YYYY-MM-DD")).toDate();
         var dateReturn;
@@ -398,14 +399,14 @@ module.exports = (socket, log) => {
         };
 
         if (dateReturn < toDay) {
-            result = Error.ERROR("AGP-0006").data({FECHA_DEV: req.body.FECHA_DEV || ""});
+            result = Error.ERROR("AGP-0006").data({ FECHA_DEV: req.body.FECHA_DEV || "" });
             log.logger.error("Change Place LDE - FECHA DEVOLUCION %j", JSON.stringify(result));
             res.status(result.http_status).send(result);
-        } else if (user.data.group === 'TER') {
+        } else if (user.data.group === "TER") {
             result = Error.ERROR("AGP-0008");
             res.status(result.http_status).send(result);
         } else {
-            if (user.data.group === 'FOR') {
+            if (user.data.group === "FOR") {
                 delete param.lugar_dev;
                 delete param.id_cliente;
                 delete param.id;
@@ -416,8 +417,8 @@ module.exports = (socket, log) => {
                     log.logger.info("Change Place LDE - LUGAR - FECHA DEVOLUCION %s - %s", req.body.LUGAR_DEV, req.body.FECHA_DEV);
                     if (req.body.EMAIL) {
                         let lde = data.data;
-                        var return_to = lde.RETURN_TO[lde.RETURN_TO.length-1];
-                        var client = lde.CLIENT[lde.CLIENT.length-1];
+                        var return_to = lde.RETURN_TO[lde.RETURN_TO.length - 1];
+                        var client = lde.CLIENT[lde.CLIENT.length - 1];
                         let ldeMail = {
                             contenedor: lde.CONTAINER,
                             terminal: lde.TERMINAL,
@@ -427,20 +428,20 @@ module.exports = (socket, log) => {
                             fecha: return_to.DATE_TO,
                             lugar: return_to.PLACE
                         };
-                        res.render('changePlace.pug', ldeMail, (err, html) => {
+                        res.render("changePlace.pug", ldeMail, (err, html) => {
                             if (err) {
                                 log.logger.error("Error %s", err);
                             } else {
                                 html = {
-                                    data : html,
+                                    data: html,
                                     alternative: true
                                 };
 
                                 var subject = `Libre Deuda Electónico ${req.body.CONTENEDOR}`;
 
-                                var Mail = require('../include/micro-emailjs.js');
+                                var Mail = require("../include/micro-emailjs.js");
                                 Mail.send(req.body.EMAIL, subject, html)
-                                .then(data => {
+                                    .then(data => {
                                         console.info(`Email enviado a: ${req.body.EMAIL}`);
                                         res.status(200).send(data);
                                     }).catch(err => {
