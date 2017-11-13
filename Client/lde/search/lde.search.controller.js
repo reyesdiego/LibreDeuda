@@ -235,7 +235,7 @@ myApp.filter('lugarDevolucion', [function(){
 
     return function(idPlace, places){
         let result = idPlace;
-        if (places){
+        if (places && places.length > 0){
 			for (let lugar of places){
 				if (idPlace == lugar._id) {
 					result = lugar.NOMBRE
