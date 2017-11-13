@@ -20,7 +20,7 @@ module.exports = {
         ],
         "quotes": [
             "error",
-            "double"
+            {"enum": ["single", "double"]}
         ],
         "semi": [
             "error",
