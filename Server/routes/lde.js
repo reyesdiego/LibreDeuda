@@ -1,9 +1,10 @@
 /**
  * Created by diego on 4/18/16.
  */
+"use strict";
 //@ts-check
+
 module.exports = (socket, log) => {
-    "use strict";
     var express = require("express");
     var router = express.Router();
     var moment = require("moment");

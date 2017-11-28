@@ -1,17 +1,19 @@
 /**
  * Created by diego on 23/09/16.
  */
+//@ts-check
+
+"use strict";
 
 module.exports = (socket) => {
-    "use strict";
     var express = require("express");
     var router = express.Router();
-    var moment = require('moment');
+    var moment = require("moment");
 
-    var Ctvp = require('../lib/ctvp.js');
-    Ctvp = new Ctvp();
+    const _Ctvp = require("../lib/ctvp.js");
+    const Ctvp = new _Ctvp();
 
-    let add = (req, res) => {
+    const add = (req, res) => {
         var ctvp = req.body;
         var container = require("../include/container.js");
 
@@ -24,19 +26,19 @@ module.exports = (socket) => {
         };
 
         Ctvp.add(ctvp)
-        .then(data => {
+            .then(data => {
                 if (checkContainer === false) {
                     data.message = "El Contenedor no es válido por su dígito verificador";
                 }
                 res.status(200).send(data);
             })
-        .catch(err => {
+            .catch(err => {
                 res.status(500).send(err);
             });
     };
 
-    let getCtvp = (req, res) => {
-        var params = {contenedor: req.params.contenedor};
+    const getCtvp = (req, res) => {
+        var params = { contenedor: req.params.contenedor };
 
         Ctvp.check(params)
             .then(data => {
@@ -47,7 +49,7 @@ module.exports = (socket) => {
             });
     };
 
-    let getCtvps = (req, res) => {
+    const getCtvps = (req, res) => {
 
         Ctvp.get()
             .then(data => {
@@ -58,7 +60,7 @@ module.exports = (socket) => {
             });
     };
 
-    let invoice = (req, res) => {
+    const invoice = (req, res) => {
 
         var ctvp = req.body;
 
@@ -68,10 +70,10 @@ module.exports = (socket) => {
         };
 
         Ctvp.invoice(params)
-        .then(data => {
+            .then(data => {
                 res.status(200).send(data);
             })
-        .catch(err => {
+            .catch(err => {
                 res.status(500).send(err);
             });
 

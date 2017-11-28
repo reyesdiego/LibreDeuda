@@ -1,12 +1,14 @@
 /**
  * Created by diego on 14/11/16.
  */
+//@ts-check
+
+"use strict";
 
 module.exports = () => {
-    "use strict";
     var express = require("express");
     var router = express.Router();
-    var Error = require('../include/error.js');
+    var Error = require("../include/error.js");
 
     let getErrors = (req, res) => {
         var code = req.query.code;
@@ -18,7 +20,7 @@ module.exports = () => {
             result = Error.getErrors();
         }
         res.status(200).send({
-            status: 'OK',
+            status: "OK",
             data: result
         });
     };

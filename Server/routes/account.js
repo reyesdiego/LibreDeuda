@@ -2,9 +2,11 @@
  * Created by diego on 28/04/16.
  * @module Account
  */
+//@ts-check
+
+"use strict";
 
 module.exports = (log) => {
-    "use strict";
 
     var Error = require("../include/error.js");
     var express = require("express"),
@@ -209,9 +211,9 @@ module.exports = (log) => {
                                 };
                                 var Mail = require("../include/micro-emailjs.js");
                                 Mail.send(data.data.email, "Usuario Creado", html)
-                                    .then(emailData => {
+                                    .then(() => {
                                         log.logger.info(`Email enviado a: ${data.data.email}`);
-                                    }).catch(err => {
+                                    }).catch(() => {
                                         log.logger.error("Error al enviar mail a %s.", data.data.email);
                                     });
                             }
