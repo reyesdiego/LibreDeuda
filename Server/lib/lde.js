@@ -2,8 +2,8 @@
  * Created by diego on 09/05/16.
  */
 
-'use strict';
-var Error = require('../include/error.js');
+"use strict";
+var Error = require("../include/error.js");
 
 class ldeMongoDb {
     constructor (model) {
@@ -46,48 +46,48 @@ class ldeMongoDb {
             if (params.id !== undefined) {
                 match._id = params.id;
             }
-            if (user.group === 'TER') {
+            if (user.group === "TER") {
                 match.TERMINAL = user.terminal;
             }
             var param = [
                 {$match: match
                 },
-                {$unwind: '$STATUS'},
-                {$unwind: '$RETURN_TO'},
-                {$unwind: '$CLIENT'},
-                {$sort: {'STATUS.AUD_TIME': 1, 'RETURN_TO.AUD_TIME': 1}},
+                {$unwind: "$STATUS"},
+                {$unwind: "$RETURN_TO"},
+                {$unwind: "$CLIENT"},
+                {$sort: {"STATUS.AUD_TIME": 1, "RETURN_TO.AUD_TIME": 1}},
                 {$group: {
                     _id: {
-                        id: '$_id'},
-                    TERMINAL: {'$first': '$TERMINAL'},
-                    SHIP: {'$first': '$SHIP'},
-                    TRIP: {'$first': '$TRIP'},
-                    CONTAINER: {'$first': '$CONTAINER'},
-                    BL: {'$first': '$BL'},
-                    ID_CLIENT: {'$first': '$ID_CLIENT'},
-                    STATUS: {'$last': '$STATUS'},
-                    STATUS_FIRST: {'$first': '$STATUS'},
-                    RETURN_TO: {'$last': '$RETURN_TO'},
-                    CLIENT: {'$last': '$CLIENT'},
-                    EXPIRATION: {'$first': '$EXPIRATION'}
+                        id: "$_id"},
+                    TERMINAL: {"$first": "$TERMINAL"},
+                    SHIP: {"$first": "$SHIP"},
+                    TRIP: {"$first": "$TRIP"},
+                    CONTAINER: {"$first": "$CONTAINER"},
+                    BL: {"$first": "$BL"},
+                    ID_CLIENT: {"$first": "$ID_CLIENT"},
+                    STATUS: {"$last": "$STATUS"},
+                    STATUS_FIRST: {"$first": "$STATUS"},
+                    RETURN_TO: {"$last": "$RETURN_TO"},
+                    CLIENT: {"$last": "$CLIENT"},
+                    EXPIRATION: {"$first": "$EXPIRATION"}
                 }},
-                {$match: {'STATUS.STATUS': 0, $or: [{EXPIRATION: '0'}, {EXPIRATION: '1', 'RETURN_TO.DATE_TO': {$gte: toDay}}] }},
+                {$match: {"STATUS.STATUS": 0, $or: [{EXPIRATION: "0"}, {EXPIRATION: "1", "RETURN_TO.DATE_TO": {$gte: toDay}}] }},
                 {$project: {
-                    '_id': false,
-                    ID: '$_id.id',
+                    "_id": false,
+                    ID: "$_id.id",
                     TERMINAL: true,
                     SHIP: true,
                     TRIP: true,
                     CONTAINER: true,
                     BL: true,
                     ID_CLIENT: true,
-                    CUIT: '$CLIENT.CUIT',
-                    EMAIL_CLIENT: '$CLIENT.EMAIL_CLIENT',
-                    LUGAR_DEV: '$RETURN_TO.PLACE',
-                    FECHA_DEV: '$RETURN_TO.DATE_TO',
-                    STATUS: '$STATUS.STATUS',
-                    USER: '$STATUS_FIRST.AUD_USER',
-                    VENCE: '$EXPIRATION'
+                    CUIT: "$CLIENT.CUIT",
+                    EMAIL_CLIENT: "$CLIENT.EMAIL_CLIENT",
+                    LUGAR_DEV: "$RETURN_TO.PLACE",
+                    FECHA_DEV: "$RETURN_TO.DATE_TO",
+                    STATUS: "$STATUS.STATUS",
+                    USER: "$STATUS_FIRST.AUD_USER",
+                    VENCE: "$EXPIRATION"
                 }}
             ];
 
@@ -100,7 +100,7 @@ class ldeMongoDb {
                     } else {
                         let lde = data[0];
 
-                        if (user.group === 'AGE' && user.email !== lde.USER) {
+                        if (user.group === "AGE" && user.email !== lde.USER) {
                             reject(result);
                         } else {
                             result = {
@@ -121,11 +121,9 @@ class ldeMongoDb {
 
     returnToLde (params) {
         return new Promise((resolve, reject) => {
-            var moment = require("moment");
             var result;
             var contenedor = params.contenedor;
             var match = {CONTAINER: contenedor};
-            var toDay = moment(moment().format("YYYY-MM-DD")).toDate();
 
             var user = params.user.data;
 
@@ -140,20 +138,20 @@ class ldeMongoDb {
             //}
             var param = [
                 {$project: {
-                    ID: '$_id',
+                    ID: "$_id",
                     CONTAINER: true,
                     ID_CLIENT: true,
                     TERMINAL: true,
-                    STATUS_LAST: {$arrayElemAt: ['$STATUS', -1]},
-                    RETURN_TO: {$arrayElemAt: ['$RETURN_TO', -1]}
+                    STATUS_LAST: {$arrayElemAt: ["$STATUS", -1]},
+                    RETURN_TO: {$arrayElemAt: ["$RETURN_TO", -1]}
                 }},
                 {$match: match},
-                {$match: {'STATUS_LAST.STATUS': 3}},
+                {$match: {"STATUS_LAST.STATUS": 3}},
                 {$project: {
-                    TERMINAL: '$TERMINAL',
-                    CONTENEDOR: '$CONTAINER',
-                    LUGAR_DEV: '$RETURN_TO.PLACE',
-                    FECHA_DEV: '$RETURN_TO.DATE_TO'
+                    TERMINAL: "$TERMINAL",
+                    CONTENEDOR: "$CONTAINER",
+                    LUGAR_DEV: "$RETURN_TO.PLACE",
+                    FECHA_DEV: "$RETURN_TO.DATE_TO"
                 }}
             ];
 
@@ -166,7 +164,7 @@ class ldeMongoDb {
                     } else {
                         let lde = data[0];
 
-                        if (user.group === 'AGE' && user.email !== lde.USER) {
+                        if (user.group === "AGE" && user.email !== lde.USER) {
                             reject(result);
                         } else {
                             result = {
@@ -216,7 +214,7 @@ class ldeMongoDb {
                                         } else {
                                             result = {
                                                 status: "OK",
-                                                message: `El Libre Deuda ha sido Anulado correctamente.`,
+                                                message: "El Libre Deuda ha sido Anulado correctamente.",
                                                 data: {
                                                     ID: dataSaved._id,
                                                     STATUS: status
@@ -297,7 +295,7 @@ class ldeMongoDb {
 
             var user = params.user.data;
 
-            if (user.group !== 'FOR') {
+            if (user.group !== "FOR") {
                 result = Error.ERROR("AGP-0008").data({CONTENEDOR: params.contenedor});
             } else {
                 let task,
@@ -437,7 +435,7 @@ class ldeMongoDb {
                     reject(err);
                 })
             .then(data => {
-                    if (data.status === 'OK') {
+                    if (data.status === "OK") {
                         let ID = data.data.ID;
                         this.model.findOne({_id: ID})
                             .exec((err, lde) => {
@@ -472,7 +470,7 @@ class ldeMongoDb {
                                         } else {
                                             result = {
                                                 status: "OK",
-                                                message: `El Libre Deuda ha sido Entregado`,
+                                                message: "El Libre Deuda ha sido Entregado",
                                                 data: {
                                                     ID: dataSaved._id,
                                                     STATUS: status,
@@ -496,7 +494,7 @@ class ldeMongoDb {
             var result;
             var param, match;
             var contenedor = params.contenedor;
-            var mongoose = require('mongoose');
+            var mongoose = require("mongoose");
 
             match = {
                 CONTENEDOR: contenedor
@@ -510,17 +508,17 @@ class ldeMongoDb {
 
             param = [
                 {$project: {
-                    ID: '$_id',
+                    ID: "$_id",
                     TERMINAL: true,
-                    BUQUE: '$SHIP',
-                    VIAJE: '$TRIP',
+                    BUQUE: "$SHIP",
+                    VIAJE: "$TRIP",
                     BL: true,
-                    VENCE: '$EXPIRATION',
-                    CONTENEDOR: '$CONTAINER',
+                    VENCE: "$EXPIRATION",
+                    CONTENEDOR: "$CONTAINER",
                     ID_CLIENT: true,
                     CLIENT: true,
-                    STATUS: {$arrayElemAt: ['$STATUS', -1]},
-                    RETURN_TO: {$arrayElemAt: ['$RETURN_TO', -1]}
+                    STATUS: {$arrayElemAt: ["$STATUS", -1]},
+                    RETURN_TO: {$arrayElemAt: ["$RETURN_TO", -1]}
                 }},
                 {$match: match}
             ];
@@ -545,7 +543,7 @@ class ldeMongoDb {
             var result;
             var param,
                 match = {},
-                sort = {'_id': -1};
+                sort = {"_id": -1};
 
             var user = params.user.data;
 
@@ -553,24 +551,24 @@ class ldeMongoDb {
                 sort = options.sort;
             }
 
-            if (user.group === 'AGE') {
+            if (user.group === "AGE") {
                 match = {
-                    $or: [ {'STATUS': 0}, {'STATUS': 9}],
-                    'USER': params.user.USUARIO
+                    $or: [ {"STATUS": 0}, {"STATUS": 9}],
+                    "USER": params.user.USUARIO
                 };
-            } if (user.group === 'ADM') {
+            } if (user.group === "ADM") {
                 match = {
-                    $or: [ {'STATUS': 0}, {'STATUS': 9}]
+                    $or: [ {"STATUS": 0}, {"STATUS": 9}]
                 };
-            } else if (user.group === 'TER') {
+            } else if (user.group === "TER") {
                 match = {
-                    $or: [ {'STATUS': 0}, {'STATUS': 3}],
+                    $or: [ {"STATUS": 0}, {"STATUS": 3}],
                     TERMINAL: user.terminal
                 };
-            } else if (user.group === 'FOR') {
+            } else if (user.group === "FOR") {
                 match = {
-                    'STATUS': 0,
-                    'CUIT_FIRST': user.cuit
+                    "STATUS": 0,
+                    "CUIT_FIRST": user.cuit
                 };
                 if (params.bl !== undefined) {
                     match.BL = params.bl;
@@ -589,26 +587,26 @@ class ldeMongoDb {
                     EXPIRATION: true,
                     CONTAINER: true,
                     ID_CLIENT: true,
-                    CLIENT_FIRST: {$arrayElemAt: ['$CLIENT', 0]},
-                    CLIENT_LAST: {$arrayElemAt: ['$CLIENT', -1]},
-                    STATUS_FIRST: {$arrayElemAt: ['$STATUS', 0]},
-                    STATUS_LAST: {$arrayElemAt: ['$STATUS', -1]},
-                    RETURN_TO: {$arrayElemAt: ['$RETURN_TO', -1]}
+                    CLIENT_FIRST: {$arrayElemAt: ["$CLIENT", 0]},
+                    CLIENT_LAST: {$arrayElemAt: ["$CLIENT", -1]},
+                    STATUS_FIRST: {$arrayElemAt: ["$STATUS", 0]},
+                    STATUS_LAST: {$arrayElemAt: ["$STATUS", -1]},
+                    RETURN_TO: {$arrayElemAt: ["$RETURN_TO", -1]}
                 }},
                 {$project: {
                     TERMINAL: true,
-                    BUQUE: '$SHIP',
-                    VIAJE: '$TRIP',
-                    CONTENEDOR: '$CONTAINER',
+                    BUQUE: "$SHIP",
+                    VIAJE: "$TRIP",
+                    CONTENEDOR: "$CONTAINER",
                     BL: true,
                     ID_CLIENT: true,
-                    VENCE: '$EXPIRATION',
-                    CUIT_FIRST: '$CLIENT_FIRST.CUIT',
-                    CUIT: '$CLIENT_LAST.CUIT',
-                    LUGAR_DEV: '$RETURN_TO.PLACE',
-                    FECHA_DEV: '$RETURN_TO.DATE_TO',
-                    STATUS: '$STATUS_LAST.STATUS',
-                    USER: '$STATUS_FIRST.AUD_USER'
+                    VENCE: "$EXPIRATION",
+                    CUIT_FIRST: "$CLIENT_FIRST.CUIT",
+                    CUIT: "$CLIENT_LAST.CUIT",
+                    LUGAR_DEV: "$RETURN_TO.PLACE",
+                    FECHA_DEV: "$RETURN_TO.DATE_TO",
+                    STATUS: "$STATUS_LAST.STATUS",
+                    USER: "$STATUS_FIRST.AUD_USER"
                 }},
                 {$match: match},
                 {$sort: sort},
@@ -626,29 +624,29 @@ class ldeMongoDb {
                             EXPIRATION: true,
                             CONTAINER: true,
                             ID_CLIENT: true,
-                            CLIENT_FIRST: {$arrayElemAt: ['$CLIENT', 0]},
-                            CLIENT_LAST: {$arrayElemAt: ['$CLIENT', -1]},
-                            STATUS_FIRST: {$arrayElemAt: ['$STATUS', 0]},
-                            STATUS_LAST: {$arrayElemAt: ['$STATUS', -1]},
-                            RETURN_TO: {$arrayElemAt: ['$RETURN_TO', -1]}
+                            CLIENT_FIRST: {$arrayElemAt: ["$CLIENT", 0]},
+                            CLIENT_LAST: {$arrayElemAt: ["$CLIENT", -1]},
+                            STATUS_FIRST: {$arrayElemAt: ["$STATUS", 0]},
+                            STATUS_LAST: {$arrayElemAt: ["$STATUS", -1]},
+                            RETURN_TO: {$arrayElemAt: ["$RETURN_TO", -1]}
                         }},
                         {$project: {
                             TERMINAL: true,
-                            BUQUE: '$SHIP',
-                            VIAJE: '$TRIP',
-                            CONTENEDOR: '$CONTAINER',
+                            BUQUE: "$SHIP",
+                            VIAJE: "$TRIP",
+                            CONTENEDOR: "$CONTAINER",
                             BL: true,
                             ID_CLIENT: true,
-                            VENCE: '$EXPIRATION',
-                            CUIT_FIRST: '$CLIENT_FIRST.CUIT',
-                            CUIT: '$CLIENT_LAST.CUIT',
-                            LUGAR_DEV: '$RETURN_TO.PLACE',
-                            FECHA_DEV: '$RETURN_TO.DATE_TO',
-                            STATUS: '$STATUS_LAST.STATUS',
-                            USER: '$STATUS_FIRST.AUD_USER'
+                            VENCE: "$EXPIRATION",
+                            CUIT_FIRST: "$CLIENT_FIRST.CUIT",
+                            CUIT: "$CLIENT_LAST.CUIT",
+                            LUGAR_DEV: "$RETURN_TO.PLACE",
+                            FECHA_DEV: "$RETURN_TO.DATE_TO",
+                            STATUS: "$STATUS_LAST.STATUS",
+                            USER: "$STATUS_FIRST.AUD_USER"
                         }},
                         {$match: match},
-                        {$group: {_id: '$id._id', totalCount: {$sum: 1}}
+                        {$group: {_id: "$id._id", totalCount: {$sum: 1}}
                         }
                     ];
                     this.model.aggregate(param)
@@ -709,7 +707,7 @@ class ldeMongoDb {
                                 let lde = data[0];
                                 /** Si no recibe lugar o fecha de devolucion se utiliza la ultima que tenia*/
                                 let lastReturn = lde.RETURN_TO[lde.RETURN_TO.length-1];
-                                if (user.group === 'FOR' && user.cuit === lde.CUIT) {
+                                if (user.group === "FOR" && user.cuit === lde.CUIT) {
                                     /**La fecha de devolucion no puede ser menor a la fecha original*/
                                     if (lastReturn.DATE_TO < params.fecha_dev) {
                                         result = Error.ERROR("AGP-0007");
@@ -736,7 +734,7 @@ class ldeMongoDb {
                                         });
                                     }
                                 } else {
-                                    if (user.group === 'AGE') {
+                                    if (user.group === "AGE") {
                                         let newReturn_To = {
                                             PLACE: (params.lugar_dev) ? params.lugar_dev : lastReturn.PLACE,
                                             DATE_TO: (params.fecha_dev !== undefined) ? params.fecha_dev : lastReturn.DATE_TO,
@@ -776,7 +774,7 @@ class lde {
             this.connection = connection;
             //this.clase = new GateOracle(this.connection);
         } else {
-            this.connection = require('../models/freeDebt.js');
+            this.connection = require("../models/freeDebt.js");
             this.clase = new ldeMongoDb(this.connection);
         }
     }
@@ -797,10 +795,10 @@ class lde {
      * Obtiene un JSON del Libre Deuda Electrónico verificando que éste se encuentre activo.
      *
      * @param {Object} params - Objeto Filtro.
+     * @param {optional String} params.id - Id del sistema AGP - Optional
      * @param {String} params.contenedor - Contenedor a verificar
-     * @param {String} params.id - Id del sistema AGP - Optional
+     * @param {Object} params.user - Usuario que realiza la consulta
      * @param {String} params.id_cliente - Id del sistema del cliente - Optional
-     * @param {String} params.user - Usuario que realiza la consulta
      * @api public
      */
     checkLde (params) {
