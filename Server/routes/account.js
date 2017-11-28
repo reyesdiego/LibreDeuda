@@ -6,7 +6,7 @@
 module.exports = (log) => {
     "use strict";
 
-    var Error = require('../include/error.js');
+    var Error = require("../include/error.js");
     var express = require("express"),
         router = express.Router();
 
@@ -18,33 +18,33 @@ module.exports = (log) => {
         req.checkBody(
             {
                 email: {
-                    notEmpty: {errorMessage: "El Email es requerido." },
-                    isEmail: {errorMessage: "El Email es inválido."}
+                    notEmpty: { errorMessage: "El Email es requerido." },
+                    isEmail: { errorMessage: "El Email es inválido." }
                 },
                 password: {
-                    notEmpty: {errorMessage: "La Clave es requerida." }
+                    notEmpty: { errorMessage: "La Clave es requerida." }
                 },
                 company: {
-                    notEmpty: {errorMessage: "La Razón Social es requerida." }
+                    notEmpty: { errorMessage: "La Razón Social es requerida." }
                 },
                 cuit: {
-                    notEmpty: {errorMessage: "El CUIT es requerido." }
+                    notEmpty: { errorMessage: "El CUIT es requerido." }
                 },
                 group: {
-                    notEmpty: {errorMessage: "la Entidad es requerida." }
+                    notEmpty: { errorMessage: "la Entidad es requerida." }
                 },
                 emailContact: {
-                    notEmpty: {errorMessage: "El Email de Contancto es requerido." },
-                    isEmail: {errorMessage: "El Email de Contancto es inválido."}
+                    notEmpty: { errorMessage: "El Email de Contancto es requerido." },
+                    isEmail: { errorMessage: "El Email de Contancto es inválido." }
                 },
                 lastname: {
-                    notEmpty: {errorMessage: "El Apellido de Contancto es requerido." }
+                    notEmpty: { errorMessage: "El Apellido de Contancto es requerido." }
                 },
                 firstname: {
-                    notEmpty: {errorMessage: "El Nombre de Contancto es requerido." }
+                    notEmpty: { errorMessage: "El Nombre de Contancto es requerido." }
                 },
                 telephone: {
-                    notEmpty: {errorMessage: "El Teléfono de Contancto es requerido." }
+                    notEmpty: { errorMessage: "El Teléfono de Contancto es requerido." }
                 }
             });
 
@@ -74,10 +74,10 @@ module.exports = (log) => {
                     res.status(errToken.http_status).send(errToken);
                 } else {
                     account.getAccount(payload.USUARIO, payload.CLAVE)
-                    .then(data => {
+                        .then(data => {
                             res.status(200).send(data);
                         })
-                    .catch(err => {
+                        .catch(err => {
                             res.status(err.http_status).send(err);
                         });
                 }
@@ -95,28 +95,28 @@ module.exports = (log) => {
 
         payload.TYPE = payload.TYPE || "";
 
-        if (payload.USUARIO === undefined || payload.USUARIO === '') {
+        if (payload.USUARIO === undefined || payload.USUARIO === "") {
             result = Error.ERROR("AGP-0012").data();
             res.status(result.http_status).send(result);
         } else {
 
             account.getAccount(payload.USUARIO, payload.CLAVE)
-            .then(data => {
+                .then(data => {
                     let user = data.data;
                     if (user.status === Account.STATUS.ENABLED) {
                         token.createToken(payload)
-                        .then(token => {
+                            .then(token => {
                                 response = {
                                     status: "OK",
                                     data: token
                                 };
-                                if (payload.TYPE.toLowerCase() === 'full') {
+                                if (payload.TYPE.toLowerCase() === "full") {
                                     response.data = user;
                                     response.data.token = token;
                                 }
                                 res.status(200).send(response);
                             })
-                        .catch(err => {
+                            .catch(err => {
                                 res.status(403).send({
                                     status: "ERROR",
                                     message: "Hubo un error en el inicio de sesión (token)"
@@ -145,7 +145,7 @@ module.exports = (log) => {
                     }
 
                 })
-            .catch(err => {
+                .catch(err => {
                     res.status(err.http_status).send(err);
                 });
         }
@@ -154,7 +154,7 @@ module.exports = (log) => {
     var register = (req, res) => {
 
         var params = req.body;
-        var config = require('../config/config.js');
+        var config = require("../config/config.js");
 
         var account = new Account();
 
@@ -175,15 +175,18 @@ module.exports = (log) => {
         };
 
         account.register(params)
-        .then(data => {
+            .then(data => {
                 var token = require("../include/token.js");
 
                 let payload = {
                     USUARIO: data.data.email,
                     CLAVE: data.data.password
                 };
-                token.createToken(payload, {expiredIn: '10 years'})
-                .then(token => {
+                /**
+                 * Crea un token expirable a 10 años ya que es para el alta del usuario.
+                 */
+                token.createToken(payload, { expiredIn: "10 years" })
+                    .then(token => {
                         let mailData = {
                             email: data.data.email,
                             company: data.data.company,
@@ -191,11 +194,11 @@ module.exports = (log) => {
                             url: config.url,
                             token: token
                         };
-                        res.render('register.pug', mailData, (err, html) => {
+                        res.render("register.pug", mailData, (err, html) => {
                             res.status(200).send(html);
                             if (err) {
                                 res.status(500).send({
-                                    status: 'ERROR',
+                                    status: "ERROR",
                                     message: err.message,
                                     data: err
                                 });
@@ -204,7 +207,7 @@ module.exports = (log) => {
                                     data: html,
                                     alternative: true
                                 };
-                                var Mail = require('../include/micro-emailjs.js');
+                                var Mail = require("../include/micro-emailjs.js");
                                 Mail.send(data.data.email, "Usuario Creado", html)
                                     .then(emailData => {
                                         log.logger.info(`Email enviado a: ${data.data.email}`);
@@ -219,8 +222,8 @@ module.exports = (log) => {
                         res.status(500).send(err);
                     });
 
-        })
-        .catch(err => {
+            })
+            .catch(err => {
                 console.error(err.message);
                 log.logger.error(`INS Account: ${err.message}`);
                 res.status(err.http_status).send(err);
@@ -240,13 +243,13 @@ module.exports = (log) => {
                 res.status(errToken.http_status).send(errToken);
             } else {
                 account.getAccount(payload.USUARIO, payload.CLAVE)
-                .then(data => {
+                    .then(data => {
                         if (data.data.status === Account.STATUS.NEW) {
                             account.setStatus(data.data._id, Account.STATUS.PENDING)
                                 .then(data => {
-                                    res.render('validated.pug', data.data, (err, html) => {
+                                    res.render("validated.pug", data.data, (err, html) => {
                                         res.status(200).send(html);
-                                        var Mail = require('../include/micro-emailjs.js');
+                                        var Mail = require("../include/micro-emailjs.js");
                                         html = {
                                             data: html,
                                             alternative: true

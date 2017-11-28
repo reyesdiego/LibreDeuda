@@ -4,7 +4,7 @@
 
 module.exports = function (app, socket, log, redis) {
     "use strict";
-    var Error = require('../include/error.js');
+    var Error = require("../include/error.js");
 
     let verifyToken = (req, res, next) => {
         var incomingToken = req.headers.token,
@@ -24,7 +24,7 @@ module.exports = function (app, socket, log, redis) {
                         req.user = payload;
                         if (err) {
                         } else {
-                            if (data.status === 'OK') {
+                            if (data.status === "OK") {
                                 req.user.data = data.data;
                             }
                             next();
@@ -41,16 +41,16 @@ module.exports = function (app, socket, log, redis) {
     app.use(account);
 
     var ctvp = require("./ctvp.js")(socket);
-    app.use('/ctvp', verifyToken, ctvp);
+    app.use("/ctvp", verifyToken, ctvp);
 
     var error = require("./error.js")();
-    app.use('/errors', verifyToken, error);
+    app.use("/errors", verifyToken, error);
 
     var lde = require("./lde.js")(socket, log, redis);
-    app.use('/lde', verifyToken, lde);
+    app.use("/lde", verifyToken, lde);
 
-    app.get('/pm2test', (req, res) => {
-        var pm2 = require('pm2');
+    app.get("/pm2test", (req, res) => {
+        var pm2 = require("pm2");
         pm2.connect((err) => {
             if (err) {
 
@@ -64,7 +64,7 @@ module.exports = function (app, socket, log, redis) {
         });
     });
 
-    app.get('/', (req, res) => {
+    app.get("/", (req, res) => {
         res.status(200).send("Libre Deuda 1.0\n");
     });
 
