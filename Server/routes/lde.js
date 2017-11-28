@@ -1,7 +1,7 @@
 /**
  * Created by diego on 4/18/16.
  */
-
+//@ts-check
 module.exports = (socket, log) => {
     "use strict";
     var express = require("express");
@@ -10,8 +10,8 @@ module.exports = (socket, log) => {
     var contentCheck = require("../include/contentType.js");
     var Error = require("../include/error.js");
 
-    var Lde = require("../lib/lde.js");
-    Lde = new Lde();
+    var _Lde = require("../lib/lde.js");
+    const Lde = new _Lde();
 
     let validateFree = (req, res, next) => {
         var result;
@@ -75,12 +75,12 @@ module.exports = (socket, log) => {
     /** GET */
     let getFreeDebt = (req, res, next) => {
         if (req.url.indexOf("/lugar") >= 0) {
-            let place = require("../lib/place.js");
+            const _Place = require("../lib/place.js");
             let ID = req.query.ID;
-            place = new place();
+            const Place = new _Place();
 
             if (ID) {
-                place.getPlace(ID)
+                Place.getPlace(ID)
                     .then(data => {
                         res.status(200).send(data);
                     })
@@ -88,7 +88,7 @@ module.exports = (socket, log) => {
                         res.status(err.http_status).send(err);
                     });
             } else {
-                place.getPlaces()
+                Place.getPlaces()
                     .then(data => {
                         res.status(200).send(data);
                     })
@@ -246,14 +246,16 @@ module.exports = (socket, log) => {
         var lde2insert;
         var param, result;
         var user = req.user;
-        
+
         if (user.data.group !== "AGE") {
             result = Error.ERROR("AGP-0008");
             res.status(result.http_status).send(result);
         } else {
 
             param = {
+                id: "",
                 contenedor: lde.CONTENEDOR,
+                id_cliente: "",
                 user: req.user
             };
             Lde.checkLde(param)
@@ -268,12 +270,11 @@ module.exports = (socket, log) => {
                     });
                     res.status(result.http_status).send(result);
                 })
-                .catch(err => {
+                .catch(() => {
 
                     let checkContainer = container(lde.CONTENEDOR);
                     let checkCuit = cuit(lde.CUIT);
 
-                    let toDay = moment(moment().format("YYYY-MM-DD")).toDate();
                     let dateReturn = moment(lde.FECHA_DEV, "YYYY-MM-DD").toDate();
 
                     if (checkCuit === false) {
@@ -343,7 +344,7 @@ module.exports = (socket, log) => {
 
                                             var Mail = require("../include/micro-emailjs.js");
                                             Mail.send(lde.EMAIL, subject, html)
-                                                .then(data => {
+                                                .then(() => {
                                                     console.info(`Email enviado a: ${lde.EMAIL}`);
                                                 }).catch(err => {
                                                     console.error(`Email NO enviado a: ${lde.EMAIL}. ERROR: ${err.message}`);
@@ -441,7 +442,7 @@ module.exports = (socket, log) => {
 
                                 var Mail = require("../include/micro-emailjs.js");
                                 Mail.send(req.body.EMAIL, subject, html)
-                                    .then(data => {
+                                    .then(dataMail => {
                                         console.info(`Email enviado a: ${req.body.EMAIL}`);
                                         res.status(200).send(data);
                                     }).catch(err => {
