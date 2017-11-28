@@ -10,6 +10,10 @@ module.exports = {
             "error", 
             { allow: ["warn", "error", "info", "log"] }
         ],
+        "no-unused-vars": [
+            "warn",
+            {vars: "all","args": "after-used"}
+        ],
         "indent": [
             "error",
             4
@@ -20,7 +24,7 @@ module.exports = {
         ],
         "quotes": [
             "error",
-            {"enum": ["single", "double"]}
+            "double"
         ],
         "semi": [
             "error",

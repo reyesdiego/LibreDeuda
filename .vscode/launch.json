@@ -10,7 +10,7 @@
         "name": "Server",
         "program": "${workspaceFolder}/Server/index.js",
         "env": {
-            "NODE_ENV": "production"
+            "NODE_ENV": "development"
         }
     }
     ]
