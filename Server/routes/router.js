@@ -1,9 +1,11 @@
 /**
  * Created by diego on 28/04/16.
  */
+//@ts-check
 
-module.exports = function (app, socket, log, redis) {
-    "use strict";
+"use strict";
+
+module.exports = function (app, socket, log) {
     var Error = require("../include/error.js");
 
     let verifyToken = (req, res, next) => {
@@ -11,18 +13,19 @@ module.exports = function (app, socket, log, redis) {
             token = require("../include/token.js");
         var result;
 
-        var account = require("../lib/account.js");
-        account = new account();
+        const _Account = require("../lib/account.js");
+        const Account = new _Account();
 
         token.verifyToken(incomingToken, (err, payload) => {
             if (err) {
                 result = Error.ERROR("AGP-0009").data(err);
                 res.status(result.http_status).send(result);
             } else {
-                account.getAccount(payload.USUARIO, payload.CLAVE)
-                .then(data => {
+                Account.getAccount(payload.USUARIO, payload.CLAVE)
+                    .then(data => {
                         req.user = payload;
                         if (err) {
+                            res.status(500).send(err);
                         } else {
                             if (data.status === "OK") {
                                 req.user.data = data.data;
@@ -30,7 +33,7 @@ module.exports = function (app, socket, log, redis) {
                             next();
                         }
                     })
-                .catch(err => {
+                    .catch(err => {
                         res.status(err.http_status).send(err);
                     });
             }
@@ -46,14 +49,14 @@ module.exports = function (app, socket, log, redis) {
     var error = require("./error.js")();
     app.use("/errors", verifyToken, error);
 
-    var lde = require("./lde.js")(socket, log, redis);
+    var lde = require("./lde.js")(socket, log);
     app.use("/lde", verifyToken, lde);
 
     app.get("/pm2test", (req, res) => {
         var pm2 = require("pm2");
         pm2.connect((err) => {
             if (err) {
-
+                res.status(500).send(err);
             } else {
                 console.log("se conecto");
                 pm2.describe("LibreDeuda", (err, data) => {
