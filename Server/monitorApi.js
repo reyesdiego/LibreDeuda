@@ -2,8 +2,8 @@
  * Created by diego on 19/05/16.
  */
 
-var http = require('https');
-var pm2 = require('pm2');
+var http = require("https");
+var pm2 = require("pm2");
 var fs = require("fs");
 var path = require("path");
 var interval = 7000;
@@ -11,14 +11,14 @@ var interval = 7000;
 var optionsget = {
     host: "10.10.0.223", //process.argv[2], // here only the domain name (no http/https !)
     port: 8086,//process.argv[3],
-    path: '/',
-    method: 'GET',
+    path: "/",
+    method: "GET",
     timeout: 20,
     rejectUnauthorized: false
 };
 
 setInterval(function () {
-    'use strict';
+    "use strict";
     var reqGet = http.request(optionsget, function (res) {
         /*
          let mailer,
@@ -50,7 +50,7 @@ setInterval(function () {
 
     reqGet.end();
 
-    reqGet.on('error', function (e) {
+    reqGet.on("error", function (e) {
 
         pm2.connect(function (err) {
             if (err) {
