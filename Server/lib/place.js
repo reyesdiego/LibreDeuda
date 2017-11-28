@@ -3,11 +3,11 @@
  */
 
 class PlaceMongoDb {
-    constructor (model) {
+    constructor(model) {
         this.model = model;
     }
 
-    getPlaces (id) {
+    getPlaces(id) {
         let promise = new Promise((resolve, reject) => {
             let param = {};
             if (id) {
@@ -15,33 +15,33 @@ class PlaceMongoDb {
             }
 
             this.model.find(param)
-            .lean()
-            .exec((err, data) => {
-                if (err) {
-                    let errReject = {
-                        status: 'ERROR',
-                        message: err.message,
-                        data: err
-                    };
-                    reject(errReject);
-                } else {
-                    data.map(item => {
-                        return {
-                            ID: item._id,
-                            NOMBRE: item.NOMBRE
+                .lean()
+                .exec((err, data) => {
+                    if (err) {
+                        let errReject = {
+                            status: "ERROR",
+                            message: err.message,
+                            data: err
                         };
-                    });
-                    if (id) {
-                        data = (data[0]) ? data[0] : null;
-                    }
+                        reject(errReject);
+                    } else {
+                        data.map(item => {
+                            return {
+                                ID: item._id,
+                                NOMBRE: item.NOMBRE
+                            };
+                        });
+                        if (id) {
+                            data = (data[0]) ? data[0] : null;
+                        }
 
-                    let dataResolve = {
-                        status: 'OK',
-                        data: data
-                    };
-                    resolve(dataResolve);
-                }
-            });
+                        let dataResolve = {
+                            status: "OK",
+                            data: data
+                        };
+                        resolve(dataResolve);
+                    }
+                });
         });
         return promise;
     }
@@ -49,21 +49,21 @@ class PlaceMongoDb {
 }
 
 class Place {
-    constructor (connection) {
+    constructor(connection) {
         if (connection !== undefined) {
             this.connection = connection;
             //this.clase = new GateOracle(this.connection);
         } else {
-            this.connection = require('../models/place.js');
+            this.connection = require("../models/place.js");
             this.clase = new PlaceMongoDb(this.connection);
         }
     }
 
-    getPlace (id) {
+    getPlace(id) {
         return this.clase.getPlaces(id);
     }
 
-    getPlaces () {
+    getPlaces() {
         return this.clase.getPlaces();
     }
 

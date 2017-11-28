@@ -1,8 +1,7 @@
 /**
  * Created by diego on 11/11/16.
  */
-
-var error = require('./error.js');
+"use strict";
 
 var isApplicationJson = (req, res, next) => {
     var APPLICATION_JSON = "application/json";
@@ -13,7 +12,7 @@ var isApplicationJson = (req, res, next) => {
         var result = {
             status: "ERROR",
             message: "El Content-Type debe ser application/json"
-        }
+        };
         res.status(415).send(result);
     }
 };
@@ -28,7 +27,7 @@ var isTextPlain = (req, res, next) => {
         var result = {
             status: "ERROR",
             message: "El Content-Type debe ser text/plain"
-        }
+        };
         res.status(415).send(result);
     }
 };
