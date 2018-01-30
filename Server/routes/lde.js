@@ -258,9 +258,7 @@ module.exports = (socket, log) => {
         } else {
 
             param = {
-                id: "",
                 contenedor: lde.CONTENEDOR,
-                id_cliente: "",
                 user: req.user
             };
             Lde.checkLde(param)
