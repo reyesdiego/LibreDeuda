@@ -108,6 +108,10 @@ module.exports = (socket, log) => {
                     res.status(200).send(data);
                 })
                 .catch(err => {
+                    /**
+                     * En caso que el LDE ya haya sido factura y la terminal debe consultar el lugar de devolucion y/o la fecha del mismo, debe
+                     * poder acceder a esos datos
+                     */
                     if (param.user.data.group === "TER") {
                         next();
                     } else {
