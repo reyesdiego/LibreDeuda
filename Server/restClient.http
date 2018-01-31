@@ -1,14 +1,15 @@
 //login
-POST https://terminales.puertobuenosaires.gob.ar:8086/login
+POST http://10.10.0.223:8086/login
 Content-Type: application/json
 
 {
     "USUARIO": "emanuel.zarate@trp.com.ar",
+    //"USUARIO": "pablo_mendoza@bactssa.com.ar",
     "CLAVE": "123456"
 }
 //consulta LDE
-GET http://10.10.0.223:8086/LDE/MAEU6363989
-token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJVU1VBUklPIjoidHJwX3dlYnNlcnZpY2VzX2FncEB0cnAuY29tLmFyIiwiQ0xBVkUiOiJQNGcwM2wzY3RyMG4xYzAiLCJUWVBFIjoiIiwiaWF0IjoxNTExNDY2Njc4LCJleHAiOjE1MTE1NTMwNzh9.2inZT08nLuh8I-tKYqUvE4cv0KDFwrLyFwiVsDFUseA
+GET http://10.10.0.223:8086/LDE/SUDU6718868
+token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJVU1VBUklPIjoiZHJleWVzQHB1ZXJ0b2J1ZW5vc2FpcmVzLmdvYi5hciIsIkNMQVZFIjoiMTIzNDU2IiwiVFlQRSI6IiIsImlhdCI6MTUxNzQxMDE1MSwiZXhwIjoxNTE3NDk2NTUxfQ.dmzyUOwJuSraZKkoOSjyMocnqk9q7C_2WDhylth3hnI
 
 //login
 POST http://10.10.0.223:8086/login
@@ -18,27 +19,46 @@ Content-Type: application/json
     "USUARIO": "dreyes@puertobuenosaires.gob.ar",
     "CLAVE": "123456"
 }
+
 //insertar LDE
-POST https://terminales.puertobuenosaires.gob.ar:8086/lde
+POST http://localhost:8086/lde
 Content-Type: application/json
-token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJVU1VBUklPIjoiZHJleWVzQHB1ZXJ0b2J1ZW5vc2FpcmVzLmdvYi5hciIsIkNMQVZFIjoiMTIzNDU2IiwiVFlQRSI6IiIsImlhdCI6MTUxMTg4MTMyNywiZXhwIjoxNTExODgxMzg3fQ.JABnjg1siHJNwYI5ZLPwwWmn9H4-VfIKGZ5oN7Tn_1c
+token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJVU1VBUklPIjoiZHJleWVzQHB1ZXJ0b2J1ZW5vc2FpcmVzLmdvYi5hciIsIkNMQVZFIjoiMTIzNDU2IiwiVFlQRSI6IiIsImlhdCI6MTUxNzMyMDQ1OSwiZXhwIjoxNTE3NDA2ODU5fQ.3XQ5ZkvhHJa19FhQjFoQRejWNv5reJH7bRMTzTBnvMc
 
 {"TERMINAL":"TRP",
 "BUQUE":"TEST VESSEL",
 "VIAJE":"101S",
-"CONTENEDOR":"SUDU6718868",
+"CONTENEDOR": "SUDU6718868",
 "BL":"N7515A5KR330",
-"FECHA_DEV":"2017-12-30",
+"FECHA_DEV":"2018-01-31",
 "LUGAR_DEV":"TRP",
 "CUIT":"30593435810",
 "EMAIL":"dreyes@puertobuenosaires.gob.ar",
-"ID_CLIENTE":"920910735a"}
+"ID_CLIENTE":"92091073"}
+
+//Disable LDE
+PUT http://10.10.0.223:8086/lde/disable
+Content-Type: application/json
+token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJVU1VBUklPIjoiZHJleWVzQHB1ZXJ0b2J1ZW5vc2FpcmVzLmdvYi5hciIsIkNMQVZFIjoiMTIzNDU2IiwiVFlQRSI6IiIsImlhdCI6MTUxNzMyMDQ1OSwiZXhwIjoxNTE3NDA2ODU5fQ.3XQ5ZkvhHJa19FhQjFoQRejWNv5reJH7bRMTzTBnvMc
+
+{
+    "CONTENEDOR": "SUDU6718868"
+}
+
+//Invoice LDE
+PUT http://10.10.0.223:8086/lde/invoice
+Content-Type: application/json
+token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJVU1VBUklPIjoiZW1hbnVlbC56YXJhdGVAdHJwLmNvbS5hciIsIkNMQVZFIjoiMTIzNDU2IiwiVFlQRSI6IiIsImlhdCI6MTUxNzQxMTI0MSwiZXhwIjoxNTE3NDk3NjQxfQ.YNzNUEHJT5TgtB-vY0gQZB4REXUq0URo3k8zzhmNlmc
+
+{
+    "CONTENEDOR": "SUDU6718868"
+}
 
 //consulta LDE
 GET https://terminales.puertobuenosaires.gob.ar:8086/LDE/SUDU6718868
 token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJVU1VBUklPIjoiZW1hbnVlbC56YXJhdGVAdHJwLmNvbS5hciIsIkNMQVZFIjoiMTIzNDU2IiwiVFlQRSI6IiIsImlhdCI6MTUxMTg4MTQwMiwiZXhwIjoxNTExODgxNDYyfQ.btlNydI1uNprTV4jwy49aNV9hm8e23cJuQq9mN0pNkU
 //cambio lugar devolucion
-PUT https://terminales.puertobuenosaires.gob.ar:8086/lde/lugar
+PUT https://localhost:8086/lde/lugar
 Content-Type: application/json
 token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJVU1VBUklPIjoiZHJleWVzQHB1ZXJ0b2J1ZW5vc2FpcmVzLmdvYi5hciIsIkNMQVZFIjoiMTIzNDU2IiwiVFlQRSI6IiIsImlhdCI6MTUxMTU1Mjk5OSwiZXhwIjoxNTExNTUzMDU5fQ.9xvPWWZGVAScSg28xYeYRjX6e0YNtIjKFdo7vhvcM78
 
@@ -49,3 +69,11 @@ token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJVU1VBUklPIjoiZHJleWVzQHB1ZXJ0b2J1
 "ID": "59f6ad832da8973769378fa2",
 "EMAIL": "dreyes@puertobuenosaires.gob.ar"
 }
+
+//listado de lugares
+GET http://localhost:8086/lde/lugar
+token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJVU1VBUklPIjoiZHJleWVzQHB1ZXJ0b2J1ZW5vc2FpcmVzLmdvYi5hciIsIkNMQVZFIjoiMTIzNDU2IiwiVFlQRSI6IiIsImlhdCI6MTUxNzMyMDQ1OSwiZXhwIjoxNTE3NDA2ODU5fQ.3XQ5ZkvhHJa19FhQjFoQRejWNv5reJH7bRMTzTBnvMc
+
+//listado de errores
+GET http://localhost:8086/errors
+token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJVU1VBUklPIjoiZHJleWVzQHB1ZXJ0b2J1ZW5vc2FpcmVzLmdvYi5hciIsIkNMQVZFIjoiMTIzNDU2IiwiVFlQRSI6IiIsImlhdCI6MTUxNzMyMDQ1OSwiZXhwIjoxNTE3NDA2ODU5fQ.3XQ5ZkvhHJa19FhQjFoQRejWNv5reJH7bRMTzTBnvMc
