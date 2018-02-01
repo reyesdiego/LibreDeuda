@@ -1,10 +1,4 @@
-.idea/
-Client/node_modules/
-Client/bower_components/
-Client/services/config.production.js
-Client/services/config.development.js
-Server/node_modules/
-Server/config/secret.js
-Server/config/config_pro.json
-Server/config/config_dev.json
-Client/build
+node_modules/
+config/secret.js
+config/config_pro.json
+config/config_dev.json
