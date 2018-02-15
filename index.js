@@ -4,18 +4,18 @@
 "use strict";
 
 var config = require("./config/config.js");
-var log4n = require('./include/log4node.js'),
+var log4n = require("./include/log4node.js"),
     log = new log4n.log(config.log);
 
-//var http = require("https");
-var http = require("http");
+var http = require("https");
+//var http = require("http");
 var fs = require("fs");
 var path = require("path");
 var express = require("express");
 var expressValidator = require("express-validator");
-var compress = require('compression');
-var methodOverride = require('method-override'),
-    bodyParser = require('body-parser');
+var compress = require("compression");
+var methodOverride = require("method-override"),
+    bodyParser = require("body-parser");
     //multer = require('multer');
 var socket = require("socket.io");
 
@@ -41,21 +41,21 @@ app.use(expressValidator({
     }
 }));
 
-app.set('views', path.join(__dirname, '.', '/public'));
-app.set('view engine', 'pug');
+app.set("views", path.join(__dirname, ".", "/public"));
+app.set("view engine", "pug");
 /** For Pug Views*/
-app.locals.moment = require('moment');
+app.locals.moment = require("moment");
 
-app.all('/*', (req, res, next) => {
+app.all("/*", (req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", 'X-Requested-With, Content-Type, token');
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-    res.header('Access-Control-Request-Headers', 'Content-Type, token');
-    res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
-    res.header('Expires', '-1');
-    res.header('Pragma', 'no-cache');
+    res.header("Access-Control-Allow-Headers", "X-Requested-With, Content-Type, token");
+    res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
+    res.header("Access-Control-Request-Headers", "Content-Type, token");
+    res.header("Cache-Control", "private, no-cache, no-store, must-revalidate");
+    res.header("Expires", "-1");
+    res.header("Pragma", "no-cache");
 
-    if ('OPTIONS' === req.method) {
+    if ("OPTIONS" === req.method) {
         res.status(200).send();
     } else {
         next();
@@ -70,39 +70,39 @@ app.all('/*', (req, res, next) => {
 
 server = http.createServer(app);
 
-app.disable('x-powered-by');
+app.disable("x-powered-by");
 
 socket = socket(server, {
     transports: [
-        'websocket',
-        'xhr-polling',
-        'polling'
+        "websocket",
+        "xhr-polling",
+        "polling"
     ]
 });
 
 
 server.listen(port, () => {
-    log.logger.info("#%s Nodejs %s Running on %s://localhost:%s", process.pid, process.version, 'http', port);
+    log.logger.info("#%s Nodejs %s Running on %s://localhost:%s", process.pid, process.version, "http", port);
     /** Conecta a la base de datos MongoDb */
-    require('local-mongoose')(config.mongo.url, config.mongo.options);
+    require("local-mongoose")(config.mongo.url, config.mongo.options);
 });
-server.on('error', (err) => {
-    if (err.code === 'EADDRINUSE') {
-        log.logger.error('El puerto %s está siendo utilizado por otro proceso. El proceso que intenta iniciar se abortará', port);
+server.on("error", (err) => {
+    if (err.code === "EADDRINUSE") {
+        log.logger.error("El puerto %s está siendo utilizado por otro proceso. El proceso que intenta iniciar se abortará", port);
         process.exit();
     }
 });
 
-app.get('/killme', (req, res) => {
+app.get("/killme", (req, res) => {
     server.close();
 });
 
 require("./routes/router.js")(app, socket, log);
 
-process.on('exit', () => {
-    log.logger.error('exiting');
+process.on("exit", () => {
+    log.logger.error("exiting");
 });
 
-process.on('uncaughtException', (err) => {
+process.on("uncaughtException", (err) => {
     log.logger.info("Caught exception: " + err);
 });
