@@ -62,13 +62,13 @@ app.all("/*", (req, res, next) => {
     }
 });
 
-//var options = {
-//    key: fs.readFileSync(path.join(__dirname, '', "/key.pem")),
-//    cert: fs.readFileSync(path.join(__dirname, '', "/cert.pem"))
-//};
-//server = http.createServer(options, app);
+var options = {
+    key: fs.readFileSync(path.join(__dirname, "", "/key.pem")),
+    cert: fs.readFileSync(path.join(__dirname, "", "/cert.pem"))
+};
+server = http.createServer(options, app);
 
-server = http.createServer(app);
+//server = http.createServer(app);
 
 app.disable("x-powered-by");
 
@@ -93,7 +93,7 @@ server.on("error", (err) => {
     }
 });
 
-app.get("/killme", (req, res) => {
+app.get("/killme", () => {
     server.close();
 });
 
