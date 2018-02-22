@@ -319,7 +319,8 @@ module.exports = (socket, log) => {
                                     AUD_TIME: timestamp
                                 }
                             ],
-                            EXPIRATION: (lde.VENCE === undefined) ? "0" : lde.VENCE.toString()
+                            EXPIRATION: (lde.VENCE === undefined) ? "0" : lde.VENCE.toString(),
+                            OBSERVA: lde.OBSERVA
                         };
                         Lde.add(lde2insert)
                             .then(data => {
